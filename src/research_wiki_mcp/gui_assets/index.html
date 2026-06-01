@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research WIKI Lab</title>
+  <style>
+    :root {
+      --ink: #17243b;
+      --muted: #6d7c91;
+      --line: #dbe4ef;
+      --paper: #ffffff;
+      --canvas: #eef3f8;
+      --navy: #102849;
+      --navy-soft: #173a68;
+      --blue: #2075d6;
+      --blue-soft: #eaf4ff;
+      --red: #d95656;
+      --red-soft: #fff0ef;
+      --green: #228c72;
+      --shadow: 0 12px 30px rgba(32, 59, 94, .09);
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      margin: 0;
+      min-width: 1180px;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell {
+      display: grid;
+      grid-template-columns: 232px minmax(520px, 1fr) 416px;
+      min-height: 100vh;
+    }
+    .shell.workbench-closed { grid-template-columns: 232px minmax(520px, 1fr); }
+    .sidebar {
+      padding: 26px 18px;
+      color: #e9f2ff;
+      background: var(--navy);
+    }
+    .brand {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 34px;
+    }
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      color: var(--navy);
+      border-radius: 12px;
+      background: #d9eaff;
+      font-weight: 800;
+    }
+    .brand strong { display: block; font-size: 15px; letter-spacing: .05em; }
+    .brand small { color: #aec5e3; font-size: 11px; }
+    .nav-label {
+      margin: 24px 10px 9px;
+      color: #87a8ce;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .16em;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin: 4px 0;
+      padding: 10px;
+      color: #dceaff;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      text-align: left;
+    }
+    .nav-item.active, .nav-item:hover { background: var(--navy-soft); }
+    .nav-count {
+      min-width: 23px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      color: #cde1fb;
+      font-size: 11px;
+      text-align: center;
+    }
+    .sidebar-note {
+      margin-top: 38px;
+      padding: 13px;
+      border: 1px solid rgba(190,215,246,.16);
+      border-radius: 10px;
+      color: #aac3e1;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .workspace { padding: 25px 26px 32px; overflow: hidden; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0; color: #1a3151; font-size: 23px; }
+    .subtitle { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .actions { display: flex; gap: 8px; }
+    .btn {
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #31506f;
+      background: var(--paper);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .btn:hover { border-color: #aac5e3; }
+    .btn.primary { color: white; border-color: var(--blue); background: var(--blue); }
+    .btn.review { color: white; border-color: var(--green); background: var(--green); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 19px;
+    }
+    .stat {
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .stat-label { color: var(--muted); font-size: 11px; font-weight: 700; }
+    .stat-value { display: block; margin-top: 7px; color: #1d3f67; font-size: 23px; }
+    .section {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    h2 { margin: 0; color: #234364; font-size: 14px; }
+    .legend { display: flex; gap: 12px; color: var(--muted); font-size: 11px; }
+    .dot { display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 50%; }
+    .dot.blue { background: var(--blue); }
+    .dot.red { background: var(--red); }
+    .dot.amber { background: #d9962f; }
+    .paper-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+    .paper-card {
+      display: block;
+      width: 100%;
+      min-height: 90px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-left-width: 4px;
+      border-radius: 9px;
+      background: #fbfdff;
+      text-align: left;
+    }
+    .paper-card:hover { border-color: #aac5e3; background: #f7fbff; }
+    .paper-card.blue { border-left-color: var(--blue); }
+    .paper-card.red { border-left-color: var(--red); }
+    .paper-card.amber { border-left-color: #d9962f; }
+    .paper-card strong { display: block; overflow: hidden; color: #294766; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .paper-card p { margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: #236fbf;
+      background: var(--blue-soft);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .empty { padding: 24px 16px; color: var(--muted); font-size: 12px; text-align: center; }
+    .search-wrap { position: relative; }
+    .search {
+      width: 270px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      outline: none;
+    }
+    .search:focus { border-color: #8ab7e9; box-shadow: 0 0 0 3px #eaf4ff; }
+    .page-list { max-height: 320px; overflow: auto; }
+    .page-row {
+      display: grid;
+      grid-template-columns: 108px minmax(0, 1fr) 92px 85px;
+      align-items: center;
+      width: 100%;
+      padding: 11px 16px;
+      border: 0;
+      border-bottom: 1px solid #edf2f7;
+      color: var(--ink);
+      background: white;
+      text-align: left;
+    }
+    .page-row:hover { background: #f7fbff; }
+    .type-chip, .status-chip {
+      display: inline-block;
+      width: fit-content;
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: #3b648c;
+      background: #edf5fd;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .status-chip.draft { color: #a65e16; background: #fff4dd; }
+    .status-chip.reviewed { color: #20775f; background: #e8f7f2; }
+    .page-title { overflow: hidden; color: #274563; font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .page-lang { color: var(--muted); font-size: 11px; }
+    .workbench {
+      padding: 22px 20px;
+      border-left: 1px solid #d5dfeb;
+      background: #f9fbfd;
+    }
+    .shell.workbench-closed .workbench { display: none; }
+    .workbench h2 { font-size: 16px; }
+    .workbench-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .tabs { display: flex; gap: 3px; margin: 18px 0 16px; padding: 3px; border-radius: 9px; background: #eaf0f6; }
+    .tab {
+      flex: 1;
+      padding: 8px 7px;
+      border: 0;
+      border-radius: 7px;
+      color: #61758e;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .tab.active { color: #235990; background: white; box-shadow: 0 2px 5px rgba(35,70,105,.09); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    label { display: block; color: #56708c; font-size: 11px; font-weight: 800; }
+    input, select, textarea {
+      width: 100%;
+      margin-top: 5px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: #263e58;
+      background: white;
+      outline: none;
+    }
+    textarea { min-height: 188px; resize: vertical; line-height: 1.55; }
+    input:focus, select:focus, textarea:focus { border-color: #8ab7e9; box-shadow: 0 0 0 3px #eaf4ff; }
+    .field { margin-top: 10px; }
+    .range-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      margin-top: 5px;
+      padding: 3px;
+      border-radius: 8px;
+      background: #eaf0f6;
+    }
+    .range-choice {
+      padding: 8px 7px;
+      border: 0;
+      border-radius: 6px;
+      color: #61758e;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .range-choice.active { color: #235990; background: white; box-shadow: 0 2px 5px rgba(35,70,105,.09); }
+    input:disabled { color: #9aa9b8; background: #edf2f7; cursor: not-allowed; }
+    .button-row { display: flex; gap: 8px; margin-top: 13px; }
+    .notice {
+      margin-top: 14px;
+      padding: 11px;
+      border-radius: 8px;
+      color: #4f6984;
+      background: #edf4fb;
+      font-size: 11px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .notice.error { color: #a14343; background: var(--red-soft); }
+    .preview {
+      max-height: 445px;
+      margin-top: 13px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    .preview-item { padding: 12px; border-bottom: 1px solid var(--line); }
+    .preview-item:last-child { border-bottom: 0; }
+    .preview-item strong { color: #2e597f; font-size: 11px; }
+    .preview-item pre { margin: 8px 0 0; color: #425b75; font-family: inherit; font-size: 11px; line-height: 1.55; white-space: pre-wrap; }
+    .preview-item img { width: 100%; margin-top: 9px; border: 1px solid var(--line); border-radius: 5px; }
+    .register-box {
+      margin-top: 14px;
+      padding: 13px;
+      border: 1px solid #b8d5f2;
+      border-radius: 9px;
+      background: #f4f9ff;
+    }
+    .register-box h3 { margin: 0; color: #255b8f; font-size: 13px; }
+    .register-box p { margin: 7px 0 0; color: #607b96; font-size: 11px; line-height: 1.55; }
+    .reader {
+      margin-top: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .reader-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 19px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .reader h2 { color: #1d3f67; font-size: 20px; line-height: 1.35; }
+    .reader-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .reader-body {
+      min-height: 480px;
+      padding: 24px 26px 36px;
+      color: #2d455e;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .reader-body h1, .reader-body h2, .reader-body h3 { margin: 1.35em 0 .55em; color: #1e436a; }
+    .reader-body h1 { font-size: 23px; }
+    .reader-body h2 { font-size: 18px; }
+    .reader-body h3 { font-size: 15px; }
+    .reader-body p { margin: .65em 0; }
+    .reader-body pre { overflow: auto; padding: 13px; border-radius: 7px; background: #f2f6fa; font-size: 12px; line-height: 1.55; white-space: pre-wrap; }
+    .reader-body blockquote { margin: 12px 0; padding: 1px 14px; border-left: 3px solid #9bbfe4; color: #58718b; }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">W</span>
+        <div><strong>RESEARCH WIKI</strong><small>LAB MCP WORKSPACE</small></div>
+      </div>
+      <div class="nav-label">KNOWLEDGE</div>
+      <button class="nav-item active" data-nav-view="dashboard"><span>대시보드</span><span class="nav-count">01</span></button>
+      <button class="nav-item" data-nav-view="papers"><span>논문 보관함</span><span class="nav-count" id="paperNavCount">0</span></button>
+      <button class="nav-item" data-nav-view="pages"><span>WIKI 페이지</span><span class="nav-count" id="pageNavCount">0</span></button>
+      <div class="sidebar-note">
+        Markdown 파일이 원본입니다.<br>
+        모든 편집은 Git 이력으로 남고 SQLite 검색 인덱스는 다시 만들 수 있습니다.
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div>
+          <h1 id="workspaceTitle">연구 지식 대시보드</h1>
+          <p class="subtitle" id="workspaceSubtitle">논문 반영 상태를 확인하고 WIKI 초안을 함께 다듬습니다.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="rebuildButton">인덱스 다시 만들기</button>
+          <button class="btn primary" id="newPageButton">새 WIKI 페이지</button>
+          <button class="btn" id="workbenchToggle" type="button" aria-expanded="true">작업 패널 닫기</button>
+        </div>
+      </header>
+
+      <section class="stats" id="summaryStats">
+        <div class="stat"><span class="stat-label">로컬 PDF</span><strong class="stat-value" id="statPapers">0</strong></div>
+        <div class="stat"><span class="stat-label">반영 완료 PDF</span><strong class="stat-value" id="statReflected">0</strong></div>
+        <div class="stat"><span class="stat-label">WIKI 페이지</span><strong class="stat-value" id="statPages">0</strong></div>
+        <div class="stat"><span class="stat-label">검토 대기 초안</span><strong class="stat-value" id="statDrafts">0</strong></div>
+      </section>
+
+      <section class="section" id="paperSection">
+        <div class="section-head">
+          <h2>논문 반영 상태</h2>
+          <div class="legend"><span><i class="dot red"></i>읽지 않음</span><span><i class="dot blue"></i>WIKI 반영</span></div>
+        </div>
+        <div class="paper-grid" id="paperGrid"></div>
+      </section>
+
+      <section class="section" id="pageSection">
+        <div class="section-head">
+          <h2>WIKI 페이지</h2>
+          <div class="search-wrap"><input class="search" id="searchInput" placeholder="제목, 태그, 본문 검색"></div>
+        </div>
+        <div class="page-list" id="pageList"></div>
+      </section>
+
+      <section class="reader" id="pageDetailSection" hidden>
+        <div class="reader-head">
+          <div>
+            <button class="btn" id="pageDetailBack" type="button">목록으로 돌아가기</button>
+            <h2 id="pageDetailTitle"></h2>
+            <div class="reader-meta" id="pageDetailMeta"></div>
+          </div>
+          <button class="btn primary" id="pageDetailEdit" type="button">편집 패널 열기</button>
+        </div>
+        <article class="reader-body" id="pageDetailBody"></article>
+      </section>
+    </section>
+
+    <aside class="workbench">
+      <div class="workbench-head">
+        <div>
+          <h2>작업 패널</h2>
+          <p class="subtitle">WIKI 저장, 연구자 검토 표시, PDF 읽기를 실행합니다.</p>
+        </div>
+        <button class="btn" id="workbenchClose" type="button">닫기</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="edit">WIKI 편집</button>
+        <button class="tab" data-tab="ingest">PDF 읽기</button>
+      </div>
+
+      <section class="panel active" id="editPanel">
+        <form id="editForm">
+          <div class="form-grid">
+            <label>유형<select id="pageType"></select></label>
+            <label>언어<select id="pageLanguage"><option value="ko">한국어</option><option value="en">English</option></select></label>
+          </div>
+          <label class="field">슬러그<input id="pageSlug" required placeholder="예: visibility-guidance"></label>
+          <label class="field">제목<input id="pageTitle" required placeholder="페이지 제목"></label>
+          <input id="pageStatus" type="hidden" value="draft">
+          <label class="field">신뢰도<select id="pageConfidence"><option value="low">low</option><option value="medium">medium</option><option value="high">high</option></select></label>
+          <label class="field">출처 경로<input id="pageSources" placeholder="쉼표로 구분"></label>
+          <label class="field">태그<input id="pageTags" placeholder="쉼표로 구분"></label>
+          <label class="field">본문<textarea id="pageBody" placeholder="Markdown 본문"></textarea></label>
+          <div class="form-grid field">
+            <label>작성자<input id="pageAuthor" value="lab-member" required></label>
+            <label>Git 이메일<input id="pageEmail" value="lab@example.local" required></label>
+          </div>
+          <div class="button-row">
+            <button class="btn primary" type="submit">저장</button>
+            <button class="btn review" type="button" id="reviewButton">검토 완료로 표시</button>
+          </div>
+        </form>
+        <div class="notice" id="editNotice">목록에서 페이지를 선택하거나 새 페이지를 작성하세요.</div>
+      </section>
+
+      <section class="panel" id="ingestPanel">
+        <form id="ingestForm">
+          <label>로컬 PDF 경로<input id="pdfPath" required placeholder="C:\papers\paper.pdf"></label>
+          <div class="form-grid field">
+            <label>읽기 방식<select id="readingMode"><option value="text">텍스트 추출</option><option value="screenshot">이미지 + 텍스트</option></select></label>
+            <label>정리 언어<select id="reflectionLanguage"><option value="ko">한국어</option><option value="en">English</option></select></label>
+          </div>
+          <div class="field">
+            <label>읽을 페이지</label>
+            <div class="range-toggle">
+              <button class="range-choice active" type="button" data-range-mode="all">전체 읽기</button>
+              <button class="range-choice" type="button" data-range-mode="selected">범위 선택</button>
+            </div>
+          </div>
+          <div class="form-grid field">
+            <label>페이지 범위<input id="pdfPages" disabled placeholder="범위 선택 시 예: 1-3,5"></label>
+            <label>DPI<input id="pdfDpi" type="number" value="144" min="72" max="300"></label>
+          </div>
+          <div class="button-row"><button class="btn primary" type="submit">PDF 미리 읽기</button></div>
+        </form>
+        <div class="notice">추출 원문은 PDF 언어를 유지합니다. 선택 언어는 이후 Codex 또는 Claude Code가 WIKI 내용을 정리할 때 사용합니다.</div>
+        <section class="register-box" id="sourceRegisterBox" hidden>
+          <h3>WIKI source 초안 등록</h3>
+          <p>추출한 원문을 Markdown source 페이지로 저장합니다. 이후 Codex 또는 Claude Code가 내용을 다듬고 concept 페이지를 추가할 수 있습니다.</p>
+          <label class="field">source 제목<input id="sourceRegisterTitle" placeholder="논문 제목"></label>
+          <label class="field">source 슬러그<input id="sourceRegisterSlug" placeholder="예: exemplar-cnn"></label>
+          <div class="button-row"><button class="btn primary" id="sourceRegisterButton" type="button">source 초안 등록</button></div>
+          <div class="notice" id="sourceRegisterNotice">미리 읽기를 실행하면 등록할 수 있습니다.</div>
+        </section>
+        <div class="preview" id="pdfPreview"><div class="empty">아직 읽은 PDF가 없습니다.</div></div>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    const state = { pages: [], papers: [], selected: null, pdfRangeMode: "all", pdfPreview: null };
+    const $ = (id) => document.getElementById(id);
+    const splitList = (value) => value.split(",").map((item) => item.trim()).filter(Boolean);
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `요청 실패: ${response.status}`);
+      return data;
+    }
+
+    function setNotice(message, isError = false) {
+      $("editNotice").textContent = message;
+      $("editNotice").className = `notice${isError ? " error" : ""}`;
+    }
+
+    function renderStats(stats) {
+      $("statPapers").textContent = stats.papers;
+      $("statReflected").textContent = stats.reflected_papers;
+      $("statPages").textContent = stats.pages;
+      $("statDrafts").textContent = stats.drafts;
+      $("paperNavCount").textContent = stats.papers;
+      $("pageNavCount").textContent = stats.pages;
+    }
+
+    function renderPapers() {
+      $("paperGrid").innerHTML = state.papers.length
+        ? state.papers.map((paper) => `
+          <button class="paper-card ${paper.color}" type="button" data-paper-path="${escapeHtml(paper.path)}">
+            <strong>${escapeHtml(paper.name)}</strong>
+            <p>${paper.reflected ? "source와 concept 정리가 반영되었습니다." : paper.source_registered ? "source 초안 등록됨 · concept 정리 대기" : "아직 WIKI에 등록되지 않았습니다. 눌러서 읽기를 시작하세요."}</p>
+            ${paper.comparison_badge ? '<span class="badge">비교 분석 완료</span>' : ""}
+          </button>`).join("")
+        : '<div class="empty">raw/papers 폴더에 PDF를 추가하면 상태가 표시됩니다.</div>';
+      document.querySelectorAll("[data-paper-path]").forEach((button) => button.addEventListener("click", () => selectPaper(button.dataset.paperPath)));
+    }
+
+    function renderPages() {
+      $("pageList").innerHTML = state.pages.length
+        ? state.pages.map((page) => `
+          <button class="page-row" data-page-type="${escapeHtml(page.page_type)}" data-page-slug="${escapeHtml(page.slug)}">
+            <span class="type-chip">${escapeHtml(page.page_type)}</span>
+            <span class="page-title">${escapeHtml(page.title)}</span>
+            <span class="status-chip ${escapeHtml(page.status)}">${escapeHtml(page.status)}</span>
+            <span class="page-lang">${escapeHtml(page.language)}</span>
+          </button>`).join("")
+        : '<div class="empty">조건에 맞는 WIKI 페이지가 없습니다.</div>';
+      document.querySelectorAll(".page-row").forEach((row) => row.addEventListener("click", () => loadPage(row.dataset.pageType, row.dataset.pageSlug)));
+    }
+
+    async function loadDashboard(query = "") {
+      const dashboard = await api(`/api/dashboard?q=${encodeURIComponent(query)}`);
+      state.pages = dashboard.pages;
+      state.papers = dashboard.papers;
+      renderStats(dashboard.stats);
+      renderPapers();
+      renderPages();
+      if (!$("pageType").options.length) {
+        dashboard.page_types.forEach((type) => $("pageType").add(new Option(type, type)));
+      }
+    }
+
+    async function loadPage(pageType, slug) {
+      const page = await api(`/api/pages/${encodeURIComponent(pageType)}/${encodeURIComponent(slug)}`);
+      state.selected = { page_type: pageType, slug };
+      populatePageForm(page);
+      showPageDetail(page);
+    }
+
+    function populatePageForm(page) {
+      $("pageType").value = page.page_type;
+      $("pageSlug").value = page.slug;
+      $("pageTitle").value = page.title;
+      $("pageStatus").value = page.status;
+      $("pageLanguage").value = page.language;
+      $("pageConfidence").value = page.confidence;
+      $("pageSources").value = page.sources.join(", ");
+      $("pageTags").value = page.tags.join(", ");
+      $("pageBody").value = page.body;
+      $("pageAuthor").value = page.author;
+      setNotice(`${page.title} 페이지를 편집기에 불러왔습니다.`);
+    }
+
+    function showPageDetail(page) {
+      $("workspaceTitle").textContent = "WIKI 상세";
+      $("workspaceSubtitle").textContent = "등록된 Markdown 본문을 읽고 필요할 때 편집 패널을 여세요.";
+      $("summaryStats").hidden = true;
+      $("paperSection").hidden = true;
+      $("pageSection").hidden = true;
+      $("pageDetailSection").hidden = false;
+      $("pageDetailTitle").textContent = page.title;
+      $("pageDetailMeta").innerHTML = `
+        <span class="type-chip">${escapeHtml(page.page_type)}</span>
+        <span class="status-chip ${escapeHtml(page.status)}">${escapeHtml(page.status)}</span>
+        <span class="type-chip">${escapeHtml(page.language)}</span>
+        <span class="type-chip">${escapeHtml(page.confidence)}</span>`;
+      $("pageDetailBody").innerHTML = renderMarkdown(page.body);
+      setWorkbenchOpen(false);
+    }
+
+    function renderMarkdown(markdown) {
+      const blocks = escapeHtml(markdown || "").split(/\n{2,}/);
+      return blocks.map((block) => {
+        if (block.startsWith("### ")) return `<h3>${block.slice(4)}</h3>`;
+        if (block.startsWith("## ")) return `<h2>${block.slice(3)}</h2>`;
+        if (block.startsWith("# ")) return `<h1>${block.slice(2)}</h1>`;
+        if (block.startsWith("&gt; ")) return `<blockquote><p>${block.replace(/^&gt; /, "")}</p></blockquote>`;
+        if (block.startsWith("```")) return `<pre>${block}</pre>`;
+        return `<p>${block.replace(/\n/g, "<br>")}</p>`;
+      }).join("");
+    }
+
+    function selectPaper(path) {
+      $("pdfPath").value = path;
+      state.pdfPreview = null;
+      $("sourceRegisterBox").hidden = true;
+      $("pdfPreview").innerHTML = '<div class="empty">PDF 미리 읽기를 누르면 원문을 확인하고 source 초안을 등록할 수 있습니다.</div>';
+      setWorkbenchOpen(true);
+      openTab("ingest");
+    }
+
+    function resetPage() {
+      state.selected = null;
+      $("editForm").reset();
+      $("pageLanguage").value = "ko";
+      $("pageStatus").value = "draft";
+      $("pageConfidence").value = "low";
+      $("pageAuthor").value = "lab-member";
+      $("pageEmail").value = "lab@example.local";
+      setNotice("새 WIKI 페이지 초안을 작성합니다.");
+      openTab("edit");
+    }
+
+    function currentPagePayload() {
+      return {
+        page_type: $("pageType").value,
+        slug: $("pageSlug").value.trim(),
+        title: $("pageTitle").value.trim(),
+        status: $("pageStatus").value,
+        language: $("pageLanguage").value,
+        confidence: $("pageConfidence").value,
+        sources: splitList($("pageSources").value),
+        tags: splitList($("pageTags").value),
+        body: $("pageBody").value,
+        author: $("pageAuthor").value.trim(),
+        author_email: $("pageEmail").value.trim(),
+      };
+    }
+
+    function openTab(name) {
+      document.querySelectorAll(".tab").forEach((button) => button.classList.toggle("active", button.dataset.tab === name));
+      $("editPanel").classList.toggle("active", name === "edit");
+      $("ingestPanel").classList.toggle("active", name === "ingest");
+    }
+
+    function setWorkbenchOpen(isOpen) {
+      document.querySelector(".shell").classList.toggle("workbench-closed", !isOpen);
+      $("workbenchToggle").textContent = isOpen ? "작업 패널 닫기" : "작업 패널 열기";
+      $("workbenchToggle").setAttribute("aria-expanded", String(isOpen));
+    }
+
+    function setActiveNav(button) {
+      document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("active", item === button));
+    }
+
+    function setWorkspaceView(name) {
+      const views = {
+        dashboard: ["연구 지식 대시보드", "논문 반영 상태를 확인하고 WIKI 초안을 함께 다듬습니다."],
+        papers: ["논문 보관함", "로컬 PDF의 WIKI 반영 상태와 비교 분석 여부를 확인합니다."],
+        pages: ["WIKI 페이지", "Markdown 지식 페이지를 검색하고 편집합니다."],
+      };
+      const [title, subtitle] = views[name];
+      $("workspaceTitle").textContent = title;
+      $("workspaceSubtitle").textContent = subtitle;
+      $("summaryStats").hidden = name !== "dashboard";
+      $("paperSection").hidden = name === "pages";
+      $("pageSection").hidden = name === "papers";
+      $("pageDetailSection").hidden = true;
+    }
+
+    function setPdfRangeMode(mode) {
+      state.pdfRangeMode = mode;
+      document.querySelectorAll("[data-range-mode]").forEach((button) => button.classList.toggle("active", button.dataset.rangeMode === mode));
+      $("pdfPages").disabled = mode === "all";
+      if (mode === "all") $("pdfPages").value = "";
+    }
+
+    function currentPdfPayload() {
+      return {
+        pdf_path: $("pdfPath").value.trim(),
+        reading_mode: $("readingMode").value,
+        reflection_language: $("reflectionLanguage").value,
+        pages: state.pdfRangeMode === "all" ? "" : $("pdfPages").value.trim(),
+        dpi: Number($("pdfDpi").value),
+      };
+    }
+
+    function suggestedSlug(path) {
+      const filename = path.split(/[\\/]/).pop().replace(/\.pdf$/i, "");
+      return filename.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 64) || "paper";
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+    }
+
+    $("editForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      try {
+        const page = await api("/api/pages", { method: "POST", body: JSON.stringify(currentPagePayload()) });
+        state.selected = { page_type: page.page_type, slug: page.slug };
+        setNotice(`${page.title} 초안을 저장했습니다. Git 이력에도 기록되었습니다.`);
+        await loadDashboard($("searchInput").value);
+        populatePageForm(page);
+        showPageDetail(page);
+      } catch (error) { setNotice(error.message, true); }
+    });
+
+    $("reviewButton").addEventListener("click", async () => {
+      if (!state.selected) return setNotice("먼저 저장된 페이지를 선택하세요.", true);
+      try {
+        const page = await api(`/api/pages/${encodeURIComponent(state.selected.page_type)}/${encodeURIComponent(state.selected.slug)}/review`, {
+          method: "POST",
+          body: JSON.stringify({ author: $("pageAuthor").value.trim(), author_email: $("pageEmail").value.trim() }),
+        });
+        $("pageStatus").value = page.status;
+        setNotice(`${page.title} 페이지를 reviewed 상태로 변경했습니다.`);
+        await loadDashboard($("searchInput").value);
+      } catch (error) { setNotice(error.message, true); }
+    });
+
+    $("ingestForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (state.pdfRangeMode === "selected" && !$("pdfPages").value.trim()) {
+        $("pdfPreview").innerHTML = '<div class="notice error">범위 선택을 사용하려면 페이지 범위를 입력하세요.</div>';
+        return;
+      }
+      $("pdfPreview").innerHTML = '<div class="empty">PDF를 읽고 있습니다...</div>';
+      try {
+        const result = await api("/api/pdf/preview", {
+          method: "POST",
+          body: JSON.stringify(currentPdfPayload()),
+        });
+        state.pdfPreview = currentPdfPayload();
+        const pdfName = state.pdfPreview.pdf_path.split(/[\\/]/).pop().replace(/\.pdf$/i, "");
+        $("sourceRegisterTitle").value = pdfName;
+        $("sourceRegisterSlug").value = suggestedSlug(state.pdfPreview.pdf_path);
+        $("sourceRegisterBox").hidden = false;
+        $("sourceRegisterNotice").textContent = "원문 확인 후 source 초안으로 등록하세요.";
+        $("pdfPreview").innerHTML = result.artifacts.map((artifact) => `
+          <article class="preview-item">
+            <strong>${escapeHtml(artifact.pdf_name)} · ${artifact.page_number}쪽 · ${escapeHtml(artifact.reflection_language)}</strong>
+            ${artifact.image_url ? `<img src="${escapeHtml(artifact.image_url)}" alt="${escapeHtml(artifact.pdf_name)} ${artifact.page_number}쪽">` : ""}
+            <pre>${escapeHtml(artifact.text || "")}</pre>
+          </article>`).join("");
+      } catch (error) {
+        $("pdfPreview").innerHTML = `<div class="notice error">${escapeHtml(error.message)}</div>`;
+      }
+    });
+
+    $("sourceRegisterButton").addEventListener("click", async () => {
+      if (!state.pdfPreview) {
+        $("sourceRegisterNotice").textContent = "먼저 PDF 미리 읽기를 실행하세요.";
+        return;
+      }
+      try {
+        $("sourceRegisterNotice").textContent = "source 초안을 등록하고 있습니다...";
+        const page = await api("/api/pdf/register-source", {
+          method: "POST",
+          body: JSON.stringify({
+            ...state.pdfPreview,
+            title: $("sourceRegisterTitle").value.trim(),
+            slug: $("sourceRegisterSlug").value.trim(),
+            author: $("pageAuthor").value.trim(),
+            author_email: $("pageEmail").value.trim(),
+          }),
+        });
+        $("sourceRegisterNotice").textContent = "source 초안을 등록했습니다. concept 정리는 Codex 또는 Claude Code에서 이어서 진행하세요.";
+        await loadDashboard($("searchInput").value);
+        state.selected = { page_type: page.page_type, slug: page.slug };
+        populatePageForm(page);
+        showPageDetail(page);
+      } catch (error) {
+        $("sourceRegisterNotice").textContent = error.message;
+      }
+    });
+
+    $("newPageButton").addEventListener("click", () => {
+      setWorkbenchOpen(true);
+      resetPage();
+    });
+    $("workbenchToggle").addEventListener("click", () => setWorkbenchOpen(document.querySelector(".shell").classList.contains("workbench-closed")));
+    $("workbenchClose").addEventListener("click", () => setWorkbenchOpen(false));
+    $("pageDetailBack").addEventListener("click", () => setWorkspaceView("pages"));
+    $("pageDetailEdit").addEventListener("click", () => {
+      setWorkbenchOpen(true);
+      openTab("edit");
+    });
+    $("rebuildButton").addEventListener("click", async () => {
+      try {
+        const result = await api("/api/index/rebuild", { method: "POST" });
+        setNotice(`검색 인덱스를 다시 만들었습니다. ${result.count}개 페이지를 확인했습니다.`);
+        await loadDashboard($("searchInput").value);
+      } catch (error) { setNotice(error.message, true); }
+    });
+    $("searchInput").addEventListener("input", (event) => loadDashboard(event.target.value).catch((error) => setNotice(error.message, true)));
+    document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => openTab(button.dataset.tab)));
+    document.querySelectorAll("[data-range-mode]").forEach((button) => button.addEventListener("click", () => setPdfRangeMode(button.dataset.rangeMode)));
+    document.querySelectorAll("[data-nav-view]").forEach((button) => button.addEventListener("click", () => {
+      setActiveNav(button);
+      setWorkspaceView(button.dataset.navView);
+    }));
+
+    loadDashboard().catch((error) => setNotice(error.message, true));
+  </script>
+</body>
+</html>

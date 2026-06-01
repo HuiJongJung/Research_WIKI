@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "research-wiki-mcp"
+version = "0.1.0"
+description = "MCP-based research WIKI for shared lab workflows"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1,<2",
+    "pymupdf>=1.27,<2",
+    "pypdf>=6,<7",
+    "starlette>=0.49,<2",
+    "uvicorn>=0.31,<1",
+]
+
+[project.scripts]
+research-wiki-mcp = "research_wiki_mcp.server:main"
+research-wiki-gui = "research_wiki_mcp.gui:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+research_wiki_mcp = ["gui_assets/*.html"]

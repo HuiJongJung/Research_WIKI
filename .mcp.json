@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "research-wiki": {
+      "type": "stdio",
+      "command": "research-wiki-mcp",
+      "args": [
+        "--root",
+        "${CLAUDE_PROJECT_DIR:-.}"
+      ]
+    }
+  }
+}

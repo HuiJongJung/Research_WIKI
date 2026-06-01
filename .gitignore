@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Derived state and local secrets.
+data/*.sqlite3
+.env
+
+# Generated PDF artifacts.
+raw/screenshots/
+
+# Local paper inputs. Keep only the directory placeholder in Git.
+raw/papers/*.pdf
