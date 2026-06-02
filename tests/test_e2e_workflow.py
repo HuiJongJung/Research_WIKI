@@ -45,10 +45,46 @@ class McpWorkflowEndToEndTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn("Visibility guidance", extracted[0]["text"])
                     self.assertEqual(extracted[0]["reflection_language"], "ko")
 
+                    published = await self._call(
+                        session,
+                        "wiki_publish_pdf_screenshots",
+                        {
+                            "pdf_path": str(paper_path),
+                            "asset_group": "sample-paper",
+                            "author": "Codex",
+                            "author_email": "codex@example.local",
+                            "pages": "1",
+                            "dpi": 72,
+                            "reflection_language": "ko",
+                        },
+                    )
+                    self.assertEqual(
+                        published[0]["markdown_image"],
+                        "![PDF page 1](../assets/sample-paper/page-0001-dpi-72.png)",
+                    )
+                    self.assertTrue((root / published[0]["asset_path"]).is_file())
+
                     await self._save_page(session, "source", "sample-paper", "Sample Paper")
                     self.assertEqual((await self._papers(session))[0]["color"], "amber")
 
                     await self._save_page(session, "concept", "visibility-guidance", "Visibility Guidance")
+                    captured = await self._call(
+                        session,
+                        "wiki_capture_discussion",
+                        {
+                            "page_type": "concept",
+                            "slug": "visibility-guidance",
+                            "title": "Visibility Guidance",
+                            "author": "Codex",
+                            "author_email": "codex@example.local",
+                            "entry": "Discussion established that visibility guidance needs a controlled ablation.",
+                            "rationale": "Reusable experiment requirement.",
+                            "sources": ["raw/papers/sample.pdf"],
+                            "tags": ["ablation"],
+                        },
+                    )
+                    self.assertTrue(captured["captured"])
+                    self.assertIn("## Discussion Captures", captured["body"])
                     reflected = (await self._papers(session))[0]
                     self.assertEqual(reflected["color"], "blue")
                     self.assertFalse(reflected["comparison_badge"])

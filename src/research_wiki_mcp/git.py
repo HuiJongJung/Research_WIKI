@@ -25,8 +25,13 @@ class GitRepository:
         if not (self.root / ".git").exists():
             self._run("init", "-b", "main")
 
-    def commit_file(self, path: Path, *, author: str, email: str, message: str) -> str:
-        relative_path = self._relative_path(path)
+    def commit_file(self, path: Path, *, author: str, email: str, message: str) -> str | None:
+        return self.commit_files((path,), author=author, email=email, message=message)
+
+    def commit_files(self, paths: tuple[Path, ...], *, author: str, email: str, message: str) -> str | None:
+        relative_paths = tuple(self._relative_path(path) for path in paths)
+        if not relative_paths:
+            return None
         env = {
             **os.environ,
             "GIT_AUTHOR_NAME": author,
@@ -34,8 +39,11 @@ class GitRepository:
             "GIT_COMMITTER_NAME": author,
             "GIT_COMMITTER_EMAIL": email,
         }
-        self._run("add", "--", relative_path, env=env)
-        self._run("commit", "-m", message, "--", relative_path, env=env)
+        self._run("add", "--", *relative_paths, env=env)
+        staged = self._run("diff", "--cached", "--quiet", "--", *relative_paths, env=env, check=False)
+        if staged.returncode == 0:
+            return None
+        self._run("commit", "-m", message, "--", *relative_paths, env=env)
         return self._run("rev-parse", "HEAD").stdout.strip()
 
     def history(self, path: Path) -> list[Revision]:
@@ -68,13 +76,14 @@ class GitRepository:
         self,
         *args: str,
         env: dict[str, str] | None = None,
+        check: bool = True,
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             ["git", "-c", "core.fsmonitor=false", "-c", "core.fscache=false", *args],
             cwd=self.root,
             env=env,
             stdin=subprocess.DEVNULL,
-            check=True,
+            check=check,
             capture_output=True,
             text=True,
             encoding="utf-8",

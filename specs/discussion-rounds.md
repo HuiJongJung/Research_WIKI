@@ -262,3 +262,30 @@ Append planning discussion outcomes here. Keep earlier rounds intact when adding
   - Allow maintainers to enable or disable each capability.
   - Save choices to `mcp-settings.json`.
   - Apply changes on the next server start so an active MCP client connection is not interrupted.
+## Round 8 - Canonical WIKI Image Attachments
+
+### User Request
+
+- Allow WIKI source summaries to include images while organizing a paper.
+- Improve the MCP Tool so visual evidence can be preserved in the source page.
+
+### Outcome
+
+- Keep raw screenshot previews reproducible and ignored by Git.
+- Add a Git-managed `wiki/assets/<source-slug>/` attachment store for selected PDF pages.
+- Add `wiki_publish_pdf_screenshots` and inline GUI rendering for Markdown image attachments.
+
+## Round 9 - Discussion Capture And WIKI Browsing
+
+### User Request
+
+- While Research WIKI MCP is connected, automatically add discussion outcomes that belong in source, claim, comparison, concept, or related WIKI pages.
+- Browse WIKI pages by knowledge-object category.
+- Reduce excessive scrolling caused by the small WIKI page list.
+- Browse WIKI categories by paper as well.
+
+### Outcome
+
+- Add client-invoked `wiki_capture_discussion`; connected models call it when durable knowledge emerges.
+- Preserve the server boundary: MCP does not monitor conversations autonomously.
+- Add WIKI object-type tabs, linked-paper filtering, reflected-paper navigation, and an expanded dedicated WIKI list.

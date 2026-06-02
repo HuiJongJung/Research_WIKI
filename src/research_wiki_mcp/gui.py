@@ -178,6 +178,18 @@ def create_gui_app(config: AppConfig) -> Starlette:
             return JSONResponse({"error": "artifact not found"}, status_code=404)
         return FileResponse(candidate)
 
+    async def wiki_asset(request: Request) -> Response:
+        relative = Path(request.path_params["asset_path"])
+        root = config.wiki_assets_root.resolve()
+        candidate = (root / relative).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            return JSONResponse({"error": "asset path is outside WIKI asset root"}, status_code=404)
+        if not candidate.is_file():
+            return JSONResponse({"error": "asset not found"}, status_code=404)
+        return FileResponse(candidate)
+
     app = Starlette(
         routes=[
             Route("/", homepage),
@@ -191,6 +203,7 @@ def create_gui_app(config: AppConfig) -> Starlette:
             Route("/api/pdf/preview", preview_pdf, methods=["POST"]),
             Route("/api/pdf/register-source", register_pdf_source, methods=["POST"]),
             Route("/artifacts/screenshots/{artifact_path:path}", screenshot_artifact),
+            Route("/assets/wiki/{asset_path:path}", wiki_asset),
         ]
     )
     app.state.service = service

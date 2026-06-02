@@ -7,11 +7,12 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import re
+from shutil import copyfile
 from typing import Any
 
 from .config import AppConfig
 from .index import SearchResult, WikiIndex
-from .models import WikiPage
+from .models import WikiPage, utc_now, validate_slug
 from .pdf import PdfExtractor
 from .repository import PageRepository
 
@@ -113,6 +114,88 @@ class ResearchWikiService:
             tags=tags,
         )
 
+    def capture_discussion(
+        self,
+        *,
+        page_type: str,
+        slug: str,
+        title: str,
+        author: str,
+        author_email: str,
+        entry: str,
+        rationale: str,
+        language: str = "ko",
+        confidence: str = "medium",
+        sources: list[str] | None = None,
+        tags: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Append durable research discussion to an appropriate WIKI page."""
+
+        if page_type not in {"source", "concept", "comparison", "claim", "question"}:
+            raise ValueError("discussion capture page type must be source, concept, comparison, claim, or question")
+        if not entry.strip():
+            raise ValueError("entry must not be empty")
+        if not rationale.strip():
+            raise ValueError("rationale must not be empty")
+        path = self.repository.path_for(page_type, slug)
+        captured_at = utc_now().strftime("%Y-%m-%d %H:%M UTC")
+        capture_lines = [
+            f"### {captured_at}",
+            "",
+            entry.strip(),
+            "",
+            f"- Capture rationale: {rationale.strip()}",
+        ]
+        if path.is_file():
+            current = self.repository.read(page_type, slug)
+            if entry.strip() in current.body:
+                page = self._page_dict(current)
+                page["captured"] = False
+                page["capture_policy"] = "Skipped because the discussion entry already exists."
+                return page
+            body = current.body.rstrip()
+            if "## Discussion Captures" not in body:
+                body = f"{body}\n\n## Discussion Captures"
+            body = f"{body}\n\n" + "\n".join(capture_lines)
+            merged_sources = self._merge_ordered(current.sources, sources or [])
+            merged_tags = self._merge_ordered(current.tags, [*(tags or []), "discussion-capture"])
+            page_title = current.title
+            page_language = current.language
+            page_confidence = current.confidence
+        else:
+            body = "\n".join(
+                [
+                    f"# {title.strip()}",
+                    "",
+                    "## Discussion Captures",
+                    "",
+                    *capture_lines,
+                ]
+            )
+            merged_sources = tuple(sources or ())
+            merged_tags = self._merge_ordered((), [*(tags or []), "discussion-capture"])
+            page_title = title.strip()
+            page_language = language
+            page_confidence = confidence
+        if not page_title:
+            raise ValueError("title must not be empty")
+        page = self.save_page(
+            page_type=page_type,
+            slug=slug,
+            title=page_title,
+            author=author,
+            author_email=author_email,
+            body=body,
+            status="draft",
+            language=page_language,
+            confidence=page_confidence,
+            sources=list(merged_sources),
+            tags=list(merged_tags),
+        )
+        page["captured"] = True
+        page["capture_policy"] = "Connected clients decide when discussion is durable enough to store."
+        return page
+
     def review_page(self, page_type: str, slug: str, *, author: str, author_email: str) -> dict[str, Any]:
         page = self.repository.review(page_type, slug, author=author, author_email=author_email)
         self.index.rebuild()
@@ -181,6 +264,59 @@ class ResearchWikiService:
             )
         ]
 
+    def publish_pdf_screenshots(
+        self,
+        *,
+        pdf_path: str,
+        asset_group: str,
+        author: str,
+        author_email: str,
+        pages: str | None = None,
+        dpi: int = 144,
+        reflection_language: str = "ko",
+    ) -> list[dict[str, Any]]:
+        """Publish selected PDF pages as Git-managed WIKI image attachments."""
+
+        group = validate_slug(asset_group)
+        if not author.strip():
+            raise ValueError("author must not be empty")
+        if not author_email.strip():
+            raise ValueError("author_email must not be empty")
+        artifacts = self.pdf.render_screenshots(
+            pdf_path,
+            pages=pages,
+            dpi=dpi,
+            reflection_language=reflection_language,
+        )
+        output_root = self.config.wiki_assets_root / group
+        output_root.mkdir(parents=True, exist_ok=True)
+        published = []
+        paths = []
+        for artifact in artifacts:
+            filename = f"page-{artifact.page_number:04d}-dpi-{dpi}.png"
+            image_path = output_root / filename
+            copyfile(artifact.image_path, image_path)
+            paths.append(image_path)
+            relative_path = image_path.relative_to(self.config.project_root).as_posix()
+            markdown_path = f"../assets/{group}/{filename}"
+            published.append(
+                {
+                    "page_number": artifact.page_number,
+                    "image_path": str(image_path),
+                    "asset_path": relative_path,
+                    "markdown_image": f"![PDF page {artifact.page_number}]({markdown_path})",
+                    "text": artifact.text,
+                    "reflection_language": artifact.reflection_language,
+                }
+            )
+        self.repository.git.commit_files(
+            tuple(paths),
+            author=author,
+            email=author_email,
+            message=f"wiki: publish PDF screenshots for {group}",
+        )
+        return published
+
     def register_pdf_source_draft(
         self,
         *,
@@ -197,6 +333,9 @@ class ResearchWikiService:
         """Persist extracted original PDF text as an editable source draft."""
 
         path = Path(pdf_path).expanduser().resolve()
+        source = self._paper_source(path)
+        page_slug = slug.strip() or self._source_slug(path.stem, source)
+        page_title = title.strip() or path.stem
         if reading_mode == "text":
             artifacts = self.extract_pdf_text(
                 str(path),
@@ -204,8 +343,11 @@ class ResearchWikiService:
                 reflection_language=reflection_language,
             )
         elif reading_mode == "screenshot":
-            artifacts = self.render_pdf_screenshots(
-                str(path),
+            artifacts = self.publish_pdf_screenshots(
+                pdf_path=str(path),
+                asset_group=page_slug,
+                author=author,
+                author_email=author_email,
                 pages=pages,
                 dpi=dpi,
                 reflection_language=reflection_language,
@@ -213,9 +355,6 @@ class ResearchWikiService:
         else:
             raise ValueError("reading_mode must be text or screenshot")
 
-        source = self._paper_source(path)
-        page_slug = slug.strip() or self._source_slug(path.stem, source)
-        page_title = title.strip() or path.stem
         body_lines = [
             f"# {page_title}",
             "",
@@ -239,7 +378,7 @@ class ResearchWikiService:
                 ]
             )
             if artifact.get("image_path"):
-                body_lines.extend(["", f"- Screenshot artifact: `{artifact['image_path']}`"])
+                body_lines.extend(["", artifact["markdown_image"]])
 
         page = self.save_page(
             page_type="source",
@@ -298,6 +437,10 @@ class ResearchWikiService:
             slug = "paper"
         digest = sha256(source.encode("utf-8")).hexdigest()[:8]
         return f"{slug[:64].rstrip('-')}-{digest}"
+
+    @staticmethod
+    def _merge_ordered(existing: tuple[str, ...], additions: list[str]) -> tuple[str, ...]:
+        return tuple(dict.fromkeys([*existing, *(item for item in additions if item.strip())]))
 
     def index_resource(self) -> str:
         return self._json({"pages": self.search(limit=500)})

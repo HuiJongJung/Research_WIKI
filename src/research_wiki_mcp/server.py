@@ -60,8 +60,10 @@ def create_server(config: AppConfig) -> FastMCP:
     mcp = FastMCP(
         "Research WIKI MCP",
         instructions=(
-            "연구 WIKI를 읽고 쓰는 MCP 서버입니다. 모델 기반 요약과 novelty 분석은 "
-            "Codex 또는 Claude Code가 수행하며, 서버는 결정론적 저장·검색·PDF 추출을 제공합니다."
+            "연구 WIKI를 읽고 쓰는 MCP 서버입니다. 모델 기반 요약과 novelty 분석은 연결된 Codex 또는 Claude Code가 수행합니다. "
+            "대화 중 재사용 가치가 있는 논문 해석, 핵심 개념, 비교 결과, 연구 claim 또는 열린 질문이 구체화되면 "
+            "wiki_capture_discussion을 적극적으로 호출하여 적절한 WIKI 페이지에 저장하세요. "
+            "사소한 질의응답, 아직 합의되지 않은 추측, 중복 내용은 저장하지 마세요."
         ),
         host=config.http_host,
         port=config.http_port,
@@ -180,6 +182,36 @@ def create_server(config: AppConfig) -> FastMCP:
             tags=tags,
         )
 
+    @register_if_enabled("tool", "wiki_capture_discussion", mcp.tool())
+    def wiki_capture_discussion(
+        page_type: str,
+        slug: str,
+        title: str,
+        author: str,
+        author_email: str,
+        entry: str,
+        rationale: str,
+        language: str = "ko",
+        confidence: str = "medium",
+        sources: list[str] | None = None,
+        tags: list[str] | None = None,
+    ) -> dict:
+        """Persist durable knowledge discovered during discussion into an appropriate WIKI page."""
+
+        return service.capture_discussion(
+            page_type=page_type,
+            slug=slug,
+            title=title,
+            author=author,
+            author_email=author_email,
+            entry=entry,
+            rationale=rationale,
+            language=language,
+            confidence=confidence,
+            sources=sources,
+            tags=tags,
+        )
+
     @register_if_enabled("tool", "wiki_review_page", mcp.tool())
     def wiki_review_page(page_type: str, slug: str, author: str, author_email: str) -> dict:
         """Promote a draft WIKI page to reviewed."""
@@ -241,6 +273,28 @@ def create_server(config: AppConfig) -> FastMCP:
 
         return service.render_pdf_screenshots(
             pdf_path,
+            pages=pages,
+            dpi=dpi,
+            reflection_language=reflection_language,
+        )
+
+    @register_if_enabled("tool", "wiki_publish_pdf_screenshots", mcp.tool())
+    def wiki_publish_pdf_screenshots(
+        pdf_path: str,
+        asset_group: str,
+        author: str,
+        author_email: str,
+        pages: str | None = None,
+        dpi: int = 144,
+        reflection_language: str = "ko",
+    ) -> list[dict]:
+        """Publish selected PDF pages as Git-managed WIKI images with Markdown snippets."""
+
+        return service.publish_pdf_screenshots(
+            pdf_path=pdf_path,
+            asset_group=asset_group,
+            author=author,
+            author_email=author_email,
             pages=pages,
             dpi=dpi,
             reflection_language=reflection_language,

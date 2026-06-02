@@ -137,3 +137,19 @@ Record decisions in chronological order.
 - Decision: Store per-capability enable or disable choices in version-managed `mcp-settings.json`.
 - Decision: Apply changes when the MCP server next starts instead of force-closing active client connections.
 - Reason: Maintainers need visibility and control without destabilizing a Codex or Claude Code session that is already using the server.
+
+## 2026-06-02 - Canonical WIKI Image Attachments
+
+- Decision: Keep generated PDF previews under ignored `raw/screenshots/`, but publish selected pages into Git-managed `wiki/assets/<source-slug>/`.
+- Decision: Expose `wiki_publish_pdf_screenshots` so MCP clients receive stable Markdown image snippets and can place visual evidence inside source summaries.
+- Decision: Make screenshot-mode GUI source registration publish and embed those images automatically.
+- Reason: Figures, tables, and equations are evidence, not disposable preview state, when they are selected for a durable WIKI source page.
+
+## 2026-06-02 - Proactive Discussion Capture And WIKI Browsing
+
+- Decision: Add `wiki_capture_discussion` for Codex or Claude Code to call when a discussion yields durable `source`, `concept`, `comparison`, `claim`, or `question` knowledge.
+- Boundary: The MCP server does not monitor chat messages. The connected model decides when a capture is warranted and invokes the tool.
+- Decision: Append captures to existing pages, create draft pages when absent, skip identical entries, and return modified reviewed pages to `draft`.
+- Decision: Add GUI filters for WIKI object type and linked paper. Expand the list viewport in the dedicated WIKI page view.
+- Decision: Clicking a reflected paper card opens its linked WIKI pages; clicking an unread paper keeps the PDF-ingest workflow.
+- Reason: Research discussion should become reusable lab memory without turning every transient exchange into shared canonical knowledge.

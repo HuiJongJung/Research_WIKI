@@ -46,7 +46,7 @@ Current MCP end-to-end check:
 python -m unittest discover -s tests -p test_e2e_workflow.py -v
 ```
 
-The end-to-end test connects through MCP `stdio`, extracts a local PDF, saves `source` and `concept` reflections, verifies the red-to-blue paper transition, saves a comparison page, checks the GUI badge state, promotes a page to `reviewed`, searches the WIKI, and rebuilds the index.
+The end-to-end test connects through MCP `stdio`, extracts a local PDF, saves `source` and `concept` reflections, captures a durable discussion outcome, verifies the red-to-blue paper transition, saves a comparison page, checks the GUI badge state, promotes a page to `reviewed`, searches the WIKI, and rebuilds the index.
 
 Current stdio MCP launch:
 
@@ -62,7 +62,7 @@ Current local GUI launch:
 research-wiki-gui --host 127.0.0.1 --port 8780 --root .
 ```
 
-The unittest suite validates GUI dashboard loading, WIKI save/read/review, index rebuild, PDF text preview, screenshot preview, screenshot artifact serving, MCP capability status, and MCP setting persistence. Browser verification checks the rendered Korean dashboard, MCP-status navigation, PDF-reading tab, WIKI editor loading, and browser error log.
+The unittest suite validates GUI dashboard loading, WIKI save/read/review, index rebuild, PDF text preview, screenshot preview, screenshot artifact serving, MCP capability status, and MCP setting persistence. Browser verification checks the rendered Korean dashboard, WIKI type filters, linked-paper filtering, expanded WIKI lists, MCP-status navigation, PDF-reading tab, WIKI editor loading, and browser error log.
 
 Current Streamable HTTP MCP launch:
 
