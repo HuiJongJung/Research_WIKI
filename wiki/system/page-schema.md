@@ -3,7 +3,7 @@ type: "system"
 slug: "page-schema"
 title: "WIKI Page Schema"
 status: "reviewed"
-modified_at: "2026-06-02T04:44:40.405831+00:00"
+modified_at: "2026-06-02T04:52:35.555934+00:00"
 author: "system"
 language: "en"
 confidence: "high"
@@ -46,3 +46,19 @@ Selected PDF screenshots may be published under `wiki/assets/<source-slug>/` and
 ```
 
 Use `language: ko` by default. Set `language: en` when the user explicitly requests English reflection.
+
+## Discussion Captures
+
+Connected clients may append durable discussion outcomes to `source`, `concept`, `comparison`, `claim`, or `question` pages:
+
+```markdown
+## Discussion Captures
+
+### 2026-06-02 04:51 UTC
+
+Reusable research interpretation, comparison result, claim, or open question.
+
+- Capture rationale: Why this belongs in shared lab memory.
+```
+
+The MCP server does not monitor conversations. Codex or Claude Code decides when a capture is warranted and invokes `wiki_capture_discussion`. Modified pages return to `draft` for researcher review.
