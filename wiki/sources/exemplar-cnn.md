@@ -3,7 +3,7 @@ type: "source"
 slug: "exemplar-cnn"
 title: "Discriminative Unsupervised Feature Learning with Exemplar Convolutional Neural Networks"
 status: "draft"
-modified_at: "2026-06-02T04:21:04.047620+00:00"
+modified_at: "2026-06-02T04:41:11.125762+00:00"
 author: "Codex"
 language: "ko"
 confidence: "high"
@@ -72,6 +72,8 @@ S_(x_i) = T_i x_i = {T x_i | T in T_i}
 
 ## Visual Evidence
 ### Fig. 1-2: surrogate class가 실제로 무엇인지
+![PDF page 2](../assets/exemplar-cnn/page-0002-dpi-144.png)
+
 - Fig. 1은 STL unlabeled dataset에서 샘플링한 다양한 seed patch를 보여준다.
 - Fig. 2는 하나의 seed patch에 translation, scale, rotation, contrast, color 변형을 적용한 모습을 보여준다.
 - 핵심은 의미 라벨이 아니라 `같은 seed에서 파생되었는가`가 surrogate label을 결정한다는 점이다. (p.2)
@@ -82,23 +84,33 @@ S_(x_i) = T_i x_i = {T x_i | T in T_i}
 - 그림의 red curve는 surrogate validation error가 class 수 증가와 함께 커지는 것을 보여준다. (p.5)
 
 ### Fig. 4-5: sample 수와 transformation ablation
+![PDF page 6](../assets/exemplar-cnn/page-0006-dpi-144.png)
+
 - Fig. 4에서 surrogate class당 transformed sample 수 `K`를 늘리면 성능이 증가하고 약 `100`개 부근에서 포화한다.
 - Fig. 5에서 rotation과 scaling 제거 영향은 상대적으로 작다. translation, color, contrast 제거 영향은 더 크다.
 - 즉 augmentation 목록은 장식이 아니라 학습 표현의 성질을 정하는 설계 변수다. (p.6)
 
 ### Fig. 6: invariance를 직접 측정
+![PDF page 7](../assets/exemplar-cnn/page-0007-dpi-144.png)
+
 - 위쪽 이미지는 한 patch에 translation, rotation, contrast, saturation, color 변형을 점점 강하게 적용한 모습이다.
 - Fig. 6(a)-(c)는 원본 patch와 transformed patch feature 사이 normalized Euclidean distance를 보여준다. 변화가 커져도 feature distance가 천천히 증가할수록 해당 변형에 더 robust하다.
 - Fig. 6(d)-(f)는 transformed patch에서의 분류 성능을 보여준다. training augmentation 범위를 강하게 설정하면 해당 변형에 더 robust해진다.
 - 다만 contrast 변화가 너무 강하면 성능이 나빠질 수 있다. edge strength 자체가 유용한 정보일 수 있기 때문이다. (p.7-8, Appendix C p.13)
 
 ### Fig. 8-11: matching task와 blur
+![PDF page 10](../assets/exemplar-cnn/page-0010-dpi-144.png)
+
+![PDF page 11](../assets/exemplar-cnn/page-0011-dpi-144.png)
+
 - Fig. 8은 descriptor matching 성능이 patch 크기와 feature를 뽑는 CNN layer에 따라 달라짐을 보여준다. 저자들은 SIFT에는 patch size `157`, CNN 계열에는 `113`을 사용한다. (p.10)
 - Fig. 9 scatter plot에서 Flickr dataset에서는 AlexNet과 Exemplar-CNN이 대체로 SIFT보다 좋지만, Mikolajczyk dataset에서는 supervised AlexNet이 SIFT보다 약한 경우가 있다. Exemplar-CNN-blur는 두 dataset에서 AlexNet보다 우수하다. (p.10)
 - Fig. 10에서 일반 CNN은 blur에서 크게 약해진다. blur augmentation으로 학습한 Exemplar-CNN-blur는 blur 조건에서도 SIFT에 근접하거나 우수하다. (p.11)
 - Fig. 11에서 Mikolajczyk dataset의 strong blur와 lighting에서는 SIFT가 여전히 강하지만, viewpoint 변화에서는 CNN 특징이 강하다. (p.11)
 
 ## Key Equations
+![PDF page 3](../assets/exemplar-cnn/page-0003-dpi-144.png)
+
 ### Eq. 1: surrogate-class classification objective
 ```text
 L(X) = sum_(x_i in X) sum_(T in T_i) l(i, T x_i)
