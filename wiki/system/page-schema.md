@@ -3,7 +3,7 @@ type: "system"
 slug: "page-schema"
 title: "WIKI Page Schema"
 status: "reviewed"
-modified_at: "2026-06-01T15:07:34.097600+00:00"
+modified_at: "2026-06-02T04:44:40.405831+00:00"
 author: "system"
 language: "en"
 confidence: "high"
@@ -38,5 +38,11 @@ tags:
 ```
 
 PDF-grounded pages should record page or section evidence anchors in their body.
+
+Selected PDF screenshots may be published under `wiki/assets/<source-slug>/` and embedded from one-level-deep WIKI page directories:
+
+```markdown
+![PDF page 3](../assets/example-paper/page-0003-dpi-144.png)
+```
 
 Use `language: ko` by default. Set `language: en` when the user explicitly requests English reflection.
