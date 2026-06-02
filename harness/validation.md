@@ -62,7 +62,7 @@ Current local GUI launch:
 research-wiki-gui --host 127.0.0.1 --port 8780 --root .
 ```
 
-The unittest suite validates GUI dashboard loading, WIKI save/read/review, index rebuild, PDF text preview, screenshot preview, and screenshot artifact serving. Browser verification checks the rendered Korean dashboard, PDF-reading tab, WIKI editor loading, and browser error log.
+The unittest suite validates GUI dashboard loading, WIKI save/read/review, index rebuild, PDF text preview, screenshot preview, screenshot artifact serving, MCP capability status, and MCP setting persistence. Browser verification checks the rendered Korean dashboard, MCP-status navigation, PDF-reading tab, WIKI editor loading, and browser error log.
 
 Current Streamable HTTP MCP launch:
 

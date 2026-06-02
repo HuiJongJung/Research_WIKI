@@ -83,6 +83,9 @@ Build a locally verifiable, lab-shared research WIKI system with an MCP server a
 - Show papers reflected into `source` and `concept` pages in blue.
 - Keep reflected papers blue and add a separate badge after optional comparison generation.
 - Support WIKI search, page browsing, Markdown viewing and editing, ingest configuration, draft review, and index rebuild actions.
+- Add an `MCP 상태` navigation view that lists current MCP resources, tools, and prompts.
+- Allow maintainers to enable or disable individual MCP capabilities through a version-managed startup settings file.
+- Apply capability changes on the next MCP server start without force-closing active client connections.
 
 ## Non-Functional Requirements
 

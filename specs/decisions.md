@@ -129,3 +129,11 @@ Record decisions in chronological order.
 - Decision: Use Korean as the default language for research summaries and WIKI reflection.
 - Decision: Allow English as an explicit option.
 - Invariant: Preserve original PDF text during deterministic extraction; the selected language guides Codex or Claude Code when writing summaries and WIKI pages.
+
+## 2026-06-02 - GUI MCP Capability Management
+
+- Decision: Add a left-navigation `MCP 상태` view for maintainers.
+- Decision: Show the current resource, tool, and prompt catalog with descriptions.
+- Decision: Store per-capability enable or disable choices in version-managed `mcp-settings.json`.
+- Decision: Apply changes when the MCP server next starts instead of force-closing active client connections.
+- Reason: Maintainers need visibility and control without destabilizing a Codex or Claude Code session that is already using the server.

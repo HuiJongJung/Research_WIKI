@@ -14,6 +14,7 @@ from starlette.routing import Route
 import uvicorn
 
 from .config import AppConfig
+from .mcp_catalog import McpSettingsStore
 from .service import ResearchWikiService
 
 JsonEndpoint = Callable[[Request], Awaitable[Response]]
@@ -42,6 +43,7 @@ def create_gui_app(config: AppConfig) -> Starlette:
     """Create the local-only GUI application."""
 
     service = ResearchWikiService(config)
+    mcp_settings = McpSettingsStore(config)
 
     async def homepage(_: Request) -> Response:
         return HTMLResponse(_asset_html())
@@ -112,6 +114,16 @@ def create_gui_app(config: AppConfig) -> Starlette:
         return JSONResponse(service.rebuild_index())
 
     @_json_endpoint
+    async def mcp_status(_: Request) -> Response:
+        return JSONResponse(mcp_settings.status())
+
+    @_json_endpoint
+    async def save_mcp_settings(request: Request) -> Response:
+        payload = await request.json()
+        mcp_settings.save(payload["capabilities"])
+        return JSONResponse(mcp_settings.status())
+
+    @_json_endpoint
     async def preview_pdf(request: Request) -> Response:
         payload = await request.json()
         reading_mode = payload.get("reading_mode", "text")
@@ -174,6 +186,8 @@ def create_gui_app(config: AppConfig) -> Starlette:
             Route("/api/pages/{page_type}/{slug}", read_page),
             Route("/api/pages/{page_type}/{slug}/review", review_page, methods=["POST"]),
             Route("/api/index/rebuild", rebuild_index, methods=["POST"]),
+            Route("/api/mcp/status", mcp_status),
+            Route("/api/mcp/settings", save_mcp_settings, methods=["POST"]),
             Route("/api/pdf/preview", preview_pdf, methods=["POST"]),
             Route("/api/pdf/register-source", register_pdf_source, methods=["POST"]),
             Route("/artifacts/screenshots/{artifact_path:path}", screenshot_artifact),

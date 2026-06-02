@@ -25,6 +25,8 @@
 - [x] The derived index can be rebuilt from Markdown files.
 - [x] The GUI shows red un-ingested papers and blue reflected papers.
 - [x] The GUI supports search, browsing, editing, ingest configuration, draft review, and index rebuild.
+- [x] The GUI `MCP 상태` view lists resources, tools, and prompts and saves startup-time enable or disable settings.
+- [x] A restarted MCP server omits capabilities disabled through `mcp-settings.json`.
 
 ## Documentation Checks
 

@@ -358,6 +358,20 @@
     .reader-body p { margin: .65em 0; }
     .reader-body pre { overflow: auto; padding: 13px; border-radius: 7px; background: #f2f6fa; font-size: 12px; line-height: 1.55; white-space: pre-wrap; }
     .reader-body blockquote { margin: 12px 0; padding: 1px 14px; border-left: 3px solid #9bbfe4; color: #58718b; }
+    .mcp-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 14px; border-bottom: 1px solid var(--line); }
+    .mcp-summary-card { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #f8fbfe; }
+    .mcp-summary-card span { display: block; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .mcp-summary-card strong { display: block; margin-top: 6px; color: #24517d; font-size: 18px; }
+    .mcp-server-info { padding: 14px 16px 0; color: #4f6984; font-size: 12px; line-height: 1.65; }
+    .mcp-capability-list { padding: 6px 14px 14px; }
+    .mcp-group-title { margin: 15px 2px 7px; color: #315b84; font-size: 12px; text-transform: uppercase; }
+    .mcp-capability { display: grid; grid-template-columns: minmax(190px, .8fr) minmax(280px, 1.6fr) 74px; gap: 12px; align-items: center; padding: 11px 10px; border-top: 1px solid #edf2f7; }
+    .mcp-capability-name { color: #274563; font-family: Consolas, monospace; font-size: 12px; font-weight: 700; }
+    .mcp-capability-target { display: block; margin-top: 4px; color: #8291a2; font-family: Consolas, monospace; font-size: 10px; }
+    .mcp-capability-desc { color: #60758d; font-size: 11px; line-height: 1.5; }
+    .mcp-switch { display: flex; align-items: center; justify-content: flex-end; gap: 6px; color: #56708c; font-size: 11px; }
+    .mcp-switch input { width: auto; margin: 0; }
+    .mcp-save-row { display: flex; align-items: center; gap: 10px; padding: 0 16px 16px; }
   </style>
 </head>
 <body>
@@ -371,6 +385,8 @@
       <button class="nav-item active" data-nav-view="dashboard"><span>대시보드</span><span class="nav-count">01</span></button>
       <button class="nav-item" data-nav-view="papers"><span>논문 보관함</span><span class="nav-count" id="paperNavCount">0</span></button>
       <button class="nav-item" data-nav-view="pages"><span>WIKI 페이지</span><span class="nav-count" id="pageNavCount">0</span></button>
+      <div class="nav-label">SYSTEM</div>
+      <button class="nav-item" data-nav-view="mcp"><span>MCP 상태</span><span class="nav-count" id="mcpNavCount">0</span></button>
       <div class="sidebar-note">
         Markdown 파일이 원본입니다.<br>
         모든 편집은 Git 이력으로 남고 SQLite 검색 인덱스는 다시 만들 수 있습니다.
@@ -411,6 +427,26 @@
           <div class="search-wrap"><input class="search" id="searchInput" placeholder="제목, 태그, 본문 검색"></div>
         </div>
         <div class="page-list" id="pageList"></div>
+      </section>
+
+      <section class="section" id="mcpStatusSection" hidden>
+        <div class="section-head">
+          <h2>MCP capability 관리</h2>
+          <span class="type-chip">다음 서버 시작 시 적용</span>
+        </div>
+        <div class="mcp-summary">
+          <div class="mcp-summary-card"><span>전체 capability</span><strong id="mcpTotalCount">0</strong></div>
+          <div class="mcp-summary-card"><span>활성화</span><strong id="mcpEnabledCount">0</strong></div>
+          <div class="mcp-summary-card"><span>비활성화</span><strong id="mcpDisabledCount">0</strong></div>
+        </div>
+        <div class="mcp-server-info" id="mcpServerInfo"></div>
+        <form id="mcpSettingsForm">
+          <div class="mcp-capability-list" id="mcpCapabilityList"></div>
+          <div class="mcp-save-row">
+            <button class="btn primary" type="submit">MCP 설정 저장</button>
+            <span class="notice" id="mcpNotice">항목을 끄거나 켠 뒤 저장하세요.</span>
+          </div>
+        </form>
       </section>
 
       <section class="reader" id="pageDetailSection" hidden>
@@ -499,7 +535,7 @@
   </main>
 
   <script>
-    const state = { pages: [], papers: [], selected: null, pdfRangeMode: "all", pdfPreview: null };
+    const state = { pages: [], papers: [], selected: null, pdfRangeMode: "all", pdfPreview: null, mcpStatus: null };
     const $ = (id) => document.getElementById(id);
     const splitList = (value) => value.split(",").map((item) => item.trim()).filter(Boolean);
 
@@ -549,6 +585,35 @@
       document.querySelectorAll(".page-row").forEach((row) => row.addEventListener("click", () => loadPage(row.dataset.pageType, row.dataset.pageSlug)));
     }
 
+    function renderMcpStatus() {
+      const status = state.mcpStatus;
+      if (!status) return;
+      $("mcpTotalCount").textContent = status.counts.total;
+      $("mcpEnabledCount").textContent = status.counts.enabled;
+      $("mcpDisabledCount").textContent = status.counts.disabled;
+      $("mcpNavCount").textContent = status.counts.enabled;
+      $("mcpServerInfo").innerHTML = `
+        <strong>${escapeHtml(status.server.name)}</strong><br>
+        설정 파일: <code>${escapeHtml(status.server.settings_path)}</code><br>
+        transport: ${status.server.transports.map(escapeHtml).join(", ")}<br>
+        저장한 변경은 실행 중인 연결을 끊지 않으며, MCP 서버를 다시 시작할 때 적용됩니다.`;
+      const groups = ["resource", "tool", "prompt"];
+      $("mcpCapabilityList").innerHTML = groups.map((kind) => `
+        <h3 class="mcp-group-title">${escapeHtml(kind)}s</h3>
+        ${status.capabilities.filter((capability) => capability.kind === kind).map((capability) => `
+          <label class="mcp-capability">
+            <span class="mcp-capability-name">${escapeHtml(capability.name)}${capability.target ? `<small class="mcp-capability-target">${escapeHtml(capability.target)}</small>` : ""}</span>
+            <span class="mcp-capability-desc">${escapeHtml(capability.description)}</span>
+            <span class="mcp-switch"><input type="checkbox" data-mcp-key="${escapeHtml(capability.key)}" ${capability.enabled ? "checked" : ""}> 사용</span>
+          </label>`).join("")}
+      `).join("");
+    }
+
+    async function loadMcpStatus() {
+      state.mcpStatus = await api("/api/mcp/status");
+      renderMcpStatus();
+    }
+
     async function loadDashboard(query = "") {
       const dashboard = await api(`/api/dashboard?q=${encodeURIComponent(query)}`);
       state.pages = dashboard.pages;
@@ -588,6 +653,7 @@
       $("summaryStats").hidden = true;
       $("paperSection").hidden = true;
       $("pageSection").hidden = true;
+      $("mcpStatusSection").hidden = true;
       $("pageDetailSection").hidden = false;
       $("pageDetailTitle").textContent = page.title;
       $("pageDetailMeta").innerHTML = `
@@ -669,13 +735,15 @@
         dashboard: ["연구 지식 대시보드", "논문 반영 상태를 확인하고 WIKI 초안을 함께 다듬습니다."],
         papers: ["논문 보관함", "로컬 PDF의 WIKI 반영 상태와 비교 분석 여부를 확인합니다."],
         pages: ["WIKI 페이지", "Markdown 지식 페이지를 검색하고 편집합니다."],
+        mcp: ["MCP 상태", "현재 MCP capability를 확인하고 다음 서버 시작에 적용할 설정을 관리합니다."],
       };
       const [title, subtitle] = views[name];
       $("workspaceTitle").textContent = title;
       $("workspaceSubtitle").textContent = subtitle;
       $("summaryStats").hidden = name !== "dashboard";
-      $("paperSection").hidden = name === "pages";
-      $("pageSection").hidden = name === "papers";
+      $("paperSection").hidden = name === "pages" || name === "mcp";
+      $("pageSection").hidden = name === "papers" || name === "mcp";
+      $("mcpStatusSection").hidden = name !== "mcp";
       $("pageDetailSection").hidden = true;
     }
 
@@ -786,6 +854,21 @@
       }
     });
 
+    $("mcpSettingsForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const capabilities = {};
+      document.querySelectorAll("[data-mcp-key]").forEach((input) => capabilities[input.dataset.mcpKey] = input.checked);
+      try {
+        state.mcpStatus = await api("/api/mcp/settings", { method: "POST", body: JSON.stringify({ capabilities }) });
+        renderMcpStatus();
+        $("mcpNotice").textContent = "저장했습니다. MCP 서버를 다시 시작하면 적용됩니다.";
+        $("mcpNotice").className = "notice";
+      } catch (error) {
+        $("mcpNotice").textContent = error.message;
+        $("mcpNotice").className = "notice error";
+      }
+    });
+
     $("newPageButton").addEventListener("click", () => {
       setWorkbenchOpen(true);
       resetPage();
@@ -810,9 +893,10 @@
     document.querySelectorAll("[data-nav-view]").forEach((button) => button.addEventListener("click", () => {
       setActiveNav(button);
       setWorkspaceView(button.dataset.navView);
+      if (button.dataset.navView === "mcp") loadMcpStatus().catch((error) => setNotice(error.message, true));
     }));
 
-    loadDashboard().catch((error) => setNotice(error.message, true));
+    Promise.all([loadDashboard(), loadMcpStatus()]).catch((error) => setNotice(error.message, true));
   </script>
 </body>
 </html>

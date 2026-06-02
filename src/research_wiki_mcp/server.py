@@ -13,6 +13,7 @@ from starlette.responses import PlainTextResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .config import AppConfig
+from .mcp_catalog import McpSettingsStore
 from .service import ResearchWikiService
 
 
@@ -55,6 +56,7 @@ class SharedTokenMiddleware:
 
 def create_server(config: AppConfig) -> FastMCP:
     service = ResearchWikiService(config)
+    settings = McpSettingsStore(config)
     mcp = FastMCP(
         "Research WIKI MCP",
         instructions=(
@@ -67,25 +69,34 @@ def create_server(config: AppConfig) -> FastMCP:
         stateless_http=True,
     )
 
-    @mcp.resource("wiki://index", mime_type="application/json")
+    def register_if_enabled(kind: str, name: str, decorator):
+        """Register one MCP primitive only when enabled in startup settings."""
+
+        return decorator if settings.is_enabled(kind, name) else lambda function: function
+
+    @register_if_enabled("resource", "wiki_index", mcp.resource("wiki://index", mime_type="application/json"))
     def wiki_index() -> str:
         """Return the searchable WIKI index."""
 
         return service.index_resource()
 
-    @mcp.resource("wiki://papers", mime_type="application/json")
+    @register_if_enabled("resource", "wiki_papers", mcp.resource("wiki://papers", mime_type="application/json"))
     def wiki_papers() -> str:
         """Return local paper ingest states for GUI and agent use."""
 
         return service.papers_resource()
 
-    @mcp.resource("wiki://page/{page_type}/{slug}", mime_type="application/json")
+    @register_if_enabled(
+        "resource",
+        "wiki_page",
+        mcp.resource("wiki://page/{page_type}/{slug}", mime_type="application/json"),
+    )
     def wiki_page(page_type: str, slug: str) -> str:
         """Return one canonical WIKI page."""
 
         return service.page_resource(page_type, slug)
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_search", mcp.tool())
     def wiki_search(
         query: str = "",
         page_type: str | None = None,
@@ -105,13 +116,13 @@ def create_server(config: AppConfig) -> FastMCP:
             limit=limit,
         )
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_read_page", mcp.tool())
     def wiki_read_page(page_type: str, slug: str) -> dict:
         """Read one canonical WIKI Markdown page as structured data."""
 
         return service.read_page(page_type, slug)
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_save_page", mcp.tool())
     def wiki_save_page(
         page_type: str,
         slug: str,
@@ -141,7 +152,7 @@ def create_server(config: AppConfig) -> FastMCP:
             tags=tags,
         )
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_create_research_page", mcp.tool())
     def wiki_create_research_page(
         page_type: str,
         slug: str,
@@ -169,19 +180,19 @@ def create_server(config: AppConfig) -> FastMCP:
             tags=tags,
         )
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_review_page", mcp.tool())
     def wiki_review_page(page_type: str, slug: str, author: str, author_email: str) -> dict:
         """Promote a draft WIKI page to reviewed."""
 
         return service.review_page(page_type, slug, author=author, author_email=author_email)
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_list_revisions", mcp.tool())
     def wiki_list_revisions(page_type: str, slug: str) -> list[dict]:
         """List Git revisions for one WIKI page."""
 
         return service.list_revisions(page_type, slug)
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_restore_revision", mcp.tool())
     def wiki_restore_revision(
         page_type: str,
         slug: str,
@@ -199,13 +210,13 @@ def create_server(config: AppConfig) -> FastMCP:
             author_email=author_email,
         )
 
-    @mcp.tool()
+    @register_if_enabled("tool", "wiki_rebuild_index", mcp.tool())
     def wiki_rebuild_index() -> dict:
         """Rebuild the derived SQLite index from canonical Markdown."""
 
         return service.rebuild_index()
 
-    @mcp.tool()
+    @register_if_enabled("tool", "pdf_extract_text", mcp.tool())
     def pdf_extract_text(
         pdf_path: str,
         pages: str | None = None,
@@ -219,7 +230,7 @@ def create_server(config: AppConfig) -> FastMCP:
             reflection_language=reflection_language,
         )
 
-    @mcp.tool()
+    @register_if_enabled("tool", "pdf_render_screenshots", mcp.tool())
     def pdf_render_screenshots(
         pdf_path: str,
         pages: str | None = None,
@@ -235,7 +246,7 @@ def create_server(config: AppConfig) -> FastMCP:
             reflection_language=reflection_language,
         )
 
-    @mcp.tool()
+    @register_if_enabled("tool", "prepare_comparison_workflow", mcp.tool())
     def prepare_comparison_workflow(topic: str, source_slugs: list[str], language: str = "ko") -> dict:
         """Prepare an optional client-side comparison synthesis task."""
 
@@ -246,7 +257,7 @@ def create_server(config: AppConfig) -> FastMCP:
             "next_step": "Use the comparison_reflection prompt, then save a comparison page with wiki_save_page.",
         }
 
-    @mcp.prompt()
+    @register_if_enabled("prompt", "paper_ingest_workflow", mcp.prompt())
     def paper_ingest_workflow(
         pdf_path: str,
         reading_mode: str = "text",
@@ -258,13 +269,13 @@ def create_server(config: AppConfig) -> FastMCP:
 
         return _paper_ingest_prompt(pdf_path, reading_mode, pages, reflection_language, include_comparison)
 
-    @mcp.prompt()
+    @register_if_enabled("prompt", "claim_refinement_workflow", mcp.prompt())
     def claim_refinement_workflow(claim_slug: str, reflection_language: str = "ko") -> str:
         """Guide client-side claim fitness assessment."""
 
         return _claim_refinement_prompt(claim_slug, reflection_language)
 
-    @mcp.prompt()
+    @register_if_enabled("prompt", "novelty_review_workflow", mcp.prompt())
     def novelty_review_workflow(claim_slug: str, reflection_language: str = "ko") -> str:
         """Guide client-side novelty review."""
 

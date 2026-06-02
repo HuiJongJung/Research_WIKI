@@ -14,7 +14,7 @@
 - 연구자 검토 전 `draft`, 검토 후 `reviewed` 상태 표시
 - Codex 및 Claude Code용 MCP `resources`, `tools`, `prompts`
 - 로컬 `stdio` 또는 토큰 보호 `Streamable HTTP` 전송
-- 논문 반영 상태, WIKI 검색, 편집, PDF 설정, 인덱스 재생성을 제공하는 로컬 GUI
+- 논문 반영 상태, WIKI 검색, 편집, PDF 설정, 인덱스 재생성, MCP capability 관리를 제공하는 로컬 GUI
 
 ## WIKI 객체
 
@@ -53,6 +53,12 @@ Prompts:
 - `novelty_review_workflow`
 
 서버는 LLM API를 호출하지 않습니다. 논문 요약, 아이디어 추출, claim 적합성 검토, novelty 검토는 연결된 Codex 또는 Claude Code가 수행하고 결과를 MCP로 저장합니다.
+
+## MCP capability 관리
+
+GUI 왼쪽 내비게이션의 `MCP 상태`에서 현재 서버가 제공하는 `resources`, `tools`, `prompts` 목록을 확인할 수 있습니다. 체크박스로 각 항목을 활성화하거나 비활성화하면 프로젝트 루트의 [`mcp-settings.json`](./mcp-settings.json)에 저장됩니다.
+
+저장한 변경은 실행 중인 MCP 연결을 강제로 끊지 않습니다. Codex 또는 Claude Code가 MCP 서버를 다시 시작하거나 새 세션에서 서버를 다시 연결할 때 적용됩니다. 기본 설정은 모든 capability 활성화입니다.
 
 ## 설치
 

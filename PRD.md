@@ -119,6 +119,8 @@ The GUI is included in the first milestone and should support:
 - Korean-default and English-optional reflection language selection.
 - Draft-review actions.
 - Derived-index rebuild action.
+- MCP capability status browsing and startup-time enable or disable controls.
+- A visible notice that capability setting changes apply after the MCP server restarts.
 - Useful workflow detail beyond a minimal list when it supports research use.
 
 ## 10. Out Of Scope

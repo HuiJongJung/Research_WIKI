@@ -46,6 +46,10 @@ class AppConfig:
     def index_path(self) -> Path:
         return self.project_root / "data" / "wiki-index.sqlite3"
 
+    @property
+    def mcp_settings_path(self) -> Path:
+        return self.project_root / "mcp-settings.json"
+
     def ensure_workspace_layout(self) -> None:
         """Create canonical and derived-state directories when absent."""
 

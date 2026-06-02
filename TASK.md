@@ -27,3 +27,4 @@ Planning is closed. Implement exactly one topmost unfinished item per loop.
 - [x] Add Streamable HTTP transport with shared-token authentication.
 - [x] Add local GUI for paper states, browsing, editing, ingest configuration, draft review, and index rebuild.
 - [x] Add Codex and Claude Code configuration guidance, end-to-end validation, and finalized execution instructions.
+- [x] Add GUI MCP status navigation, capability visibility, and startup-time enable or disable controls.

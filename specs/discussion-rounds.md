@@ -248,3 +248,17 @@ Append planning discussion outcomes here. Keep earlier rounds intact when adding
   - Keep original PDF text unchanged.
   - Attach `ko` or `en` as the requested client-side reflection language.
   - Store WIKI page language in frontmatter and expose language filtering through the derived index.
+
+## GUI Follow-Up - MCP Capability Management
+
+- Date recorded: 2026-06-02
+- Status: resolved and implemented
+- User direction:
+  - Add MCP management to the GUI.
+  - Add `MCP 상태` to the left navigation.
+  - Show what the current MCP contains and allow modifications.
+- Recorded decision:
+  - List MCP resources, tools, and prompts with descriptions.
+  - Allow maintainers to enable or disable each capability.
+  - Save choices to `mcp-settings.json`.
+  - Apply changes on the next server start so an active MCP client connection is not interrupted.

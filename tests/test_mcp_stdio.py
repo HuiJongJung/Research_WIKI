@@ -49,6 +49,25 @@ class McpStdioSmokeTests(unittest.IsolatedAsyncioTestCase):
                     )
                     self.assertIn("한국어", prompt.messages[0].content.text)
 
+    async def test_stdio_omits_disabled_startup_capability(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            settings_path = Path(temp_dir) / "mcp-settings.json"
+            settings_path.write_text(
+                json.dumps({"schema_version": 1, "capabilities": {"tool:pdf_extract_text": False}}),
+                encoding="utf-8",
+            )
+            params = StdioServerParameters(
+                command=sys.executable,
+                args=["-m", "research_wiki_mcp.server", "--root", temp_dir],
+                cwd=str(Path.cwd()),
+            )
+            async with stdio_client(params) as (read, write):
+                async with ClientSession(read, write) as session:
+                    await session.initialize()
+                    tool_names = {tool.name for tool in (await session.list_tools()).tools}
+                    self.assertNotIn("pdf_extract_text", tool_names)
+                    self.assertIn("wiki_search", tool_names)
+
 
 if __name__ == "__main__":
     unittest.main()

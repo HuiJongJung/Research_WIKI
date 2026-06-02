@@ -12,6 +12,8 @@ python -m pip install -e .
 
 일반적인 로컬 사용은 `stdio` 연결을 권장합니다. 한 컴퓨터에서 별도 프로세스로 서버를 띄워 확인할 때는 토큰 보호 HTTP 연결을 사용할 수 있습니다.
 
+GUI 왼쪽 `MCP 상태` 화면에서는 서버가 제공하는 resource, tool, prompt를 확인하고 개별 항목을 켜거나 끌 수 있습니다. 설정은 프로젝트 루트의 `mcp-settings.json`에 저장되며, 실행 중인 연결을 보호하기 위해 다음 MCP 서버 시작부터 적용됩니다.
+
 ## Codex
 
 ### stdio

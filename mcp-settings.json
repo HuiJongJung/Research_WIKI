@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "capabilities": {
+    "resource:wiki_index": true,
+    "resource:wiki_papers": true,
+    "resource:wiki_page": true,
+    "tool:wiki_search": true,
+    "tool:wiki_read_page": true,
+    "tool:wiki_save_page": true,
+    "tool:wiki_create_research_page": true,
+    "tool:wiki_review_page": true,
+    "tool:wiki_list_revisions": true,
+    "tool:wiki_restore_revision": true,
+    "tool:wiki_rebuild_index": true,
+    "tool:pdf_extract_text": true,
+    "tool:pdf_render_screenshots": true,
+    "tool:prepare_comparison_workflow": true,
+    "prompt:paper_ingest_workflow": true,
+    "prompt:claim_refinement_workflow": true,
+    "prompt:novelty_review_workflow": true
+  }
+}
