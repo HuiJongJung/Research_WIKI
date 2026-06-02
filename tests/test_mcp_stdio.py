@@ -31,6 +31,7 @@ class McpStdioSmokeTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn("wiki_search", tool_names)
                     self.assertIn("wiki_save_page", tool_names)
                     self.assertIn("pdf_extract_text", tool_names)
+                    self.assertIn("wiki_publish_pdf_screenshots", tool_names)
                     self.assertIn("paper_ingest_workflow", prompt_names)
                     self.assertIn("wiki://index", resource_uris)
                     self.assertIn("wiki://page/{page_type}/{slug}", template_uris)

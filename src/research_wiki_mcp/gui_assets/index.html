@@ -317,6 +317,9 @@
     .preview-item strong { color: #2e597f; font-size: 11px; }
     .preview-item pre { margin: 8px 0 0; color: #425b75; font-family: inherit; font-size: 11px; line-height: 1.55; white-space: pre-wrap; }
     .preview-item img { width: 100%; margin-top: 9px; border: 1px solid var(--line); border-radius: 5px; }
+    #pageDetailBody figure { margin: 18px 0; }
+    #pageDetailBody figure img { display: block; max-width: 100%; border: 1px solid var(--line); border-radius: 6px; }
+    #pageDetailBody figcaption { margin-top: 7px; color: var(--muted); font-size: 12px; }
     .register-box {
       margin-top: 14px;
       padding: 13px;
@@ -666,15 +669,72 @@
     }
 
     function renderMarkdown(markdown) {
-      const blocks = escapeHtml(markdown || "").split(/\n{2,}/);
-      return blocks.map((block) => {
-        if (block.startsWith("### ")) return `<h3>${block.slice(4)}</h3>`;
-        if (block.startsWith("## ")) return `<h2>${block.slice(3)}</h2>`;
-        if (block.startsWith("# ")) return `<h1>${block.slice(2)}</h1>`;
-        if (block.startsWith("&gt; ")) return `<blockquote><p>${block.replace(/^&gt; /, "")}</p></blockquote>`;
-        if (block.startsWith("```")) return `<pre>${block}</pre>`;
-        return `<p>${block.replace(/\n/g, "<br>")}</p>`;
-      }).join("");
+      const lines = escapeHtml(markdown || "").split("\n");
+      const html = [];
+      let paragraph = [];
+      let code = [];
+      let inCode = false;
+      const flushParagraph = () => {
+        if (!paragraph.length) return;
+        html.push(`<p>${paragraph.join("<br>")}</p>`);
+        paragraph = [];
+      };
+      for (const line of lines) {
+        if (line.startsWith("```")) {
+          flushParagraph();
+          if (inCode) {
+            html.push(`<pre>${code.join("\n")}</pre>`);
+            code = [];
+          }
+          inCode = !inCode;
+          continue;
+        }
+        if (inCode) {
+          code.push(line);
+          continue;
+        }
+        if (!line) {
+          flushParagraph();
+          continue;
+        }
+        const image = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+        if (image) {
+          flushParagraph();
+          const imageUrl = wikiAssetUrl(image[2]);
+          if (imageUrl) html.push(`<figure><img src="${escapeHtml(imageUrl)}" alt="${image[1]}"><figcaption>${image[1]}</figcaption></figure>`);
+          continue;
+        }
+        if (line.startsWith("### ")) {
+          flushParagraph();
+          html.push(`<h3>${line.slice(4)}</h3>`);
+          continue;
+        }
+        if (line.startsWith("## ")) {
+          flushParagraph();
+          html.push(`<h2>${line.slice(3)}</h2>`);
+          continue;
+        }
+        if (line.startsWith("# ")) {
+          flushParagraph();
+          html.push(`<h1>${line.slice(2)}</h1>`);
+          continue;
+        }
+        if (line.startsWith("&gt; ")) {
+          flushParagraph();
+          html.push(`<blockquote><p>${line.replace(/^&gt; /, "")}</p></blockquote>`);
+          continue;
+        }
+        paragraph.push(line);
+      }
+      flushParagraph();
+      if (code.length) html.push(`<pre>${code.join("\n")}</pre>`);
+      return html.join("");
+    }
+
+    function wikiAssetUrl(markdownPath) {
+      const normalized = markdownPath.replace(/\\/g, "/");
+      if (!normalized.startsWith("../assets/")) return "";
+      return `/assets/wiki/${normalized.slice("../assets/".length).split("/").map(encodeURIComponent).join("/")}`;
     }
 
     function selectPaper(path) {

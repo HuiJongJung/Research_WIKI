@@ -45,6 +45,25 @@ class McpWorkflowEndToEndTests(unittest.IsolatedAsyncioTestCase):
                     self.assertIn("Visibility guidance", extracted[0]["text"])
                     self.assertEqual(extracted[0]["reflection_language"], "ko")
 
+                    published = await self._call(
+                        session,
+                        "wiki_publish_pdf_screenshots",
+                        {
+                            "pdf_path": str(paper_path),
+                            "asset_group": "sample-paper",
+                            "author": "Codex",
+                            "author_email": "codex@example.local",
+                            "pages": "1",
+                            "dpi": 72,
+                            "reflection_language": "ko",
+                        },
+                    )
+                    self.assertEqual(
+                        published[0]["markdown_image"],
+                        "![PDF page 1](../assets/sample-paper/page-0001-dpi-72.png)",
+                    )
+                    self.assertTrue((root / published[0]["asset_path"]).is_file())
+
                     await self._save_page(session, "source", "sample-paper", "Sample Paper")
                     self.assertEqual((await self._papers(session))[0]["color"], "amber")
 

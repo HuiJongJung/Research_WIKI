@@ -246,6 +246,28 @@ def create_server(config: AppConfig) -> FastMCP:
             reflection_language=reflection_language,
         )
 
+    @register_if_enabled("tool", "wiki_publish_pdf_screenshots", mcp.tool())
+    def wiki_publish_pdf_screenshots(
+        pdf_path: str,
+        asset_group: str,
+        author: str,
+        author_email: str,
+        pages: str | None = None,
+        dpi: int = 144,
+        reflection_language: str = "ko",
+    ) -> list[dict]:
+        """Publish selected PDF pages as Git-managed WIKI images with Markdown snippets."""
+
+        return service.publish_pdf_screenshots(
+            pdf_path=pdf_path,
+            asset_group=asset_group,
+            author=author,
+            author_email=author_email,
+            pages=pages,
+            dpi=dpi,
+            reflection_language=reflection_language,
+        )
+
     @register_if_enabled("tool", "prepare_comparison_workflow", mcp.tool())
     def prepare_comparison_workflow(topic: str, source_slugs: list[str], language: str = "ko") -> dict:
         """Prepare an optional client-side comparison synthesis task."""

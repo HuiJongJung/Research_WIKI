@@ -16,6 +16,7 @@
 - [x] MCP supports WIKI reads and writes.
 - [x] Local PDF ingest supports text extraction.
 - [x] Local PDF ingest supports screenshot-based image-plus-text reading with page-range selection.
+- [x] Selected PDF screenshots can be published into Git-managed `wiki/assets/`, embedded in source Markdown, and rendered inline in the GUI.
 - [x] Baseline paper ingest can reflect `source` and `concept` pages.
 - [x] Comparison reflection is optional and produces a visible GUI badge.
 - [x] Claim and question workflows require user-driven input.

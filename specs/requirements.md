@@ -29,6 +29,7 @@ Build a locally verifiable, lab-shared research WIKI system with an MCP server a
 - Offer a text-extraction reading mode.
 - Offer a screenshot-based integrated image-plus-text reading mode.
 - Allow page-range selection for screenshot-based reading.
+- Allow selected PDF screenshots to be published as Git-managed WIKI image attachments and embedded in Markdown source pages.
 - Create or update `source` and `concept` pages as the baseline paper-ingestion workflow.
 - Create or update `comparison` pages only when explicitly selected.
 - Keep `claim` and `question` creation as separate user-driven workflows.
@@ -53,6 +54,7 @@ Build a locally verifiable, lab-shared research WIKI system with an MCP server a
 - Search the WIKI.
 - Read, create, and edit Markdown WIKI pages.
 - Ingest a local PDF using a selected reading mode and optional page range.
+- Publish selected PDF screenshots as canonical WIKI image attachments with Markdown snippets.
 - Rebuild the derived database index from Markdown files.
 - Promote a page from `draft` to `reviewed`.
 - Request optional comparison-page generation workflows.
@@ -83,6 +85,7 @@ Build a locally verifiable, lab-shared research WIKI system with an MCP server a
 - Show papers reflected into `source` and `concept` pages in blue.
 - Keep reflected papers blue and add a separate badge after optional comparison generation.
 - Support WIKI search, page browsing, Markdown viewing and editing, ingest configuration, draft review, and index rebuild actions.
+- Render canonical WIKI image attachments inline while browsing Markdown pages.
 - Add an `MCP 상태` navigation view that lists current MCP resources, tools, and prompts.
 - Allow maintainers to enable or disable individual MCP capabilities through a version-managed startup settings file.
 - Apply capability changes on the next MCP server start without force-closing active client connections.

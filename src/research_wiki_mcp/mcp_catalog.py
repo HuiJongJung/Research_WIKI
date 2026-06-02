@@ -38,6 +38,7 @@ CAPABILITIES = (
     McpCapability("tool", "wiki_rebuild_index", "Markdown 원본에서 SQLite 검색 인덱스를 다시 만듭니다."),
     McpCapability("tool", "pdf_extract_text", "선택한 PDF 페이지에서 원문 텍스트를 추출합니다."),
     McpCapability("tool", "pdf_render_screenshots", "선택한 PDF 페이지를 PNG와 텍스트 artifact로 변환합니다."),
+    McpCapability("tool", "wiki_publish_pdf_screenshots", "선택한 PDF 페이지를 Git 관리 WIKI 이미지로 저장하고 Markdown 삽입 문법을 반환합니다."),
     McpCapability("tool", "prepare_comparison_workflow", "선택한 source를 비교하기 위한 client-side 작업을 준비합니다."),
     McpCapability("prompt", "paper_ingest_workflow", "PDF 읽기와 source 및 concept 반영 절차를 안내합니다."),
     McpCapability("prompt", "claim_refinement_workflow", "claim fitness 검토 절차를 안내합니다."),

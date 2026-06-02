@@ -7,6 +7,11 @@ import unittest
 from research_wiki_mcp.config import AppConfig
 from research_wiki_mcp.service import ResearchWikiService
 
+try:
+    import fitz
+except ImportError:  # pragma: no cover
+    fitz = None
+
 
 class ResearchWikiServiceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -69,6 +74,47 @@ class ResearchWikiServiceTests(unittest.TestCase):
             sources=["raw/papers/sample.pdf"],
         )
         self.assertEqual(self.service.list_papers()[0]["color"], "blue")
+
+    @unittest.skipUnless(fitz, "PyMuPDF is required for WIKI image publishing")
+    def test_publish_pdf_screenshots_returns_git_managed_markdown_images(self) -> None:
+        pdf_path = self.root / "raw" / "papers" / "sample.pdf"
+        pdf_path.parent.mkdir(parents=True, exist_ok=True)
+        document = fitz.open()
+        page = document.new_page()
+        page.insert_text((72, 72), "WIKI image fixture")
+        document.save(pdf_path)
+        document.close()
+
+        published = self.service.publish_pdf_screenshots(
+            pdf_path=str(pdf_path),
+            asset_group="sample-paper",
+            author="Codex",
+            author_email="codex@example.local",
+            pages="1",
+            dpi=72,
+        )
+
+        self.assertEqual(len(published), 1)
+        self.assertEqual(published[0]["asset_path"], "wiki/assets/sample-paper/page-0001-dpi-72.png")
+        self.assertEqual(
+            published[0]["markdown_image"],
+            "![PDF page 1](../assets/sample-paper/page-0001-dpi-72.png)",
+        )
+        self.assertTrue((self.root / published[0]["asset_path"]).is_file())
+        self.assertEqual(
+            self.service.repository.git.history(self.root / published[0]["asset_path"])[0].message,
+            "wiki: publish PDF screenshots for sample-paper",
+        )
+        repeated = self.service.publish_pdf_screenshots(
+            pdf_path=str(pdf_path),
+            asset_group="sample-paper",
+            author="Codex",
+            author_email="codex@example.local",
+            pages="1",
+            dpi=72,
+        )
+        self.assertEqual(repeated[0]["asset_path"], published[0]["asset_path"])
+        self.assertEqual(len(self.service.repository.git.history(self.root / published[0]["asset_path"])), 1)
 
 
 if __name__ == "__main__":

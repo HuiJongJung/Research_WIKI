@@ -137,3 +137,10 @@ Record decisions in chronological order.
 - Decision: Store per-capability enable or disable choices in version-managed `mcp-settings.json`.
 - Decision: Apply changes when the MCP server next starts instead of force-closing active client connections.
 - Reason: Maintainers need visibility and control without destabilizing a Codex or Claude Code session that is already using the server.
+
+## 2026-06-02 - Canonical WIKI Image Attachments
+
+- Decision: Keep generated PDF previews under ignored `raw/screenshots/`, but publish selected pages into Git-managed `wiki/assets/<source-slug>/`.
+- Decision: Expose `wiki_publish_pdf_screenshots` so MCP clients receive stable Markdown image snippets and can place visual evidence inside source summaries.
+- Decision: Make screenshot-mode GUI source registration publish and embed those images automatically.
+- Reason: Figures, tables, and equations are evidence, not disposable preview state, when they are selected for a durable WIKI source page.

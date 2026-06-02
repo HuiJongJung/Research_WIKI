@@ -262,3 +262,15 @@ Append planning discussion outcomes here. Keep earlier rounds intact when adding
   - Allow maintainers to enable or disable each capability.
   - Save choices to `mcp-settings.json`.
   - Apply changes on the next server start so an active MCP client connection is not interrupted.
+## Round 8 - Canonical WIKI Image Attachments
+
+### User Request
+
+- Allow WIKI source summaries to include images while organizing a paper.
+- Improve the MCP Tool so visual evidence can be preserved in the source page.
+
+### Outcome
+
+- Keep raw screenshot previews reproducible and ignored by Git.
+- Add a Git-managed `wiki/assets/<source-slug>/` attachment store for selected PDF pages.
+- Add `wiki_publish_pdf_screenshots` and inline GUI rendering for Markdown image attachments.

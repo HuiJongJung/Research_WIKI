@@ -56,7 +56,7 @@ class GuiTest(unittest.TestCase):
 
         mcp_status = self.client.get("/api/mcp/status")
         self.assertEqual(mcp_status.status_code, 200)
-        self.assertEqual(mcp_status.json()["counts"], {"total": 17, "enabled": 17, "disabled": 0})
+        self.assertEqual(mcp_status.json()["counts"], {"total": 18, "enabled": 18, "disabled": 0})
         self.assertIn("tool:pdf_extract_text", {
             capability["key"] for capability in mcp_status.json()["capabilities"]
         })
@@ -66,7 +66,7 @@ class GuiTest(unittest.TestCase):
             json={"capabilities": {"tool:pdf_extract_text": False}},
         )
         self.assertEqual(mcp_saved.status_code, 200)
-        self.assertEqual(mcp_saved.json()["counts"], {"total": 17, "enabled": 16, "disabled": 1})
+        self.assertEqual(mcp_saved.json()["counts"], {"total": 18, "enabled": 17, "disabled": 1})
 
         saved = self.client.post(
             "/api/pages",
@@ -155,6 +155,27 @@ class GuiTest(unittest.TestCase):
         image = self.client.get(image_url)
         self.assertEqual(image.status_code, 200)
         self.assertEqual(image.headers["content-type"], "image/png")
+
+        screenshot_registered = self.client.post(
+            "/api/pdf/register-source",
+            json={
+                "pdf_path": str(pdf_path),
+                "title": "Sample Paper",
+                "slug": "sample-paper",
+                "author": "tester",
+                "author_email": "tester@example.local",
+                "reading_mode": "screenshot",
+                "pages": "1",
+                "dpi": 72,
+                "reflection_language": "ko",
+            },
+        )
+        self.assertEqual(screenshot_registered.status_code, 200)
+        markdown_image = "![PDF page 1](../assets/sample-paper/page-0001-dpi-72.png)"
+        self.assertIn(markdown_image, screenshot_registered.json()["body"])
+        wiki_image = self.client.get("/assets/wiki/sample-paper/page-0001-dpi-72.png")
+        self.assertEqual(wiki_image.status_code, 200)
+        self.assertEqual(wiki_image.headers["content-type"], "image/png")
 
 
 if __name__ == "__main__":

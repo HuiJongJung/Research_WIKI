@@ -7,11 +7,12 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import re
+from shutil import copyfile
 from typing import Any
 
 from .config import AppConfig
 from .index import SearchResult, WikiIndex
-from .models import WikiPage
+from .models import WikiPage, validate_slug
 from .pdf import PdfExtractor
 from .repository import PageRepository
 
@@ -181,6 +182,59 @@ class ResearchWikiService:
             )
         ]
 
+    def publish_pdf_screenshots(
+        self,
+        *,
+        pdf_path: str,
+        asset_group: str,
+        author: str,
+        author_email: str,
+        pages: str | None = None,
+        dpi: int = 144,
+        reflection_language: str = "ko",
+    ) -> list[dict[str, Any]]:
+        """Publish selected PDF pages as Git-managed WIKI image attachments."""
+
+        group = validate_slug(asset_group)
+        if not author.strip():
+            raise ValueError("author must not be empty")
+        if not author_email.strip():
+            raise ValueError("author_email must not be empty")
+        artifacts = self.pdf.render_screenshots(
+            pdf_path,
+            pages=pages,
+            dpi=dpi,
+            reflection_language=reflection_language,
+        )
+        output_root = self.config.wiki_assets_root / group
+        output_root.mkdir(parents=True, exist_ok=True)
+        published = []
+        paths = []
+        for artifact in artifacts:
+            filename = f"page-{artifact.page_number:04d}-dpi-{dpi}.png"
+            image_path = output_root / filename
+            copyfile(artifact.image_path, image_path)
+            paths.append(image_path)
+            relative_path = image_path.relative_to(self.config.project_root).as_posix()
+            markdown_path = f"../assets/{group}/{filename}"
+            published.append(
+                {
+                    "page_number": artifact.page_number,
+                    "image_path": str(image_path),
+                    "asset_path": relative_path,
+                    "markdown_image": f"![PDF page {artifact.page_number}]({markdown_path})",
+                    "text": artifact.text,
+                    "reflection_language": artifact.reflection_language,
+                }
+            )
+        self.repository.git.commit_files(
+            tuple(paths),
+            author=author,
+            email=author_email,
+            message=f"wiki: publish PDF screenshots for {group}",
+        )
+        return published
+
     def register_pdf_source_draft(
         self,
         *,
@@ -197,6 +251,9 @@ class ResearchWikiService:
         """Persist extracted original PDF text as an editable source draft."""
 
         path = Path(pdf_path).expanduser().resolve()
+        source = self._paper_source(path)
+        page_slug = slug.strip() or self._source_slug(path.stem, source)
+        page_title = title.strip() or path.stem
         if reading_mode == "text":
             artifacts = self.extract_pdf_text(
                 str(path),
@@ -204,8 +261,11 @@ class ResearchWikiService:
                 reflection_language=reflection_language,
             )
         elif reading_mode == "screenshot":
-            artifacts = self.render_pdf_screenshots(
-                str(path),
+            artifacts = self.publish_pdf_screenshots(
+                pdf_path=str(path),
+                asset_group=page_slug,
+                author=author,
+                author_email=author_email,
                 pages=pages,
                 dpi=dpi,
                 reflection_language=reflection_language,
@@ -213,9 +273,6 @@ class ResearchWikiService:
         else:
             raise ValueError("reading_mode must be text or screenshot")
 
-        source = self._paper_source(path)
-        page_slug = slug.strip() or self._source_slug(path.stem, source)
-        page_title = title.strip() or path.stem
         body_lines = [
             f"# {page_title}",
             "",
@@ -239,7 +296,7 @@ class ResearchWikiService:
                 ]
             )
             if artifact.get("image_path"):
-                body_lines.extend(["", f"- Screenshot artifact: `{artifact['image_path']}`"])
+                body_lines.extend(["", artifact["markdown_image"]])
 
         page = self.save_page(
             page_type="source",

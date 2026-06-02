@@ -20,6 +20,7 @@ class AppConfigTests(unittest.TestCase):
             self.assertEqual(config.index_path, Path(temp_dir) / "data" / "wiki-index.sqlite3")
             self.assertTrue(config.raw_papers_root.is_dir())
             self.assertTrue(config.screenshots_root.is_dir())
+            self.assertTrue(config.wiki_assets_root.is_dir())
             for page_type in WIKI_PAGE_TYPES:
                 self.assertTrue((config.wiki_root / page_type).is_dir())
 

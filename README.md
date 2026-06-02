@@ -7,6 +7,7 @@
 ## 주요 기능
 
 - 로컬 PDF 텍스트 추출 또는 이미지 + 텍스트 스크린샷 추출
+- 선택한 PDF 페이지를 `wiki/assets/<source-slug>/`에 Git 관리 이미지로 게시하고 Markdown 본문에 삽입
 - PDF 전체 읽기 또는 선택 페이지 범위 읽기
 - 한국어 정리 기본값과 영어 정리 옵션
 - Git 이력이 남는 Markdown WIKI 저장과 복원
@@ -44,6 +45,7 @@ Tools:
 - `wiki_create_research_page`, `wiki_review_page`
 - `wiki_list_revisions`, `wiki_restore_revision`, `wiki_rebuild_index`
 - `pdf_extract_text`, `pdf_render_screenshots`
+- `wiki_publish_pdf_screenshots`
 - `prepare_comparison_workflow`
 
 Prompts:
@@ -143,6 +145,7 @@ research-wiki-gui --help
 - `wiki/`: Git으로 관리하는 canonical Markdown
 - `raw/papers/`: 로컬 PDF 입력
 - `raw/screenshots/`: 다시 만들 수 있는 PDF 스크린샷 산출물
+- `wiki/assets/`: WIKI Markdown 본문에 삽입하는 Git 관리 이미지
 - `data/wiki-index.sqlite3`: 다시 만들 수 있는 검색 인덱스
 
 ## 첫 마일스톤 제외 범위
