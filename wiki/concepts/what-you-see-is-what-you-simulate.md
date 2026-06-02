@@ -3,46 +3,48 @@ type: "concept"
 slug: "what-you-see-is-what-you-simulate"
 title: "What You See Is What You Simulate"
 status: "draft"
-modified_at: "2026-06-02T07:41:08.688888+00:00"
+modified_at: "2026-06-02T09:32:16.038657+00:00"
 author: "Codex"
 language: "ko"
-confidence: "medium"
+confidence: "high"
 sources:
   - "C:\\Users\\jinsw712\\Desktop\\Files\\Research_WIKI\\raw\\papers\\Physics-Integrated 3D Gaussians for Generative Dynamics.pdf"
 tags:
-  - "simulation-rendering"
-  - "representation-unification"
   - "ws2"
-  - "3d-gaussian-splatting"
+  - "simulation-rendering-unification"
+  - "explicit-representation"
+  - "physics-based-animation"
 ---
 
 # What You See Is What You Simulate
 
 ## Definition
-“What you see is what you simulate (WS2)”는 렌더링에 쓰는 visual representation과 물리 시뮬레이션에 쓰는 simulation representation을 같은 discrete primitive로 통일하는 설계 원리다. PhysGaussian에서는 3D Gaussian kernel이 동시에 렌더링 primitive이자 MPM particle/continuum discretization 역할을 한다.
+“What You See Is What You Simulate (WS2)”는 렌더링에 쓰는 visual representation과 물리 시뮬레이션에 쓰는 simulation representation을 가능한 한 같은 discrete primitive로 통일하려는 설계 원리다. PhysGaussian에서는 3D Gaussian kernel이 동시에 렌더링 primitive이자 continuum mechanics/MPM의 material particle 역할을 한다.
 
 ## Why It Matters
-- mesh extraction, tetrahedralization, cage mesh, proxy geometry embedding 같은 중간 단계를 줄인다.
-- 시뮬레이션 결과와 렌더링 결과 사이의 resolution mismatch 또는 geometry mismatch를 줄일 수 있다.
-- 정적 3D reconstruction 결과를 바로 physics-based generative dynamics로 연결하는 경로를 만든다.
+기존 visual content pipeline은 geometry construction, simulation-ready meshing, physics simulation, rendering을 분리한다. 이 분리는 simulation mesh와 rendered geometry 사이의 resolution mismatch, embedding error, surface/volume inconsistency를 만들 수 있다. WS2는 보이는 primitive와 움직이는 primitive를 통일해 이 중간 변환을 줄이고, static captured scene에 곧바로 physics-based novel motion을 부여할 수 있게 한다.
 
 ## Where It Appears
-- PhysGaussian Fig. 1의 “What You Simulate / What You See” 대비와 Fig. 2 pipeline 전체에서 나타난다.
-- 본문 Sec. 1과 Sec. 3.4에서 Gaussian을 continuum discretization으로 직접 보고, 변형된 Gaussian을 splatting으로 직접 렌더링한다고 설명한다.
+- PhysGaussian Abstract와 Introduction: triangle/tetrahedron meshing, marching cubes, cage mesh, geometry embedding 없이 같은 3D Gaussian kernel을 simulation과 rendering에 사용한다고 주장한다. (p.1-2)
+- Fig. 1: “What You Simulate”와 “What You See”가 같은 Gaussian-continuum pipeline 위에 있음을 보여준다. (p.1)
+- Fig. 2: 3D Gaussian Splatting과 Physics Integration이 “Gaussian Ellipsoids as Continuum”을 통해 연결된다. (p.3)
+- Sec. 3.4: deformed Gaussian을 original GS splatting procedure로 직접 렌더링한다고 설명한다. (p.4)
 
 ## Mechanisms
-- 정적 scene을 3DGS로 재구성한다.
-- Gaussian center/covariance를 continuum deformation map과 deformation gradient로 시간 진화시킨다.
-- 같은 Gaussian state를 MPM update와 rendering에 공유한다.
-- internal filling은 표면 중심 3DGS를 volumetric physical body에 가깝게 보강하는 optional bridge다.
+- Static scene을 3DGS로 재구성해 `{X_p, A_p, sigma_p, C_p}`를 얻는다.
+- 각 Gaussian kernel을 continuum discretization particle로 본다.
+- MPM이 particle position, velocity, deformation gradient, stress 등을 시간 갱신한다.
+- 같은 Gaussian state를 다시 splatting renderer에 넣어 novel-view image를 만든다.
+- 별도 mesh extraction이나 embedding 없이 simulation state와 rendering state가 같은 primitive identity를 공유한다.
 
 ## Failure Modes / Bias
-- 보이는 opacity 분포가 실제 질량/밀도 분포를 대표하지 않을 수 있다.
-- hollow surface reconstruction은 volumetric material simulation에 부적합할 수 있어 filling heuristic에 의존한다.
-- material parameter가 수동이면 visual plausibility는 높아도 physical identification은 약할 수 있다.
-- lighting, shadow, topology-dependent appearance는 같은 primitive 공유만으로 해결되지 않는다.
+- Visual Gaussian이 실제 mass distribution을 잘 나타낸다는 보장이 없다. 3DGS는 surface appearance에 치우치므로 내부가 비어 있을 수 있다.
+- 실제 object volume, density, material boundary가 보이지 않는 영역에서는 WS2가 “보이는 것만 시뮬레이션”하는 한계를 가질 수 있다.
+- Gaussian primitive가 sparse하거나 noisy하면 simulation particle로서 안정성이 떨어질 수 있다.
+- Rendering fidelity와 physical correctness가 항상 같은 방향으로 최적화되지는 않는다.
 
 ## Open Questions
-- WS2 representation이 differentiable material parameter estimation과 결합될 때 어느 정도 자동화될 수 있는가?
-- Gaussian primitive 외에 surfel, voxel, mesh-free point representation에서도 같은 원리가 얼마나 잘 작동하는가?
-- physically faithful mass distribution과 visually faithful radiance distribution 사이의 충돌은 어떻게 조정해야 하는가?
+- 3DGS의 opacity, covariance, density-like quantity를 physical mass/volume으로 변환하는 표준 mapping은 가능한가?
+- WS2 원리를 surfel, oriented point, neural particle, voxel Gaussian, signed-distance primitive에도 적용할 수 있는가?
+- Differentiable simulation과 결합하면 video에서 material parameter와 hidden internal structure를 얼마나 식별할 수 있는가?
+- 사용자 편집 도구에서는 WS2가 mesh/cage 기반 editing보다 어느 조건에서 더 예측 가능하고 제어 가능한가?
