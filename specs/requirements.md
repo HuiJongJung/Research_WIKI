@@ -60,6 +60,7 @@ Build a locally verifiable, lab-shared research WIKI system with an MCP server a
 - Request optional comparison-page generation workflows.
 - Create and maintain user-driven claim and question pages.
 - Support client-driven claim-fitness and novelty-review workflows.
+- Let connected clients proactively capture durable discussion outcomes into `source`, `concept`, `comparison`, `claim`, or `question` pages without server-side conversation monitoring.
 
 ### MCP Prompts
 
@@ -85,6 +86,7 @@ Build a locally verifiable, lab-shared research WIKI system with an MCP server a
 - Show papers reflected into `source` and `concept` pages in blue.
 - Keep reflected papers blue and add a separate badge after optional comparison generation.
 - Support WIKI search, page browsing, Markdown viewing and editing, ingest configuration, draft review, and index rebuild actions.
+- Support WIKI browsing by page type and linked paper, with an expanded page-list viewport in the dedicated WIKI view.
 - Render canonical WIKI image attachments inline while browsing Markdown pages.
 - Add an `MCP 상태` navigation view that lists current MCP resources, tools, and prompts.
 - Allow maintainers to enable or disable individual MCP capabilities through a version-managed startup settings file.

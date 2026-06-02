@@ -29,3 +29,4 @@ Planning is closed. Implement exactly one topmost unfinished item per loop.
 - [x] Add Codex and Claude Code configuration guidance, end-to-end validation, and finalized execution instructions.
 - [x] Add GUI MCP status navigation, capability visibility, and startup-time enable or disable controls.
 - [x] Add Git-managed WIKI image attachments for PDF screenshots, expose MCP publishing, and render attached images in the GUI.
+- [x] Add proactive discussion capture through MCP and improve WIKI browsing with page-type, paper, and expanded-list views.

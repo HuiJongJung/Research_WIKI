@@ -12,7 +12,7 @@ from typing import Any
 
 from .config import AppConfig
 from .index import SearchResult, WikiIndex
-from .models import WikiPage, validate_slug
+from .models import WikiPage, utc_now, validate_slug
 from .pdf import PdfExtractor
 from .repository import PageRepository
 
@@ -113,6 +113,88 @@ class ResearchWikiService:
             sources=sources,
             tags=tags,
         )
+
+    def capture_discussion(
+        self,
+        *,
+        page_type: str,
+        slug: str,
+        title: str,
+        author: str,
+        author_email: str,
+        entry: str,
+        rationale: str,
+        language: str = "ko",
+        confidence: str = "medium",
+        sources: list[str] | None = None,
+        tags: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Append durable research discussion to an appropriate WIKI page."""
+
+        if page_type not in {"source", "concept", "comparison", "claim", "question"}:
+            raise ValueError("discussion capture page type must be source, concept, comparison, claim, or question")
+        if not entry.strip():
+            raise ValueError("entry must not be empty")
+        if not rationale.strip():
+            raise ValueError("rationale must not be empty")
+        path = self.repository.path_for(page_type, slug)
+        captured_at = utc_now().strftime("%Y-%m-%d %H:%M UTC")
+        capture_lines = [
+            f"### {captured_at}",
+            "",
+            entry.strip(),
+            "",
+            f"- Capture rationale: {rationale.strip()}",
+        ]
+        if path.is_file():
+            current = self.repository.read(page_type, slug)
+            if entry.strip() in current.body:
+                page = self._page_dict(current)
+                page["captured"] = False
+                page["capture_policy"] = "Skipped because the discussion entry already exists."
+                return page
+            body = current.body.rstrip()
+            if "## Discussion Captures" not in body:
+                body = f"{body}\n\n## Discussion Captures"
+            body = f"{body}\n\n" + "\n".join(capture_lines)
+            merged_sources = self._merge_ordered(current.sources, sources or [])
+            merged_tags = self._merge_ordered(current.tags, [*(tags or []), "discussion-capture"])
+            page_title = current.title
+            page_language = current.language
+            page_confidence = current.confidence
+        else:
+            body = "\n".join(
+                [
+                    f"# {title.strip()}",
+                    "",
+                    "## Discussion Captures",
+                    "",
+                    *capture_lines,
+                ]
+            )
+            merged_sources = tuple(sources or ())
+            merged_tags = self._merge_ordered((), [*(tags or []), "discussion-capture"])
+            page_title = title.strip()
+            page_language = language
+            page_confidence = confidence
+        if not page_title:
+            raise ValueError("title must not be empty")
+        page = self.save_page(
+            page_type=page_type,
+            slug=slug,
+            title=page_title,
+            author=author,
+            author_email=author_email,
+            body=body,
+            status="draft",
+            language=page_language,
+            confidence=page_confidence,
+            sources=list(merged_sources),
+            tags=list(merged_tags),
+        )
+        page["captured"] = True
+        page["capture_policy"] = "Connected clients decide when discussion is durable enough to store."
+        return page
 
     def review_page(self, page_type: str, slug: str, *, author: str, author_email: str) -> dict[str, Any]:
         page = self.repository.review(page_type, slug, author=author, author_email=author_email)
@@ -355,6 +437,10 @@ class ResearchWikiService:
             slug = "paper"
         digest = sha256(source.encode("utf-8")).hexdigest()[:8]
         return f"{slug[:64].rstrip('-')}-{digest}"
+
+    @staticmethod
+    def _merge_ordered(existing: tuple[str, ...], additions: list[str]) -> tuple[str, ...]:
+        return tuple(dict.fromkeys([*existing, *(item for item in additions if item.strip())]))
 
     def index_resource(self) -> str:
         return self._json({"pages": self.search(limit=500)})

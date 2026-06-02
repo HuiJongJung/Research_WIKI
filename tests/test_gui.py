@@ -34,6 +34,9 @@ class GuiTest(unittest.TestCase):
         self.assertIn('data-range-mode="all">전체 읽기</button>', homepage.text)
         self.assertIn('data-nav-view="papers"', homepage.text)
         self.assertIn('data-nav-view="pages"', homepage.text)
+        self.assertIn('id="pageTypeFilters"', homepage.text)
+        self.assertIn('id="paperFilter"', homepage.text)
+        self.assertIn(".page-section-focus .page-list", homepage.text)
         self.assertIn('data-nav-view="mcp"', homepage.text)
         self.assertIn('id="mcpStatusSection"', homepage.text)
         self.assertIn('id="mcpSettingsForm"', homepage.text)
@@ -56,7 +59,7 @@ class GuiTest(unittest.TestCase):
 
         mcp_status = self.client.get("/api/mcp/status")
         self.assertEqual(mcp_status.status_code, 200)
-        self.assertEqual(mcp_status.json()["counts"], {"total": 18, "enabled": 18, "disabled": 0})
+        self.assertEqual(mcp_status.json()["counts"], {"total": 19, "enabled": 19, "disabled": 0})
         self.assertIn("tool:pdf_extract_text", {
             capability["key"] for capability in mcp_status.json()["capabilities"]
         })
@@ -66,7 +69,7 @@ class GuiTest(unittest.TestCase):
             json={"capabilities": {"tool:pdf_extract_text": False}},
         )
         self.assertEqual(mcp_saved.status_code, 200)
-        self.assertEqual(mcp_saved.json()["counts"], {"total": 18, "enabled": 17, "disabled": 1})
+        self.assertEqual(mcp_saved.json()["counts"], {"total": 19, "enabled": 18, "disabled": 1})
 
         saved = self.client.post(
             "/api/pages",

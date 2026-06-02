@@ -75,6 +75,72 @@ class ResearchWikiServiceTests(unittest.TestCase):
         )
         self.assertEqual(self.service.list_papers()[0]["color"], "blue")
 
+    def test_capture_discussion_creates_appends_and_deduplicates_draft_page(self) -> None:
+        created = self.service.capture_discussion(
+            page_type="claim",
+            slug="visibility-guidance",
+            title="Visibility Guidance",
+            author="Codex",
+            author_email="codex@example.local",
+            entry="Visibility gradients may help preserve edge-sensitive denoising behavior.",
+            rationale="Reusable research hypothesis.",
+            sources=["raw/papers/sample.pdf"],
+            tags=["visibility"],
+        )
+        self.assertTrue(created["captured"])
+        self.assertEqual(created["status"], "draft")
+        self.assertIn("## Discussion Captures", created["body"])
+        self.assertIn("discussion-capture", created["tags"])
+
+        repeated = self.service.capture_discussion(
+            page_type="claim",
+            slug="visibility-guidance",
+            title="Ignored Replacement Title",
+            author="Codex",
+            author_email="codex@example.local",
+            entry="Visibility gradients may help preserve edge-sensitive denoising behavior.",
+            rationale="Duplicate invocation.",
+        )
+        self.assertFalse(repeated["captured"])
+        self.assertEqual(repeated["title"], "Visibility Guidance")
+        self.assertEqual(len(self.service.list_revisions("claim", "visibility-guidance")), 1)
+
+        self.service.review_page(
+            "claim",
+            "visibility-guidance",
+            author="Reviewer",
+            author_email="reviewer@example.local",
+        )
+        appended = self.service.capture_discussion(
+            page_type="claim",
+            slug="visibility-guidance",
+            title="Ignored Replacement Title",
+            author="Codex",
+            author_email="codex@example.local",
+            entry="A controlled ablation should separate gradient conditioning from raw visibility conditioning.",
+            rationale="Durable validation requirement.",
+            sources=["raw/papers/second.pdf"],
+            tags=["ablation"],
+            confidence="low",
+        )
+        self.assertTrue(appended["captured"])
+        self.assertEqual(appended["status"], "draft")
+        self.assertEqual(appended["confidence"], "medium")
+        self.assertEqual(appended["sources"], ["raw/papers/sample.pdf", "raw/papers/second.pdf"])
+        self.assertEqual(appended["tags"], ["visibility", "discussion-capture", "ablation"])
+
+    def test_capture_discussion_rejects_system_page(self) -> None:
+        with self.assertRaisesRegex(ValueError, "discussion capture page type"):
+            self.service.capture_discussion(
+                page_type="system",
+                slug="index",
+                title="Index",
+                author="Codex",
+                author_email="codex@example.local",
+                entry="Do not append discussion captures to system pages.",
+                rationale="Invalid page type.",
+            )
+
     @unittest.skipUnless(fitz, "PyMuPDF is required for WIKI image publishing")
     def test_publish_pdf_screenshots_returns_git_managed_markdown_images(self) -> None:
         pdf_path = self.root / "raw" / "papers" / "sample.pdf"

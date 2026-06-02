@@ -14,6 +14,7 @@
 - [x] Codex and Claude Code connection instructions are documented.
 - [x] MCP exposes `resources`, `tools`, and `prompts`.
 - [x] MCP supports WIKI reads and writes.
+- [x] MCP exposes a proactive client-invoked discussion capture tool that creates or appends draft WIKI knowledge without duplicating identical entries.
 - [x] Local PDF ingest supports text extraction.
 - [x] Local PDF ingest supports screenshot-based image-plus-text reading with page-range selection.
 - [x] Selected PDF screenshots can be published into Git-managed `wiki/assets/`, embedded in source Markdown, and rendered inline in the GUI.
@@ -26,6 +27,7 @@
 - [x] The derived index can be rebuilt from Markdown files.
 - [x] The GUI shows red un-ingested papers and blue reflected papers.
 - [x] The GUI supports search, browsing, editing, ingest configuration, draft review, and index rebuild.
+- [x] The GUI filters WIKI pages by object type and linked paper and expands the page list in the dedicated WIKI view.
 - [x] The GUI `MCP 상태` view lists resources, tools, and prompts and saves startup-time enable or disable settings.
 - [x] A restarted MCP server omits capabilities disabled through `mcp-settings.json`.
 

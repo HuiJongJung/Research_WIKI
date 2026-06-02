@@ -203,6 +203,29 @@
     }
     .search:focus { border-color: #8ab7e9; box-shadow: 0 0 0 3px #eaf4ff; }
     .page-list { max-height: 320px; overflow: auto; }
+    .page-section-focus .page-list { min-height: 540px; max-height: calc(100vh - 230px); }
+    .page-filter-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #f9fbfd;
+    }
+    .page-type-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter-chip {
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #58718b;
+      background: white;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .filter-chip.active { color: white; border-color: var(--blue); background: var(--blue); }
+    .paper-filter { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .paper-filter select { width: 420px; margin-top: 0; padding: 7px 9px; font-size: 11px; }
     .page-row {
       display: grid;
       grid-template-columns: 108px minmax(0, 1fr) 92px 85px;
@@ -387,7 +410,7 @@
       <div class="nav-label">KNOWLEDGE</div>
       <button class="nav-item active" data-nav-view="dashboard"><span>대시보드</span><span class="nav-count">01</span></button>
       <button class="nav-item" data-nav-view="papers"><span>논문 보관함</span><span class="nav-count" id="paperNavCount">0</span></button>
-      <button class="nav-item" data-nav-view="pages"><span>WIKI 페이지</span><span class="nav-count" id="pageNavCount">0</span></button>
+      <button class="nav-item" id="pageNavButton" data-nav-view="pages"><span>WIKI 페이지</span><span class="nav-count" id="pageNavCount">0</span></button>
       <div class="nav-label">SYSTEM</div>
       <button class="nav-item" data-nav-view="mcp"><span>MCP 상태</span><span class="nav-count" id="mcpNavCount">0</span></button>
       <div class="sidebar-note">
@@ -428,6 +451,10 @@
         <div class="section-head">
           <h2>WIKI 페이지</h2>
           <div class="search-wrap"><input class="search" id="searchInput" placeholder="제목, 태그, 본문 검색"></div>
+        </div>
+        <div class="page-filter-bar">
+          <div class="page-type-filters" id="pageTypeFilters"></div>
+          <label class="paper-filter">논문별 보기<select id="paperFilter"><option value="">전체 논문</option></select></label>
         </div>
         <div class="page-list" id="pageList"></div>
       </section>
@@ -538,7 +565,7 @@
   </main>
 
   <script>
-    const state = { pages: [], papers: [], selected: null, pdfRangeMode: "all", pdfPreview: null, mcpStatus: null };
+    const state = { pages: [], papers: [], pageTypes: [], pageTypeFilter: "", paperFilter: "", selected: null, pdfRangeMode: "all", pdfPreview: null, mcpStatus: null };
     const $ = (id) => document.getElementById(id);
     const splitList = (value) => value.split(",").map((item) => item.trim()).filter(Boolean);
 
@@ -566,18 +593,19 @@
     function renderPapers() {
       $("paperGrid").innerHTML = state.papers.length
         ? state.papers.map((paper) => `
-          <button class="paper-card ${paper.color}" type="button" data-paper-path="${escapeHtml(paper.path)}">
+          <button class="paper-card ${paper.color}" type="button" data-paper-path="${escapeHtml(paper.path)}" data-paper-source="${escapeHtml(paper.source)}" data-paper-state="${escapeHtml(paper.state)}">
             <strong>${escapeHtml(paper.name)}</strong>
             <p>${paper.reflected ? "source와 concept 정리가 반영되었습니다." : paper.source_registered ? "source 초안 등록됨 · concept 정리 대기" : "아직 WIKI에 등록되지 않았습니다. 눌러서 읽기를 시작하세요."}</p>
             ${paper.comparison_badge ? '<span class="badge">비교 분석 완료</span>' : ""}
           </button>`).join("")
         : '<div class="empty">raw/papers 폴더에 PDF를 추가하면 상태가 표시됩니다.</div>';
-      document.querySelectorAll("[data-paper-path]").forEach((button) => button.addEventListener("click", () => selectPaper(button.dataset.paperPath)));
+      document.querySelectorAll("[data-paper-path]").forEach((button) => button.addEventListener("click", () => openPaper(button.dataset.paperPath, button.dataset.paperSource, button.dataset.paperState)));
     }
 
     function renderPages() {
-      $("pageList").innerHTML = state.pages.length
-        ? state.pages.map((page) => `
+      const pages = filteredPages();
+      $("pageList").innerHTML = pages.length
+        ? pages.map((page) => `
           <button class="page-row" data-page-type="${escapeHtml(page.page_type)}" data-page-slug="${escapeHtml(page.slug)}">
             <span class="type-chip">${escapeHtml(page.page_type)}</span>
             <span class="page-title">${escapeHtml(page.title)}</span>
@@ -586,6 +614,29 @@
           </button>`).join("")
         : '<div class="empty">조건에 맞는 WIKI 페이지가 없습니다.</div>';
       document.querySelectorAll(".page-row").forEach((row) => row.addEventListener("click", () => loadPage(row.dataset.pageType, row.dataset.pageSlug)));
+    }
+
+    function filteredPages() {
+      return state.pages.filter((page) =>
+        (!state.pageTypeFilter || page.page_type === state.pageTypeFilter) &&
+        (!state.paperFilter || page.sources.includes(state.paperFilter))
+      );
+    }
+
+    function renderPageFilters() {
+      const counts = Object.fromEntries(state.pageTypes.map((type) => [type, state.pages.filter((page) => page.page_type === type).length]));
+      $("pageTypeFilters").innerHTML = [
+        `<button class="filter-chip ${state.pageTypeFilter ? "" : "active"}" type="button" data-page-filter="">전체 ${state.pages.length}</button>`,
+        ...state.pageTypes.map((type) => `<button class="filter-chip ${state.pageTypeFilter === type ? "active" : ""}" type="button" data-page-filter="${escapeHtml(type)}">${escapeHtml(type)} ${counts[type]}</button>`),
+      ].join("");
+      document.querySelectorAll("[data-page-filter]").forEach((button) => button.addEventListener("click", () => {
+        state.pageTypeFilter = button.dataset.pageFilter;
+        renderPageFilters();
+        renderPages();
+      }));
+      const selectedPaper = state.paperFilter;
+      $("paperFilter").innerHTML = '<option value="">전체 논문</option>' + state.papers.map((paper) => `<option value="${escapeHtml(paper.source)}">${escapeHtml(paper.name)}</option>`).join("");
+      $("paperFilter").value = selectedPaper;
     }
 
     function renderMcpStatus() {
@@ -621,8 +672,10 @@
       const dashboard = await api(`/api/dashboard?q=${encodeURIComponent(query)}`);
       state.pages = dashboard.pages;
       state.papers = dashboard.papers;
+      state.pageTypes = dashboard.page_types;
       renderStats(dashboard.stats);
       renderPapers();
+      renderPageFilters();
       renderPages();
       if (!$("pageType").options.length) {
         dashboard.page_types.forEach((type) => $("pageType").add(new Option(type, type)));
@@ -746,6 +799,19 @@
       openTab("ingest");
     }
 
+    function openPaper(path, source, paperState) {
+      if (paperState === "unread") {
+        selectPaper(path);
+        return;
+      }
+      state.paperFilter = source;
+      state.pageTypeFilter = "";
+      setActiveNav($("pageNavButton"));
+      setWorkspaceView("pages");
+      renderPageFilters();
+      renderPages();
+    }
+
     function resetPage() {
       state.selected = null;
       $("editForm").reset();
@@ -803,8 +869,10 @@
       $("summaryStats").hidden = name !== "dashboard";
       $("paperSection").hidden = name === "pages" || name === "mcp";
       $("pageSection").hidden = name === "papers" || name === "mcp";
+      $("pageSection").classList.toggle("page-section-focus", name === "pages");
       $("mcpStatusSection").hidden = name !== "mcp";
       $("pageDetailSection").hidden = true;
+      if (name === "pages") setWorkbenchOpen(false);
     }
 
     function setPdfRangeMode(mode) {
@@ -948,6 +1016,10 @@
       } catch (error) { setNotice(error.message, true); }
     });
     $("searchInput").addEventListener("input", (event) => loadDashboard(event.target.value).catch((error) => setNotice(error.message, true)));
+    $("paperFilter").addEventListener("change", (event) => {
+      state.paperFilter = event.target.value;
+      renderPages();
+    });
     document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => openTab(button.dataset.tab)));
     document.querySelectorAll("[data-range-mode]").forEach((button) => button.addEventListener("click", () => setPdfRangeMode(button.dataset.rangeMode)));
     document.querySelectorAll("[data-nav-view]").forEach((button) => button.addEventListener("click", () => {

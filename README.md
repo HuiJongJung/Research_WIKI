@@ -43,10 +43,13 @@ Tools:
 
 - `wiki_search`, `wiki_read_page`, `wiki_save_page`
 - `wiki_create_research_page`, `wiki_review_page`
+- `wiki_capture_discussion`
 - `wiki_list_revisions`, `wiki_restore_revision`, `wiki_rebuild_index`
 - `pdf_extract_text`, `pdf_render_screenshots`
 - `wiki_publish_pdf_screenshots`
 - `prepare_comparison_workflow`
+
+`wiki_capture_discussion`은 연결된 Codex 또는 Claude Code가 대화 중 재사용 가치가 있는 논문 해석, concept, comparison, claim, question을 발견했을 때 호출합니다. MCP 서버가 채팅을 감시하는 방식은 아닙니다. 모델이 판단하여 호출하면 기존 페이지에 Discussion Capture를 추가하거나 새 draft 페이지를 만들고 Git 이력을 남깁니다.
 
 Prompts:
 
@@ -59,6 +62,8 @@ Prompts:
 ## MCP capability 관리
 
 GUI 왼쪽 내비게이션의 `MCP 상태`에서 현재 서버가 제공하는 `resources`, `tools`, `prompts` 목록을 확인할 수 있습니다. 체크박스로 각 항목을 활성화하거나 비활성화하면 프로젝트 루트의 [`mcp-settings.json`](./mcp-settings.json)에 저장됩니다.
+
+GUI의 `WIKI 페이지` 화면은 `source`, `concept`, `comparison`, `claim`, `question`, `system`, `skill` 유형별 탭과 논문별 필터를 제공합니다. 반영된 논문 카드를 누르면 해당 PDF를 출처로 연결한 WIKI 페이지만 모아서 볼 수 있습니다.
 
 저장한 변경은 실행 중인 MCP 연결을 강제로 끊지 않습니다. Codex 또는 Claude Code가 MCP 서버를 다시 시작하거나 새 세션에서 서버를 다시 연결할 때 적용됩니다. 기본 설정은 모든 capability 활성화입니다.
 

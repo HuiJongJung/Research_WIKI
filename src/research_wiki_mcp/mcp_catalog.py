@@ -32,6 +32,7 @@ CAPABILITIES = (
     McpCapability("tool", "wiki_read_page", "하나의 canonical Markdown 페이지를 구조화하여 읽습니다."),
     McpCapability("tool", "wiki_save_page", "Git 관리 Markdown 페이지를 생성하거나 수정합니다."),
     McpCapability("tool", "wiki_create_research_page", "사용자 주도 claim 또는 question 페이지를 생성합니다."),
+    McpCapability("tool", "wiki_capture_discussion", "대화 중 재사용 가치가 있다고 판단한 연구 지식을 적절한 WIKI 페이지에 추가합니다."),
     McpCapability("tool", "wiki_review_page", "draft 페이지를 reviewed 상태로 승격합니다."),
     McpCapability("tool", "wiki_list_revisions", "한 WIKI 페이지의 Git revision 목록을 반환합니다."),
     McpCapability("tool", "wiki_restore_revision", "이전 Git revision의 WIKI 페이지를 복원합니다."),
