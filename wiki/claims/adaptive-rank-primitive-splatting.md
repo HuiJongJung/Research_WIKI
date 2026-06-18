@@ -3,7 +3,7 @@ type: "claim"
 slug: "adaptive-rank-primitive-splatting"
 title: "Adaptive Rank Primitive Splatting"
 status: "draft"
-modified_at: "2026-06-18T08:55:03.005735+00:00"
+modified_at: "2026-06-18T09:10:03.700298+00:00"
 author: "Codex"
 language: "ko"
 confidence: "medium"
@@ -23,6 +23,8 @@ sources:
   - "C:\\Users\\jinsw712\\Desktop\\Files\\Research_WIKI\\raw\\papers\\Triangle Splatting Plus.pdf"
   - "wiki/sources/triangle-splatting-plus.md"
   - "discussion:2026-06-18-triangle-splatting-plus-method-implications"
+  - "discussion:2026-06-18-sparse-topology-reframing"
+  - "wiki/claims/residual-guided-mesh-refinement-splatting.md"
 tags:
   - "claim"
   - "gaussian-splatting"
@@ -33,6 +35,9 @@ tags:
   - "opaque-triangles"
   - "connectivity"
   - "discussion-capture"
+  - "topology-repair"
+  - "uncertainty-aware-pruning"
+  - "temporary-gaussian"
 ---
 
 # Adaptive Rank Primitive Splatting
@@ -287,3 +292,16 @@ Triangle Splatting 기반 확장에서는 triangle layer를 stable opaque surfac
 - 따라서 후속 아이디어는 triangle branch를 전체 장면의 단독 표현으로 쓰기보다, `triangle = stable opaque visible surface`, `Gaussian/auxiliary = uncertain, transparent, fuzzy, view-dependent residual`로 role assignment하는 방향이 더 명확하다.
 
 - Capture rationale: Triangle Splatting+의 초기 topology, connectivity, opaque training, pruning/densification 논의가 사용자의 adaptive/hybrid primitive 아이디어에서 triangle branch의 역할과 한계를 구체화하기 때문이다.
+
+### 2026-06-18 09:10 UTC
+
+## Sparse/topology reframing 보완 메모
+
+- Triangle Splatting+의 남은 한계는 단순히 opaque triangle의 visual quality drop이 아니라, topology가 `Delaunay initialization + pruning/subdivision lifecycle`에 묶여 fully connected/watertight하지 않다는 점이다.
+- Sparse 영역 문제는 관측 부족 자체를 해결하는 문제가 아니라 `initial SfM undercoverage + pruning-induced disappearance`가 최종 triangle coverage 부족으로 이어지는 문제다.
+- Sparse region에 Gaussian을 넣는다고 geometry/topology가 자동 해결되지는 않는다. Gaussian은 sparse 영역을 그럴듯하게 보일 수는 있지만, 관측이 부족하면 진짜 surface connectivity를 알 수 없다.
+- 따라서 Gaussian의 역할은 final mesh를 대체하는 주 표현이 아니라 `temporary Gaussian holder`, 즉 uncertain region을 보류하고 evidence를 축적하는 probe로 제한하는 것이 더 맞다.
+- 후속 방향은 `residual -> mesh refinement`가 아니라 `residual/uncertainty -> topology repair 대상인지, triangle로 확정하면 안 되는 material/appearance 영역인지, evidence가 부족해 보류할 영역인지 판별`하는 문제로 잡는 것이 좋다.
+- 직접 target할 수 있는 메커니즘은 uncertainty-aware pruning, sparse/topology failure detection, evidence-based triangle refinement, local remeshing/edge reconnect, auxiliary uncertainty layer다.
+
+- Capture rationale: Triangle Splatting+ 이후 adaptive primitive 아이디어의 핵심이 Gaussian residual 보완보다 topology 불완전성과 sparse/uncertain 영역의 확정 보류 문제로 이동했기 때문이다.
