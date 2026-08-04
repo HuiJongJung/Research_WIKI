@@ -3,7 +3,7 @@ type: "claim"
 slug: "adaptive-rank-primitive-splatting"
 title: "Adaptive Rank Primitive Splatting"
 status: "draft"
-modified_at: "2026-06-18T09:10:03.700298+00:00"
+modified_at: "2026-06-18T19:37:34+09:00"
 author: "Codex"
 language: "ko"
 confidence: "medium"
@@ -24,6 +24,7 @@ sources:
   - "wiki/sources/triangle-splatting-plus.md"
   - "discussion:2026-06-18-triangle-splatting-plus-method-implications"
   - "discussion:2026-06-18-sparse-topology-reframing"
+  - "discussion:2026-06-18-seminar-reframing-gs-triangle-usability"
   - "wiki/claims/residual-guided-mesh-refinement-splatting.md"
 tags:
   - "claim"
@@ -272,6 +273,22 @@ Triangle Splatting 기반 확장에서는 triangle layer를 stable opaque surfac
 - [MeshGS](https://arxiv.org/abs/2410.08941)
 - [Triangle Splatting for Real-Time Radiance Field Rendering](https://arxiv.org/abs/2505.19175)
 - [Triangle Splatting+: Differentiable Rendering with Opaque Triangles](https://arxiv.org/abs/2509.25122)
+
+## Current Narrowing
+
+초기 adaptive-rank primitive claim은 `3DGS + 2DGS + triangle`을 region별로 섞어 rendering과 geometry를 모두 개선하려는 넓은 아이디어였다. 최근 세미나용 정리에서는 이 방향이 더 구체적으로 좁혀졌다.
+
+```text
+초기 넓은 claim:
+scene region마다 적절한 primitive를 고르자.
+
+현재 좁힌 claim:
+최종적으로 usable mesh/triangle representation을 목표로 하되,
+triangle이 실패하는 sparse/uncertain 영역을 temporary Gaussian holder로 진단하고,
+geometry evidence가 충분한 경우에만 topology repair / mesh refinement로 승격하자.
+```
+
+따라서 [[residual-guided-mesh-refinement-splatting]]은 이 adaptive primitive claim의 downstream-oriented specialization으로 볼 수 있다. primitive mixture 자체보다 중요한 것은 **rendering quality 향상이 아니라 mesh usability, topology repair, uncertainty-aware pruning, evidence-based promotion**이다.
 
 ## Discussion Captures
 

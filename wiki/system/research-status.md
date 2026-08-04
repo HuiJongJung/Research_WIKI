@@ -1,0 +1,140 @@
+---
+type: "system"
+slug: "research-status"
+title: "연구 현재 상태 (공용 최신본)"
+status: "reviewed"
+modified_at: "2026-08-04T09:30:00.000000+00:00"
+author: "정휘종"
+language: "ko"
+confidence: "high"
+sources:
+  - "C:/Users/jinsw712/Desktop/Files/UnderConstrained-GS-Recon/EXPERIMENT.md"
+tags:
+  - "status"
+  - "system"
+  - "shared-context"
+---
+
+# 연구 현재 상태 (공용 최신본)
+
+> **이 문서는 세 갈래 세션이 공유하는 단일 최신본이다.** Research_WIKI의 방향 논의 세션, 같은 저장소의 조사·문헌 세션, 그리고 별도 저장소 `UnderConstrained-GS-Recon`의 실험 세션이 모두 작업 시작 시 이 문서를 읽는다.
+>
+> 이 문서는 **항상 덮어써서 현재 상태만** 유지한다. 변천사는 `wiki/system/progress-YYYY-MM-DD.md`에 남긴다.
+>
+> 마지막 갱신: 2026-08-04
+
+## 0. 참조 규칙
+
+| 알고 싶은 것 | 볼 곳 |
+| --- | --- |
+| 연구 방향, 가설, 용어, 판정 | **이 문서** (최신본) |
+| 연구가 어떻게 여기까지 왔는지 | `wiki/system/progress-YYYY-MM-DD.md` (필요할 때만) |
+| 실험 상태, 수치, 실행 기록 | `C:/Users/jinsw712/Desktop/Files/UnderConstrained-GS-Recon/EXPERIMENT.md` (실험의 진실 원천) |
+| 실험 실행 단위 재현 기록 | 같은 저장소 `experiments/<날짜>_<슬러그>.md` |
+| 방향 결정의 변천사 | 같은 저장소 `design_log/` |
+| 논문 정리, 개념 페이지 | 이 저장소 `wiki/sources/`, `wiki/concepts/` |
+| 문헌 조사 임무와 큐 | 이 저장소 `SURVEY_BRIEF.md` |
+| 발표자료 초안 규칙 | `C:/Users/jinsw712/Desktop/Files/논문 발표/연구방향 발표/PPT_초안_규칙.md` |
+
+**어느 세션도 방향을 독자적으로 바꾸지 않는다.** 방향 의문은 실험 저장소 `EXPERIMENT.md`의 "열린 질문"에 남기거나 `SURVEY_BRIEF.md` 큐에 "판단 필요"로 표시한다. 판정은 방향 논의 세션이 한다.
+
+## 1. 한 줄 연구
+
+GS 기반 표면 재구성은 **under-constrained 영역**(관측은 되지만 삼각측량각이 좁아 기하가 유일하게 결정되지 않는 곳. 원거리 구조물과 외벽이 대표 사례)에서 artifacts가 발생하는데, 어떤 벤치마크도 그곳을 측정하지 않는다. **SfM 부산물 통계로 학습 전에 Observation Confidence Field를 만들어** 위험 영역을 진단하고, supervision과 prior를 차등 배분한다.
+
+## 2. 핵심 명제
+
+> **관측 횟수는 관측 품질과 다르다. under-constrained 영역은 자주 보이지만 한 번도 제약된 적이 없다 (seen often, constrained never).**
+
+관측 수 기반 판별값(CoMapGS, G4Splat)은 이 영역을 "잘 관측됨"으로 오판한다. 각도 기반 판별값만 artifacts를 예측한다.
+
+## 3. 가설과 현재 판정
+
+| 가설 | 내용 | 상태 |
+| --- | --- | --- |
+| H1 | SfM 통계로 유효한 confidence field 구성 가능 (관측 수 기반으로는 불가) | **성립** (13개 씬) |
+| H2 | 낮은 confidence가 SOTA artifacts 위치와 대응 (거리 통제 후에도) | **정식 성립** (Spires 2개 사이트) |
+| H3 | 그 영역은 차등 개입으로 개선 가능 | **미결.** 도구 완성, 판정 대기 |
+
+## 4. 4상태 정의
+
+포즈 기반 채널(n_views, pot_angle)과 점 기반 채널(n_pts, tri_angle)을 함께 써서 점이 없는 세 가지 원인을 분리한다.
+
+| 상태 | 의미 |
+| --- | --- |
+| INVISIBLE | 관측 자체가 없음 |
+| **OBSERVED_DEGENERATE** | 관측은 충분하나 각이 좁음. **개입 대상** |
+| TEXTURELESS | 관측도 각도 확보도 되었으나 점이 없음. v1 개입 제외 |
+| WELL_CONSTRAINED | 정상 |
+
+## 5. 확보된 실측
+
+절대값을 타 논문 수치와 비교하지 않는다. 같은 지표 안에서의 상대 비교만 한다.
+
+- **H1**: 13개 씬 전부 재현. 각도는 근거리 144~176도에서 원거리 1.6~5.1도로 떨어지는데 관측 수는 10~116으로 유지됨
+- **H2 christ-church** (밴드별 비율): 1.66 / 1.53 / 2.47, Holm 보정 후 p ≤ 3.3e-04
+- **H2 christ-church, 카메라 784대 정합판**: 2.35 / 1.42 / 2.13
+- **H2 Blenheim**: 1.83 [1.58, 2.06] p=5.7e-21, 2.01 [1.69, 2.50] p=3.5e-19
+- **T&T Ignatius**: 원시 스캔 점의 46.8퍼센트가 공식 crop 밖. crop 안에서는 실측 4.8mm로 양호(거짓 경보 없음의 대조)
+- **개입 결과는 아직 없다.** 균일 prior 대조군에서 중거리가 크게 악화된 관찰만 있다
+
+## 6. 경쟁 기법과의 차이
+
+| 상대 | 그들의 판별값 | 우리와의 차이 |
+| --- | --- | --- |
+| CoMe | 학습 중 RGB 잔차 | 성공한 photometric ambiguity는 잔차를 남기지 않음. 논문 5절에서 원거리 배경 미해결을 자인 |
+| AmbiSuR | SH 계수 크기 (학습 중 사용) | 감독량 쪽 양이라 "감독은 충분한데 제약이 안 되는" 경우를 원리적으로 못 봄 |
+| CoMapGS | covisibility 개수 (학습 전) | **a priori라는 점은 같다.** 차이는 개수가 아니라 품질을 본다는 것, 대상이 표면 재구성이라는 것, photometric을 재가중하지 않는다는 것 |
+| G4Splat | 이진 가시성 격자 | 자주 보이지만 각이 좁은 곳을 "보임"으로 분류 |
+
+사후 판별값에 대한 공격 순서: **사각지대 → 시점 → 오염**. "학습 후 지표라 의미 없다"는 표현은 쓰지 않는다. AmbiSuR는 학습 중에 쓴다.
+
+## 7. 평가 무대
+
+- 주 무대: **Oxford Spires** TLS 실측 기준. christ-church와 Blenheim
+- 대조: T&T Ignatius (거짓 경보 없음 확인용)
+- accuracy 계열은 절단 문제로 포기하고 거리 밴드별 completeness를 쓴다
+- 발표와 논문에서는 **관례 지표(Chamfer, F1)를 먼저 보이고 그 한계를 보인 뒤** 자체 지표로 넘어간다
+
+## 8. 용어 규칙
+
+산출물(발표, 보고, 논문, 위키, 코드 주석, 그림 라벨)에 모두 적용한다.
+
+| 쓸 것 | 쓰지 말 것 |
+| --- | --- |
+| under-constrained | 저관측 |
+| artifacts, floaters, holes | 붕괴 |
+| photometric ambiguity | cheating (MILo 인용 시 따옴표로만) |
+| 외벽 | 파사드 |
+| 판별값, 지표, confidence | 신호 |
+| 동일 기준 비교, 정량 대조 | 채점 |
+| prior | (표준 용어이므로 유지) |
+
+- "under-constrained 영역"을 연구의 정의처럼 쓰지 않는다. 정의는 "observed yet under-constrained"이다.
+- 측정한 것과 표현을 일치시킨다. 점 사이 거리를 쟀으면 "mesh 결손"이라고 쓰지 않는다.
+- 문서 하나 안에서 말투를 통일한다. 대시를 쓰고 뒤에 덧붙이는 구조를 쓰지 않는다.
+
+## 9. 현재 진행과 다음
+
+**최우선**
+
+1. 개입 방식의 생사 판정. 기존 대조군 데이터로 품질 변화량과 각도의 관계를 확인한다. CPU 30분이며 이 결과가 GPU 투입 여부를 정한다
+2. COLMAP 원전 정독. 삼각측량각의 공식 정의, 임계값 근거, track 정제 규칙. 현재 설계의 병목
+
+**그 다음**
+
+3. 동일 기준 판별값 비교표. 각도, 점 밀도, 관측 수, 포즈 전용, 경쟁 기법 지표를 같은 기준으로 대조
+4. Observation Confidence Field 재설계. 각 범위, 각 분포, 관측 중복도를 분리 정의하고 임계값을 유도로 정한다
+5. 같은 거리에서 관측 각도만 다른 조건의 비교 실험
+
+**열린 판단 사항**
+
+- 표적을 배경 전체에서 통제된 object로 옮길 것인가
+- 실험을 MILo 하나로 하되 서술은 공통 문제로 할 것인가
+- point cloud 기반 재구성이 아니라 GS여야 하는 이유를 어떻게 세울 것인가
+
+## 10. 갱신 규칙
+
+- 방향이나 판정이 바뀌면 **그날짜 progress 파일에 무엇이 왜 바뀌었는지 적고, 이 문서의 해당 절을 덮어쓴다.**
+- 실험 수치는 이 문서에 요약만 두고 상세는 `EXPERIMENT.md`에 남긴다. 두 곳의 숫자가 어긋나면 `EXPERIMENT.md`가 옳다.
+- 갱신 책임은 방향 논의 세션에 있다. 다른 세션은 이 문서를 읽기만 한다.

@@ -1,61 +1,19 @@
-# Media Ai Mcp Agent Guide
+# Research_WIKI — 에이전트 운영 규칙
 
-> At the start of every session, read this file and `journal.md` first.
-> This file defines the local operating rules for this project.
+**규칙 본문은 `CLAUDE.md`에 있다. 이 파일은 Codex용 포인터다. 먼저 `CLAUDE.md`를 읽는다.**
 
-## 0. Structure
+요지만 옮기면 다음과 같다.
 
-- `specs/` - agreed requirements and acceptance criteria.
-- `specs/discussion-rounds.md` - append-only planning discussion record.
-- `TASK.md` - ordered checklist; work on only the top unfinished item.
-- `journal.md` - append-only local work log.
-- `harness/` - contract, procedure, validation, and preferences.
-- `AGENTS.md` - this file.
+- 세션 시작 시 **`wiki/system/research-status.md`**(연구 공용 최신본)를 읽는다. 실험 수치가 필요하면 `C:/Users/jinsw712/Desktop/Files/UnderConstrained-GS-Recon/EXPERIMENT.md`를 본다.
+- `journal.md`, `harness/`, `specs/`, `PRD.md`, `TASK.md`, `docs/`는 2026년 6월에 종료된 위키 MCP 도구 개발 프로젝트의 유물이다. **읽지 않는다.**
+- 위키 페이지는 `wiki/system/page-schema.md`의 frontmatter 규칙을 반드시 지킨다. 형식이 어긋난 파일 하나가 전체 인덱스 재구성을 중단시킨다.
+- 방향이나 판정이 바뀌면 `wiki/system/progress-<날짜>.md`에 이력을 남기고 `research-status.md`를 덮어쓴다.
+- 어느 세션도 연구 방향을 독자적으로 바꾸지 않는다.
 
-## 1. Planning Gate
+## 보고서 작성 규칙
 
-Spec design follows three stages. Do not advance past a stage until it is complete.
+사용자에게 보이는 보고서나 표를 만들 때, 내부 작성 규칙이나 단서, "확인된 경우에만 채울 것" 같은 출처 정책 문구를 본문에 넣지 않는다. 그런 규칙은 드러내지 말고 적용만 한다.
 
-**Stage 0 — Brief**
-- Write `specs/brief.md` first: one paragraph problem statement, audience, and success criterion.
-- Do not enumerate requirements yet.
+## 종료된 도구 개발 규칙
 
-**Stage 1 — Disambiguation**
-- List every ambiguous term, unstated constraint, and open decision in `specs/clarifications.md`.
-- Mark each item `blocking` or `deferred`. A `deferred` item must have a written reason it is safe to defer.
-- Do not write `specs/requirements.md` until no `blocking` items remain.
-
-**Stage 2 — Requirements**
-- Write `specs/requirements.md` and `specs/acceptance.md` after all blocking clarifications are resolved.
-- Record design decisions in `specs/decisions.md`.
-- Append each discussion round and its outcome to `specs/discussion-rounds.md`.
-- Confirm validation commands in `harness/validation.md`.
-- Ask the user to review and confirm the spec.
-- Write `specs/plan-closed.md` only when the user explicitly closes planning.
-- Do not write production code before `specs/plan-closed.md` exists.
-
-## 2. Implementation Loop
-
-1. Read the last 5 lines of `journal.md`.
-2. Select exactly one topmost unfinished item from `TASK.md`.
-3. Read related code and docs before editing.
-4. Implement only that item.
-5. Run the validation commands in `harness/validation.md`.
-6. If validation fails, fix until it passes or stop at the failure budget.
-7. Mark the item done in `TASK.md`.
-8. Append one line to `journal.md`:
-   `- [YYYY-MM-DD HH:MM] <summary> - <result>`
-9. Stop and wait for the next iteration.
-
-## 3. Never Do
-
-- Do not handle more than one task per iteration.
-- Do not skip or weaken failing tests.
-- Do not add dependencies without explicit user approval.
-- Do not rewrite or delete `journal.md`; append only.
-- Do not continue after three failed attempts with the same approach.
-
-## 4. If Blocked
-
-- If a requirement is ambiguous, add it to `specs/clarifications.md` and ask the user.
-- If the same approach fails three times, append the situation to `journal.md` and report.
+이 파일에 있던 계획 게이트, 한 번에 한 작업 구현 루프, journal 추가 형식, 검증 커맨드는 위키 MCP 도구를 만들던 시기의 규칙이었다. 2026-08-04에 폐기했다. 원본은 git 이력과 `harness/`에 남아 있다.

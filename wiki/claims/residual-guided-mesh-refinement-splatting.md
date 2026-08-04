@@ -3,13 +3,14 @@ type: "claim"
 slug: "residual-guided-mesh-refinement-splatting"
 title: "Residual-Guided Mesh Refinement Splatting"
 status: "draft"
-modified_at: "2026-06-18T09:09:48.602788+00:00"
+modified_at: "2026-07-01T19:40:00+09:00"
 author: "Codex"
 language: "ko"
 confidence: "medium"
 sources:
   - "discussion:2026-06-18-residual-guided-mesh-refinement-idea"
   - "discussion:2026-06-18-sparse-topology-reframing"
+  - "discussion:2026-06-18-seminar-reframing-gs-triangle-usability"
   - "wiki/comparisons/splatting-trends-2025h2-2026h1.md"
   - "wiki/comparisons/geometry-prior-and-residual-layer-splatting.md"
   - "wiki/claims/adaptive-rank-primitive-splatting.md"
@@ -33,6 +34,104 @@ tags:
 ---
 
 # Residual-Guided Mesh Refinement Splatting
+
+## Seminar Motivation: From Rendering Quality to Usable Geometry
+
+이 아이디어의 출발점은 단순한 `GS + triangle primitive` hybrid였다.
+
+```text
+초기 목표:
+Triangle + GS를 섞어서 scene rendering quality를 높이자.
+```
+
+하지만 Triangle Splatting, Triangle Splatting+, MILo, SurfaceSplat, MGSR 같은 흐름을 읽으면서 문제의 중심이 바뀌었다. 최근 splatting / NeRF / GS 계열에서 중요한 질문은 더 이상 "얼마나 보기 좋은가"만이 아니라, **그 결과물을 downstream에서 실제로 쓸 수 있는가**다.
+
+3DGS는 photorealistic rendering에는 강하지만 surface, normal, topology, collision, editability가 불명확하다. 반대로 triangle primitive는 normal과 surface가 명확하고 기존 graphics pipeline과 잘 맞지만, pure triangle optimization만으로 fuzzy/specular/transparent/thin/uncertain region까지 모두 설명하려 하면 quality와 topology가 흔들릴 수 있다.
+
+따라서 현재 방향은 다음처럼 정리된다.
+
+```text
+Not: GS + Triangle로 rendering quality만 높이자.
+But: 최종 representation은 downstream을 위해 mesh/triangle 기반으로 만들고,
+     optimization 과정에서는 GS를 residual probe로 사용해
+     triangle mesh의 실패 지점을 찾고 고치자.
+```
+
+## Link to Existing Claims
+
+이 claim은 기존 WIKI claim들과 다음 관계를 가진다.
+
+- [[adaptive-rank-primitive-splatting]]은 point/line/surface/volume-like primitive를 region별로 적응적으로 쓰자는 더 넓은 representation claim이다.
+- [[geometry-prior-and-residual-layer-splatting]]은 2DGS, SuGaR, MeshGS, Effective Rank GS, Triangle Splatting 계열의 geometry prior와 residual 처리 방식을 비교한다.
+- [[splatting-trends-2025h2-2026h1]]은 최근 분야 흐름이 rendering quality 중심에서 mesh/material/physics-compatible representation 중심으로 이동하고 있음을 정리한다.
+- 이 페이지는 그 흐름을 좁혀서, **Triangle Splatting+의 topology/initialization/pruning 한계를 GS residual과 uncertainty-aware mesh refinement로 다루는 구체적 연구 claim**으로 만든다.
+
+즉 전체 흐름은 다음과 같다.
+
+```text
+GS + Triangle로 더 잘 렌더링하고 싶음
+-> 최신 흐름을 보니 usable geometry가 더 중요함
+-> Triangle Splatting은 mesh-compatible해서 유망함
+-> 하지만 connectivity, SfM initialization, pruning, pure triangle optimization 한계가 남음
+-> GS를 final visual fudge가 아니라 residual/uncertainty probe로 사용
+-> geometry evidence가 충분한 residual만 triangle topology repair/refinement로 승격
+-> 최종적으로 mesh-based usable representation 지향
+```
+
+## Research Directions Around This Claim
+
+### A. Initialization Improvement
+
+Triangle Splatting 계열이 SfM point cloud와 Delaunay initialization에 민감하다면, 초기 triangle을 더 믿을 만하게 만드는 것 자체가 연구 방향이 된다.
+
+- SfM point confidence filtering
+- 2DGS/3DGS를 이용한 surface evidence pre-estimation
+- monocular depth/normal prior를 이용한 sparse region 보강
+- visibility consistency가 높은 영역부터 triangle 생성
+- uncertain region은 triangle 생성을 미루고 temporary Gaussian holder로 보류
+
+핵심 질문:
+
+```text
+어떤 point/region이 triangle initialization에 충분히 믿을 만한가?
+```
+
+### B. Mesh Connectivity and Topology Repair
+
+Triangle primitive가 잘 렌더링되어도 connected/watertight/editable mesh가 되지는 않는다. 따라서 triangle soup 또는 semi-connected mesh를 더 usable한 mesh로 유도하는 방향이 필요하다.
+
+- shared vertex consistency
+- local stitching
+- edge flip / reconnect
+- local remeshing
+- hole filling
+- isolated component pruning or repair
+- triangle density control
+
+핵심 질문:
+
+```text
+렌더링이 잘 되는 triangle set을 어떻게 downstream에서 쓸 수 있는 mesh로 만들 것인가?
+```
+
+### C. GS as Residual Probe During Optimization
+
+최종 결과가 mesh/triangle 기반이면, 학습 과정에서 GS를 쓰는 것은 금지할 필요가 없다. 오히려 GS는 triangle이 설명하지 못하는 residual을 부드럽게 흡수하고, 실패 위치를 알려주는 probe가 될 수 있다.
+
+```text
+1. Triangle으로 기본 surface 최적화
+2. Triangle이 못 설명하는 영역에 GS residual 투입
+3. residual을 geometry / material / uncertainty로 분류
+4. geometry residual만 mesh refinement로 승격
+5. material/transparent/fuzzy residual은 auxiliary layer로 남기거나 mesh conversion에서 제외
+```
+
+핵심 질문:
+
+```text
+이 residual Gaussian은 진짜 geometry인가,
+아니면 appearance/material/uncertainty인가?
+```
 
 ## Core Claim
 
@@ -248,6 +347,102 @@ But: sparse/topology uncertainty를 진단하고,
 - Local remeshing, edge flip, triangle restoration, midpoint subdivision 중 어떤 action을 언제 선택할 것인가?
 - Sparse far-field처럼 evidence가 끝까지 부족한 영역은 final representation에서 어떻게 남길 것인가?
 
+## 방향 재검토 (2026-07-01)
+
+Triangle Splatting+ 결과 mesh를 직접 Blender에서 열어 확인하고, 논문의 connectivity 서술을 다시 읽은 뒤 방향을 재점검했다.
+
+### 경험적 확인 — triangle soup
+
+- Blender(Solid shading)로 열어본 결과, 전경 오브젝트는 알아볼 수 있으나 바닥/배경은 **떨어진 삼각형 파편의 밭**이었다. "semi-connected"라 부르기도 후한 수준.
+- 논문 본문 수치가 이를 뒷받침한다(저자 인용):
+  > "the optimization process does not strictly enforce full connectivity. Mainly because of pruning, connectivity is only partially preserved. On average, each vertex is connected to 1.5 triangles. Overall, 80% of the triangles are connected to at least one other triangle, with some triangles connected to as many as six."
+- 해석: vertex당 평균 **1.5 triangle**(정상 fan은 ~6), **20%는 완전 고립**, 나머지도 대부분 2~3개짜리 fragment. 즉 실질은 triangle soup이며, 원인은 **pruning**이라고 저자가 직접 명시. 이는 이 claim이 지목한 `pruning-induced disappearance / topology 손실`과 정확히 같은 지점이다.
+
+### downstream 자랑의 실체
+
+Triangle Splatting+가 내세우는 physics simulation / interactive walkthrough / path tracing / scene editing은 대부분 **connectivity·watertight를 요구하지 않는 작업**이라 soup여도 성립한다.
+
+- path tracing / walkthrough / editing → connectivity 자체가 불필요(광선-삼각형 개별 교차, rasterize, 그룹 지정).
+- physics → Unity mesh collider로 씌우면 되지만, non-convex는 **static(고정)만** 가능하고 convex는 **볼록 근사(프록시)**다. 즉 "표면 충돌" 수준이지 **부피/soft-body/fluid 같은 watertight 요구 물리는 아님**.
+- 결론: "usable"의 실제 범위는 **렌더·엔진 호환**까지지, **변형 가능·근사 불가한 geometry로서의 usable**까지가 아니다. 이것이 "usable ≠ accurate"의 실증.
+
+### 방향의 정당성 조건 (who cares 방어선)
+
+soup 문제가 의미를 가지려면 타깃 downstream이 다음 둘을 만족해야 한다.
+
+1. **deformation이 포함된 simulation** (강체 이동/선택만이면 connectivity 무의미).
+2. **"근사"가 허용되지 않는 기준** (게임처럼 plausible이면 프록시로 충분 → 개선 실익 없음).
+
+따라서 타깃은 게임 인터랙션이 아니라 **deformable physics / robotics / engineering simulation** 처럼 근사가 허용되지 않는 영역이어야 한다.
+
+### 남은 핵심 딜레마 (아직 답 없음)
+
+- **Q1. 왜 triangle에서 출발하나?** "deformable용 connected mesh를 만든다"만으로는 `GOF/GGGS로 뽑으면 그만 아닌가`에 무너진다. reconstruction 대비 triangle-first의 우위를 아직 증명 못 함.
+- **Q2. connected mesh가 목표면 triangle의 렌더 장점을 왜 끌고 오나?** 잠정 답: reconstruction은 렌더 품질을 희생하고 geometry를 얻고, splatting은 반대다. 그 **둘을 동시에**(고품질 렌더 + 그에 맞는 mesh 생성) 얻는 자리가 빈자리일 수 있다.
+- **Q3.** 결국 **connectivity ↔ rendering quality trade-off**를 맞추는 문제로 수렴하는가?
+- **Q4.** residual GS가 이걸 해결해줄 거라는 확신은 아직 없다. 그래서 7편을 더 읽고, 읽다 보면 **baseline을 triangle이 아닌 다른 것**으로 잡을 여지도 열어둔다.
+
+### 좁힌 잠정 프레이밍
+
+> "deformable simulation용 connected mesh를 만든다"(약함, GOF에 흡수됨)
+> → "**렌더 품질(photometric)을 유지하면서 deformable-ready한 connected/watertight geometry를 동시에 확보한다**"(reconstruction=geo만, triangle splatting=photo만 사이의 빈자리)
+
+## Novelty Review (2026-07-01) — 3-agent 흡수위험 검증 결과
+
+프레이밍 *"고품질 photometric 렌더 유지 + deformable-ready scene-level watertight geometry를 하나의 optimization에서 동시 확보"*를 related-work scout / field-context mapper / skeptical reviewer 3인 병렬 웹조사로 검증.
+
+### Verdict: 지금 프레이밍 그대로면 novelty risk **High**. 좁히면 Medium-Low.
+
+세 기둥 중 셋이 이미 점유됨:
+
+| 주장하려던 것 | 선점 논문 | 무엇을 했나 | 남긴 틈 |
+| --- | --- | --- | --- |
+| joint single-opt: 렌더 + watertight scene mesh | **MILo** (SIGA 2025, 2506.24096) | 매 iteration mesh 미분추출, mesh→GS gradient, "watertight empty-interior" 단면 제시, **physics sim을 동기로 명시**, 배경 포함 | deformable sim **실험 없음**(Blender 애니메이션만), scene-level Chamfer 미보고 |
+| joint이 decoupled를 이긴다 | **OMeGa** (WACV 2026, 2509.24308) | mesh+2DGS 처음부터 joint, **Chamfer −47%·F +79.6% vs 후처리** 측정 완료 | watertight 주장 없음, physics 없음, 실내 한정 |
+| photometric optimum ≠ geometric optimum | **Geometry Gaussians** (2606.05124) | 그 insight를 **명시+수치화**(Chamfer 1.665 vs 2.508). 해법이 오히려 *decoupling* → "joint여야만 한다"의 반증 | — |
+
+→ "joint로 렌더+watertight mesh 한 번에"는 MILo가 이미 썼고, 동기(mismatch)는 남이 이미 측정. 이대로 내면 *"MILo + 남이 붙일 downstream"*으로 reject.
+
+### 유일하게 비어 있는 틈 (세 리뷰어 공통 지목)
+
+> **GS에서 뽑은 watertight connected mesh를 실제 deformable/FEM/contact sim에 넣고 ground-truth 물리오차로 검증한 사람이 없다.** MILo·OMeGa·GOF는 Chamfer/렌더에서 멈춤, PhysGaussian 계열은 sim은 하되 geometry를 건너뜀(mesh-free).
+
+→ contribution 성격 전환: **"아이디어"(점유) → "physics-error 검증 + 벤치마크"(공백)**. MILo/OMeGa는 *Chamfer가 아니라 sim-error로 이기는* baseline이 되고, Triangle Splatting은 경쟁자→"gap의 증거"로 강등(2D Triangle Splatting 저자 자백 *"not watertight, limiting simulation"* 2506.18575 인용).
+
+### ⚠️ 전체를 무너뜨릴 단일 리스크 (make-or-break)
+
+"watertight mesh가 deformable sim 필수"는 **있는 그대로면 거짓**. PhysGaussian(WS², *"meshing 필요를 부정"*), GaussianSplashing, 최신 Scene-Level Heterogeneous Physics(2606.21753)까지 전부 **meshless particle** — 분야 최전선이 입자로 흐름.
+
+**그래서 결정적 질문은 baseline이 아니라 이것:**
+
+> **meshless MPM(PhysGaussian)이 admissible하지 못한, ground-truth 있는 deformable task를 하나 이름 댈 수 있는가?**
+> (constitutive-model FEM 소변형 정밀, verifiable contact/collision manifold, CAD-coupled 공차, 엔지니어링 error bound)
+
+- yes → 방어 가능. 네 "근사 불가/robotics·engineering/게임 제외" 프레이밍이 정확히 이 corridor(FEM 정밀·collision·엔진 interop)에 앉음. 근거: GS-Verse, VR-GS mesh-FEM 캠프.
+- no → 정직하게 접고 meshless 입자-sim geometry 개선으로 피벗. 이걸 빨리 아는 게 이득.
+
+### Scope 수정
+
+"scene-level watertight"는 unbounded 실외(Mip-NeRF360)에서 **ill-posed** → **bounded/foreground-support로 한정**. FEM/collision이 실제 필요로 하는 regime와 일치하므로 손해 아님.
+
+### 차별화 실험 (아이디어→논문 전환용)
+
+1. **joint > decoupled를 sim-error로**: 동일 vertex budget, (A) MILo/OMeGa joint vs (B) GOF/2DGS 후처리 → Chamfer 말고 deflection error·contact-force·penetration/leak·divergence 보고.
+2. **watertight term ablation**: 닫힌 부피 필요 solver(FEM/tet)에서 watertight+empty-interior on/off → solver 실패·누수율 정량화.
+3. **vs meshless 정면대결**: 같은 근사불가 task에서 PhysGaussian이 tolerance 못 넘고 mesh 경로는 넘는 regime 제시.
+
+### 읽기 우선순위 (새 위협 위주 재편)
+
+1. **MILo** (2506.24096) — 최대 위협, "무엇을 *안* 했나" 표로 정독.
+2. **OMeGa** (2509.24308) — joint>decoupled 이미 측정.
+3. **Geometry Gaussians** (2606.05124) — mismatch 동기 선점·수치화, 반드시 인용+차별화.
+4. **PhysGaussian** (2311.12198) + **Scene-Level Heterogeneous Physics** (2606.21753) — meshless 위협 본체.
+5. **GS-Verse / VR-GS** — mesh-FEM 캠프, "왜 mesh인가" 근거.
+
+### 남은 판단 (웹조사로 안 풀림 = 연구자 몫)
+
+- [ ] meshless가 admissible 못한 구체 deformable task를 댈 수 있는가? ← 방향 전체가 여기 걸림.
+
 ## Related WIKI Pages
 
 - [[splatting-trends-2025h2-2026h1]]
@@ -257,3 +452,4 @@ But: sparse/topology uncertainty를 진단하고,
 - [[shared-vertex-triangle-splatting]]
 - [[mesh-compatible-radiance-field]]
 - [[triangle-splatting-plus]]
+- [[milo]]
