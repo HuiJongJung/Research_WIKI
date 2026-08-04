@@ -1,6 +1,8 @@
-# Media Ai Mcp Journal
+# Media Ai Mcp Journal (종료됨)
 
-Append only. Do not edit or delete previous entries.
+> **2026-08-04부로 이 기록은 닫혔다. 더 이상 추가하지 않는다.**
+> 연구 진행 기록은 `wiki/system/progress-YYYY-MM-DD.md`로, 현재 상태는 `wiki/system/research-status.md`로 옮겼다.
+> 아래는 2026-06-01부터 2026-08-04까지의 작업 기록이며 이력 참조용으로 보존한다.
 
 - [YYYY-MM-DD HH:MM] Harness initialized - pending planning.
 - [2026-06-01 18:50] Planning harness initialized - wrote the project brief and opened decision rounds for a lab-wide research MCP WIKI Tool.

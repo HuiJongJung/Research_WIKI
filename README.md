@@ -2,7 +2,10 @@
 
 연구실 구성원이 함께 편집할 수 있는 로컬 연구 WIKI입니다. Canonical 지식은 Git으로 관리되는 Markdown 파일이며, Codex와 Claude Code는 MCP를 통해 논문을 읽고 `source`, `concept`, `comparison`, `claim`, `question` 페이지를 저장합니다.
 
-구현 목표와 경계는 [PRD.md](./PRD.md), 상세 클라이언트 연결 방법은 [docs/client-setup.md](./docs/client-setup.md)를 참고하세요.
+상세 클라이언트 연결 방법은 [docs/client-setup.md](./docs/client-setup.md)를 참고하세요.
+
+> 이 문서는 **위키 MCP 서버와 GUI의 사용 설명서**입니다. 연구 내용과는 무관합니다. 연구 맥락은 [CLAUDE.md](./CLAUDE.md)와 `wiki/system/research-status.md`를 보세요.
+> 설계 문서(PRD.md, specs/, harness/, TASK.md)는 2026-08-04에 제거했습니다. 필요하면 git 이력에서 확인하세요.
 
 ## 주요 기능
 
@@ -138,7 +141,6 @@ HTTP 연결과 토큰 환경 변수 사용 방법은 [docs/client-setup.md](./do
 ```powershell
 python -m unittest discover -s tests -v
 python -m compileall -q src tests
-python "C:\Users\thffh\.codex\skills\start-project-harness\scripts\scaffold_project_harness.py" --check .
 research-wiki-mcp --help
 research-wiki-gui --help
 ```
@@ -161,4 +163,3 @@ research-wiki-gui --help
 - 사용자별 계정과 세부 권한
 - Git 이외의 자동 백업
 - 서버 내부 LLM API 호출
-# Research_WIKI
