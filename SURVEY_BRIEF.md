@@ -64,7 +64,12 @@
 
 상태: `대기` / `진행중` / `완료` / `판단 필요`
 
-### Q-01. 통제된 실험 무대 후보 조사 [대기] (우선순위 1)
+### Q-01. 통제된 실험 무대 후보 조사 [완료] (우선순위 1)
+
+**결과**: GT mesh 제공 후보 8종을 표로 정리했다 (`wiki/comparisons/gt-mesh-benchmark-candidates.md`). 실외 대규모는 SS3DM(CARLA 합성 mesh, CC BY 4.0), 정밀 물체는 MobileBrick, 가늘고 긴 구조물은 Asset Inspection Benchmark의 crane 씬이 후보다.
+해골 씬은 **DTU scan65**이며 GT는 mesh가 아니라 구조광 점군이다(2차 자료 근거, 원전 미확인). 구멍 있는 물체를 표적으로 삼은 선행은 찾지 못했고, 가늘고 긴 구조물 쪽만 존재한다.
+**SparseGS는 SAM을 쓰지 않는다**(v2·v4 확인). 대상 선별 선례는 GaussianObject(SA3D 마스크로 visual hull 초기화, NVS 전용, mesh 미보고)다.
+
 
 배경 전체를 표적으로 삼는 것이 석사 범위를 넘는다는 지적을 받았다. GT mesh가 있는 통제된 무대로 옮기는 안을 검토 중이다.
 
@@ -73,7 +78,12 @@
 - 구멍이 있는 물체, 가늘고 긴 구조물(파이프 등)처럼 재구성이 어려운 형상을 표적으로 삼은 선행 연구가 있는지
 - SparseGS가 SAM으로 대상을 선별해 복원한다고 알려져 있다. 그 선별 기준과 목적을 확인 (표적을 object로 옮길 경우의 선례)
 
-### Q-02. 삼각측량각을 사용한 선례 조사 [대기] (우선순위 2)
+### Q-02. 삼각측량각을 사용한 선례 조사 [완료] (우선순위 2)
+
+**결과**: 학습 내부에서 각을 loss 가중·prior 게이트·densification 제어에 쓴 사례는 **찾지 못했다** (`wiki/questions/triangulation-angle-in-training-precedent.md`).
+가장 가까운 인접은 PanoLOG(arXiv 2607.08769)로, 시차각에서 깊이 불확실도를 유도해 **학습 전 경계 상자 여백**을 정한다. 감독 배분은 하지 않는다. TriaGS(arXiv 2512.06269)는 삼각측량을 쓰되 각이 아니라 합의점 거리 loss다.
+각과 깊이 불확실도의 관계는 고전 MVS(Rumpler 외, AAPR 2011)가 이미 확립했다. "쓸모없어서 안 쓴 것이 아니라 학습 감독으로 옮긴 사례가 없다"는 서술이 가능하다. **판단 필요.**
+
 
 우리 판별값의 신뢰도 확보용이자, "5년간 아무도 안 썼으면 쓸모없는 것 아니냐"는 반론에 대한 답이다.
 
@@ -81,13 +91,23 @@
 - 촬영 계획(next-best-view, capture planning) 용도는 이미 파악되어 있으므로 제외한다. 고정 캡처의 재구성 목적함수 안으로 가져온 사례만 찾는다
 - 없으면 "찾지 못함"으로 명확히 결론낼 것. 그 자체가 우리 기여의 근거가 된다
 
-### Q-03. 3DGS 원논문 초기화 ablation 문구 확인 [대기] (우선순위 2)
+### Q-03. 3DGS 원논문 초기화 ablation 문구 확인 [완료] (우선순위 2)
+
+**결과**: 확인됨. 7.3절에 "Instead, it degrades mainly in the background"가 있고 Fig. 7을 가리킨다. **인용 가능**하며 B6의 미검증 표시를 해제할 수 있다 (`wiki/claims/3dgs-random-init-background-degradation.md`).
+Table 3 기준 Random Init 대 Full의 30K 평균은 20.42 대 26.05 (격차 5.63 dB). 무작위 초기화는 카메라 경계 상자 3배 정육면체 안의 균일 표집이다.
+덤으로 **합성 NeRF 데이터셋에서는 이 저하가 나타나지 않으며 그 이유로 배경 부재를 든다**는 문장도 있다. 인용 범위는 "점군 유무가 배경을 가른다"까지이며 각도 언급은 없다.
+
 
 - Kerbl et al., "3D Gaussian Splatting for Real-Time Radiance Field Rendering" (SIGGRAPH 2023, arXiv 2308.04079)의 초기화 ablation에서, SfM 점 대신 무작위 초기화를 썼을 때 **어느 영역의 품질이 저하된다고 적었는지** 정확한 문장을 확인한다
 - 배경 영역을 명시했다는 기억이 있으나 미검증 상태다. 확인 전까지 인용 금지
 - 정량 수치(PSNR 차이, 표 번호)도 함께 수집
 
-### Q-04. 학습 프론트엔드 confidence의 사용처 조사 [대기] (우선순위 2)
+### Q-04. 학습 프론트엔드 confidence의 사용처 조사 [판단 필요] (우선순위 2)
+
+**결과**: 대부분은 초기화 시 점 필터링이며 위협이 아니다. VGGT-X는 VGGT confidence를 쓰지 않기로 하고 대응점 가중으로 대체했다 (반례). 상세는 `wiki/questions/learned-frontend-confidence-usage.md`.
+**위협 후보 1건**: CDGS(arXiv 2502.14684)가 학습 전에 만든 화소별 confidence로 깊이 감독을 가중하고 T&T에서 F-score와 M3C2까지 보고한다. 다만 그 confidence는 학습 프론트엔드가 아니라 Canny·Laplacian·깊이 기울기의 손설계 결합이다.
+**구조 선점 1건**: AREA3D(arXiv 2512.05131)가 per-pixel depth confidence를 복셀 격자에 splat해 3D 불확실도 field를 만든다. 용도는 능동 촬영 시점 선택이다. mesh 품질을 표적으로 한 사례는 찾지 못했다.
+
 
 새로 발견된 인접 위협이다.
 
@@ -96,7 +116,12 @@
 - mesh 또는 표면 재구성 품질을 표적으로 한 사례가 있는가 (대부분 novel view synthesis일 것으로 예상)
 - 점 필터링과 pruning은 위협이 아니다. supervision 배분에 쓴 경우만 위협으로 분류한다
 
-### Q-05. prior 모델의 공표 정확도 조사 [대기] (우선순위 3)
+### Q-05. prior 모델의 공표 정확도 조사 [완료] (우선순위 3)
+
+**결과**: 공표 정확도는 실내와 근거리에 몰려 있다 (`wiki/comparisons/prior-model-reported-accuracy.md`). Depth Anything V2의 기본 출력은 affine-invariant inverse depth(상대)이고, 절대 깊이는 Hypersim·Virtual KITTI 미세조정 별도 판본이며 **그 정량 결과가 원논문에 없다**.
+저자들이 영교차 표의 수치가 강점을 반영하지 못한다고 스스로 유보를 달았다. 하늘(구름) 깊이 오예측을 실패 사례로 자인한다. DA-2K 실외 93.9퍼센트는 거리 오차가 아니라 상대 순위 정답률이다.
+법선은 StableNormal 기준 벤치마크 넷이 **전부 실내**이며 평균각오차가 13~20도다. 실외 대규모의 근거는 깊이·법선 모두 없다.
+
 
 주입하는 prior를 얼마나 믿을 수 있는지 기준을 세우기 위함이다.
 
@@ -105,7 +130,12 @@
 - 상대 깊이인지 절대 깊이인지, 실외 대규모 장면에서의 성능이 별도로 보고되는지 확인
 - 목적: "재구성된 mesh를 믿을 것인가, 추정된 깊이를 믿을 것인가"의 판단 기준 수립
 
-### Q-06. 빈 영역의 평가 관행 조사 [대기] (우선순위 3)
+### Q-06. 빈 영역의 평가 관행 조사 [판단 필요] (우선순위 3)
+
+**결과**: 기존 벤치마크는 비어야 할 영역을 재지 않고 재기 전에 지운다 (`wiki/questions/empty-region-evaluation-practice.md`). **Spires 논문 자신이 Nerfacto에 대해 하늘을 특별히 제거해야 한다고 적었고**, GT가 재구성되지 않은 영역 밖의 재구성 점도 걸러낸다. 임계는 5cm와 10cm.
+SS3DM은 비가시 삼각형 제거와 카메라 궤적 25m 확장 크롭을 쓰며, 근거로 원거리 점이 지표를 지배해 근거리 차이를 가린다는 점을 든다. T&T는 겹치는 경계 상자 크롭 후 ICP 정렬이다.
+구분 지표는 이미 있다(없음=completeness/recall, 허위=accuracy/precision). 다만 마스크 필터가 후자를 무력화한다는 지적이 있고 절두체 합집합 기준(unmasked 규약)이 대안이다. **accuracy 포기 결정 재검토 필요.**
+
 
 - 하늘처럼 mesh가 존재해서는 안 되는 영역을 기존 표면 재구성 벤치마크가 어떻게 처리하는지 조사
 - GT 점군에 하늘 방향 점이 찍혀 있는 경우의 처리 방식
