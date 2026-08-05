@@ -105,16 +105,17 @@ def main() -> int:
         elif others:
             mark = "정리 페이지 없음"
         else:
-            mark = "미반영"
+            mark = "없음"
             unlinked += 1
         rel = p.relative_to(PAPERS).as_posix()
         lines.append(f"| {rel} | {size} | {added} | {mark} | {len(others) or ''} |")
 
     lines.append("")
-    lines.append(f"반영됨 {len(pdfs) - unlinked}개 · 미반영 {unlinked}개")
+    lines.append(f"정리 페이지 있음 {len(pdfs) - unlinked}개 · 없음 {unlinked}개")
     lines.append("")
-    lines.append("미반영은 아직 위키 페이지의 `sources`에 이 PDF 경로가 없다는 뜻이다. "
-                 "읽지 않았거나, 읽었으나 경로를 다르게 적었을 수 있다.")
+    lines.append("\"정리 페이지 없음\"은 해당 PDF로 source 페이지를 만들지 않았다는 뜻일 뿐이며, "
+                 "**읽지 않았다는 뜻이 아니다.** 밀린 작업 목록으로 읽지 말 것. "
+                 "필요할 때 골라서 정리하면 된다.")
     lines.append("")
 
     OUT.write_text("\n".join(lines), encoding="utf-8", newline="\n")
