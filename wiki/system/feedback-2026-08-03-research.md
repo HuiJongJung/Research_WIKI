@@ -1,3 +1,20 @@
+---
+type: "system"
+slug: "feedback-2026-08-03-research"
+title: "260803 랩세미나 연구내용 피드백"
+status: "reviewed"
+modified_at: "2026-08-05T06:30:00.000000+00:00"
+author: "정휘종"
+language: "ko"
+confidence: "high"
+sources:
+  - "raw/feedback/260803_연구내용_피드백_원본.docx"
+tags:
+  - "feedback"
+  - "system"
+  - "research"
+---
+
 # 260803 랩세미나 연구내용 피드백
 
 > 2026-08-03 랩세미나에서 받은 연구 내용 관련 지적을 정리한 기록이다. **받은 내용을 보존하는 문서이며 갱신하지 않는다.**
