@@ -17,7 +17,11 @@
 | 경로 | 내용 |
 | --- | --- |
 | `wiki/system/research-status.md` | 연구 현재 상태 (공용 최신본, 항상 덮어씀) |
+| `wiki/system/open-items.md` | 열린 항목 등록부 (상태·담당 표기, 갱신) |
+| `wiki/system/my-tasks.md` | 사용자 직접 작업 목록 (현재분만, 덮어씀) |
 | `wiki/system/progress-YYYY-MM-DD.md` | 진행 이력 (날짜별로 쌓기만 함, 평소엔 안 읽음) |
+| `wiki/system/feedback-YYYY-MM-DD-*.md` | 세미나 피드백 기록 (동결, 갱신하지 않음) |
+| `raw/feedback/` | 피드백 원본 파일 (인덱스 대상 아님) |
 | `wiki/sources/` | 논문별 정리 페이지 |
 | `wiki/concepts/` | 재사용 가능한 개념 |
 | `wiki/comparisons/`, `wiki/claims/`, `wiki/questions/` | 비교표, 주장, 열린 질문 |
