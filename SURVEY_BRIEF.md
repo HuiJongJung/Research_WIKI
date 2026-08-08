@@ -142,7 +142,12 @@ SS3DM은 비가시 삼각형 제거와 카메라 궤적 25m 확장 크롭을 쓰
 - sky mask, 거리 상한, crop 등 어떤 장치를 쓰는지와 그 근거
 - 표면 재구성에서 "있어야 할 것이 없음"과 "없어야 할 것이 있음"을 구분해 재는 지표가 있는지
 
-### Q-07. GS로 mesh를 만들어야 할 이유의 근거 조사 [대기] (우선순위 3)
+### Q-07. GS로 mesh를 만들어야 할 이유의 근거 조사 [판단 필요] (우선순위 3)
+
+**결과**: 같은 무대에서 MVS와 GS를 비교한 표를 확보했다 (Petrovska·Jutzi, ISPRS Annals X-G-2025). **MVS가 정확도와 완전성 모두 앞선다.** 실내 RMSE 1.43mm 대 3DGS-Basic 4.74mm, 식생 뒤 3.23mm 대 7.49mm. 대신 MVS가 가장 느리다(1시간 15분 대 15~49분). 상세는 `wiki/comparisons/mvs-vs-gs-surface-reconstruction-evidence.md`.
+저자들이 **기하가 이미지 재구성 loss로 만들어지기 때문에 GS와 NeRF의 정확도가 낮다**고 명시한다. 우리 서사와 같은 진단이며 인용 가치가 높다. GS 쪽 이점 근거는 속도와 식생 뒤 기하 복원이다.
+도시 규모에서는 GS 논문들이 고전 MVS와 비교하지 않는다(City-Mesh3R은 GS 계열끼리만, F1 0.11 수준). 고전 MVS의 도시 규모 비용 원전은 유료 접근으로 확보하지 못했다. **A1은 읽기로 닫히지 않는다는 등록부 판단이 유지된다.**
+
 
 "point cloud 기반 재구성으로도 도시 규모가 되는데 왜 GS인가"라는 지적에 답하기 위한 재료 수집이다. 논거 구성 자체는 위키 판단 세션이 한다.
 
@@ -152,13 +157,27 @@ SS3DM은 비가시 삼각형 제거와 카메라 궤적 25m 확장 크롭을 쓰
 
 ---
 
-### Q-08. CAD 분야의 mesh 품질 평가 관행 [대기] (우선순위 3)
+### Q-08. CAD 분야의 mesh 품질 평가 관행 [판단 필요] (우선순위 3)
+
+**결과**: CAD·FEM 지표(aspect ratio, skewness, warpage, 최소 변 길이)는 생성과 시뮬레이션 용도로 남아 있고, 품질 기준 자체가 하류 시뮬레이션에 상대적이다 (`wiki/comparisons/mesh-intrinsic-quality-metrics.md`).
+재구성 평가에서 실제로 함께 보고되는 mesh 자체 지표는 **위상 지표**다. Sulzer 외 survey(arXiv 2301.13656)가 Chamfer·F1에 더해 IoU, Normal Consistency, 연결 성분 수, 경계 변, 비다양체 변을 보고한다. SBP-Net도 연결 성분 수를 쓴다.
+위상 지표는 **crop과 마스크에 의존하지 않아** Q-06의 공백을 우회할 수 있다. floaters는 성분 수를, holes는 경계 변을 늘린다. 다만 실외 장면에서는 그대로 쓸 수 없고 밴드별 상대량으로 재정의해야 한다. **판단 필요.**
+
 
 mesh 자체의 기하 품질을 정밀하게 다루는 분야를 참고한다. 등록부 A4 항목.
 
 - CAD 및 기하 처리 분야에서 mesh 품질을 재는 표준 지표 (내각, 변 길이 비, aspect ratio, valence 등)와 각각이 무엇을 잡아내는지
 - 그 지표들이 재구성된 mesh 평가에 쓰인 사례가 있는지, 아니면 생성 및 시뮬레이션 용도로만 쓰이는지
 - 표면 재구성 논문에서 Chamfer와 F1 외에 mesh 자체 품질을 함께 보고한 사례
+
+### Q-09. 통제 무대 SOTA 현황 측정의 준비물 확인 [대기] (우선순위 2)
+
+물체 난이도 × 관측 호 폭 격자에서 SOTA 표면 재구성 현황을 측정하는 실험의 준비물이다. 등록부 C7 항목.
+
+- **후보 모델의 코드 공개와 재현 조건 확인**: 2DGS, GOF, RaDe-GS, PGSR, Gaussian Wrapping. 각각에 대해 공식 저장소 유무, mesh 추출 스크립트 포함 여부, 학습 환경(CUDA·의존성), 알려진 재현 이슈를 표로. 특히 Gaussian Wrapping은 코드 공개 여부 자체가 미확인이다
+- **2026년 GS 표면 재구성 신규 기법 중 코드가 공개된 것**이 있는지. 있으면 계열(TSDF 융합 / SDF·opacity field / in-loop mesh / 평면 기반)을 함께 표기
+- **Blender에서 쓸 수 있는 GT mesh 포함 물체 자산**: hole이 있는 물체(토러스류·격자류), 가늘고 긴 구조물(파이프·크레인류), 복잡 형상. 라이선스와 함께. 합성 씬 직접 제작의 선례(카메라 궤도 스크립트 공개 여부)도 확인
+- 이 실험은 개선 주장이 아니라 현황 측정이다. 모델 선정 기준은 mesh 추출 공식 지원, 재현 가능, 계열 비중복 세 가지다
 
 ---
 
@@ -185,4 +204,23 @@ mesh 자체의 기하 품질을 정밀하게 다루는 분야를 참고한다. �
 
 ## 8. 완료 항목
 
-(없음)
+2026-08-05 조사 세션에서 Q-01부터 Q-08까지 전부 1차 수행했다. 상태는 각 항목에 적었고 산출 페이지는 아래와 같다.
+
+| 항목 | 상태 | 산출 페이지 |
+| --- | --- | --- |
+| Q-01 통제된 실험 무대 후보 | 완료 | `wiki/comparisons/gt-mesh-benchmark-candidates.md` |
+| Q-02 삼각측량각 선례 | 찾지 못함 (인접 3건) | `wiki/questions/triangulation-angle-in-training-precedent.md` |
+| Q-03 3DGS 초기화 ablation | 완료, 인용 가능 | `wiki/claims/3dgs-random-init-background-degradation.md` |
+| Q-04 학습 프론트엔드 confidence | 판단 필요 | `wiki/questions/learned-frontend-confidence-usage.md` |
+| Q-05 prior 공표 정확도 | 완료 | `wiki/comparisons/prior-model-reported-accuracy.md` |
+| Q-06 빈 영역 평가 관행 | 판단 필요 | `wiki/questions/empty-region-evaluation-practice.md` |
+| Q-07 GS를 써야 할 이유 | 부분 완료, 판단 필요 | `wiki/comparisons/mvs-vs-gs-surface-reconstruction-evidence.md` |
+| Q-08 CAD mesh 품질 관행 | 판단 필요 | `wiki/comparisons/mesh-intrinsic-quality-metrics.md` |
+
+### 후속 조사로 남은 것 (판정 후 큐에 올릴 후보)
+
+- InstantSplat 최신판 본문 확인. 공개 페이지가 말하는 점별 기울기 조정이 사실이면 Q-04의 위협 분류가 바뀐다
+- 고전 MVS의 도시 규모 달성 범위와 비용. ISPRS 저널 계열이 유료라 접근 경로가 필요하다
+- 표면 재구성 전용 GS(2DGS, GOF, MILo)와 MVS를 같은 표에 놓은 문헌 재탐색
+- Curve-aware GS와 EdgeGaussians 본문 정독 (가늘고 긴 구조물 표적 선례)
+- DTU 원전에서 scan65의 물체 이름표 확인
