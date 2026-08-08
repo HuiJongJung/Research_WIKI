@@ -191,6 +191,29 @@ Blender 자산은 Poly Haven이 CC0 확정, 구멍 물체는 기본 primitive로
 - **Blender에서 쓸 수 있는 GT mesh 포함 물체 자산**: hole이 있는 물체(토러스류·격자류), 가늘고 긴 구조물(파이프·크레인류), 복잡 형상. 라이선스와 함께. 합성 씬 직접 제작의 선례(카메라 궤도 스크립트 공개 여부)도 확인
 - 이 실험은 개선 주장이 아니라 현황 측정이다. 모델 선정 기준은 mesh 추출 공식 지원, 재현 가능, 계열 비중복 세 가지다
 
+### Q-10. 표면 재구성 SOTA의 역추적 검증과 C7 모델 목록 보강 [판단 필요] (우선순위 2)
+
+**결과**: 서면·실행 가능 SOTA 모두 **AmbiSuR**(ICML 2026, DTU 0.46·T&T 0.589, 코드 실재 확인)이다. 직전 SOTA는 GeoSVR(NeurIPS 2025 Spotlight, voxel 계열, 코드 공개)로 제3자 표에서 교차 확인된다. 상세는 `wiki/comparisons/gs-surface-recon-sota-2026.md`.
+**MILo는 서면 SOTA가 아니다**(DTU 0.68 대 0.46, T&T 0.49 대 0.589). CoMe는 ECCV 2026·코드 공개·T&T 0.521·18분. GW는 표준 프로토콜 수치가 없어 자체 프로토콜 SOTA 주장뿐. StableGS는 표면 재구성 논문으로 찾지 못함. GausSurf는 코드 coming soon.
+**C7 수정 제안**: AmbiSuR 추가(PGSR 제외 판정과 충돌하므로 대체 형태 검토), GeoSVR은 GS 아님(스코프 판정 선행), CoMe는 위협·측정 대상 이중 지위. 채택은 판단 필요.
+
+
+### Q-11. track 길이·재투영 오차를 감독 가중에 쓴 선례 조사 [대기] (우선순위 2)
+
+Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 확인했다. 그러나 COLMAP이 파일에 그대로 저장하는 나머지 두 부산물은 아직 확인되지 않았다. 이 둘은 각과 달리 후처리도 필요 없이 바로 읽히기 때문에, 선례가 있다면 각보다 훨씬 흔할 수 있고 C6 표의 CoMapGS 행과 겹칠 여지가 있다.
+
+**대상 물량 (COLMAP 출력에 이미 있는 것)**
+
+- **track 길이**: `points3D`의 track 원소 수. 그 3D 점이 몇 장의 등록 이미지에서 관측되는가
+- **점별 재투영 오차**: `points3D`의 error 필드. 그 점의 평균 reprojection error
+
+- 위 두 양을 NeRF 또는 3DGS **학습 내부**에서 loss 가중, prior 주입 게이트, densification·pruning 제어, 점별 학습률 조정에 쓴 사례가 있는가
+- **초기화 시 점 필터링(오차 큰 점 버리기, track 짧은 점 버리기)은 위협이 아니다.** Q-04와 같은 기준을 쓴다. 남은 점들 사이에 **차등 가중**을 준 경우만 위협으로 분류한다
+- COLMAP 출력을 sparse depth 감독으로 쓰는 사례는 이미 흔하다고 보고 제외한다. 다만 그 depth 감독에 **track 길이나 오차로 가중을 준** 사례가 있으면 그것은 포함한다
+- 표적이 novel view synthesis인지 표면·mesh 재구성인지 구분할 것
+- CoMapGS가 covisibility를 쓰면서도 COLMAP track이 아니라 MASt3R를 새로 돌린 이유가 논문에 적혀 있는지 확인. 있으면 "왜 이미 있는 것을 안 쓰는가"에 대한 인용 가능한 답이 된다
+- 없으면 "찾지 못함"으로 명확히 결론낼 것. Q-02와 합쳐 "SfM 부산물 통계 전반이 감독 배분에 쓰인 적 없다"는 서술이 가능해진다
+
 ---
 
 ## 7. 결과 인계 형식
@@ -229,6 +252,7 @@ Blender 자산은 Poly Haven이 CC0 확정, 구멍 물체는 기본 primitive로
 | Q-07 GS를 써야 할 이유 | 부분 완료, 판단 필요 (SS3DM 표 추가) | `wiki/comparisons/mvs-vs-gs-surface-reconstruction-evidence.md` |
 | Q-08 CAD mesh 품질 관행 | 판단 필요 | `wiki/comparisons/mesh-intrinsic-quality-metrics.md` |
 | Q-09 SOTA 측정 준비물 | 완료 (2차 보완: 라이선스·Blender 입력·추천 3안·실사 공백 확인) | `wiki/comparisons/controlled-stage-sota-toolkit.md` |
+| Q-10 SOTA 역추적·C7 보강 | 판단 필요 (AmbiSuR=실행 가능 SOTA, MILo 서면 위치 확정) | `wiki/comparisons/gs-surface-recon-sota-2026.md` |
 
 ### 보완 후에도 닫히지 않은 것
 
