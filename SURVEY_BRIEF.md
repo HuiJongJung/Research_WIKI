@@ -69,6 +69,7 @@
 **결과**: GT mesh 제공 후보 8종을 표로 정리했다 (`wiki/comparisons/gt-mesh-benchmark-candidates.md`). 실외 대규모는 SS3DM(CARLA 합성 mesh, CC BY 4.0), 정밀 물체는 MobileBrick, 가늘고 긴 구조물은 Asset Inspection Benchmark의 crane 씬이 후보다.
 해골 씬은 **DTU scan65**이며 GT는 mesh가 아니라 구조광 점군이다(2차 자료 근거, 원전 미확인). 구멍 있는 물체를 표적으로 삼은 선행은 찾지 못했고, 가늘고 긴 구조물 쪽만 존재한다.
 **SparseGS는 SAM을 쓰지 않는다**(v2·v4 확인). 대상 선별 선례는 GaussianObject(SA3D 마스크로 visual hull 초기화, NVS 전용, mesh 미보고)다.
+**보완(08-09)**: scan65 입력 이미지를 내려받아 해골임을 직접 확인(검증 완료). MobileBrick은 MIT, gt_mesh는 GT depth의 TSDF fusion. T&T는 비상업 제한 확실(명칭 혼재). NeRF-Synthetic은 blend 파일에서 GT mesh를 뽑는 관행(TriaGS·RayDF). Shelly는 공식 배포처를 찾지 못함. 선례 arXiv 번호 확보(Curve-aware GS 2506.21401, EdgeGaussians 2409.12886).
 
 
 배경 전체를 표적으로 삼는 것이 석사 범위를 넘는다는 지적을 받았다. GT mesh가 있는 통제된 무대로 옮기는 안을 검토 중이다.
@@ -96,6 +97,7 @@
 **결과**: 확인됨. 7.3절에 "Instead, it degrades mainly in the background"가 있고 Fig. 7을 가리킨다. **인용 가능**하며 B6의 미검증 표시를 해제할 수 있다 (`wiki/claims/3dgs-random-init-background-degradation.md`).
 Table 3 기준 Random Init 대 Full의 30K 평균은 20.42 대 26.05 (격차 5.63 dB). 무작위 초기화는 카메라 경계 상자 3배 정육면체 안의 균일 표집이다.
 덤으로 **합성 NeRF 데이터셋에서는 이 저하가 나타나지 않으며 그 이유로 배경 부재를 든다**는 문장도 있다. 인용 범위는 "점군 유무가 배경을 가른다"까지이며 각도 언급은 없다.
+**보완(08-09)**: 게재본 PDF(p.9~10) 대조 완료. 수치 일치. 단 정정 하나 — 게재본 문장은 "more **artifacts** that cannot be removed"이며 ar5iv가 전한 "floaters"가 아니다. Fig. 7은 Garden 씬. 7.4 Limitations 첫 문장("In regions where the scene is not well observed we have artifacts")과 split이 배경 재구성에 중요하다는 문장도 추가 확보. 미검증 잔여 없음.
 
 
 - Kerbl et al., "3D Gaussian Splatting for Real-Time Radiance Field Rendering" (SIGGRAPH 2023, arXiv 2308.04079)의 초기화 ablation에서, SfM 점 대신 무작위 초기화를 썼을 때 **어느 영역의 품질이 저하된다고 적었는지** 정확한 문장을 확인한다
@@ -107,6 +109,7 @@ Table 3 기준 Random Init 대 Full의 30K 평균은 20.42 대 26.05 (격차 5.6
 **결과**: 대부분은 초기화 시 점 필터링이며 위협이 아니다. VGGT-X는 VGGT confidence를 쓰지 않기로 하고 대응점 가중으로 대체했다 (반례). 상세는 `wiki/questions/learned-frontend-confidence-usage.md`.
 **위협 후보 1건**: CDGS(arXiv 2502.14684)가 학습 전에 만든 화소별 confidence로 깊이 감독을 가중하고 T&T에서 F-score와 M3C2까지 보고한다. 다만 그 confidence는 학습 프론트엔드가 아니라 Canny·Laplacian·깊이 기울기의 손설계 결합이다.
 **구조 선점 1건**: AREA3D(arXiv 2512.05131)가 per-pixel depth confidence를 복셀 격자에 splat해 3D 불확실도 field를 만든다. 용도는 능동 촬영 시점 선택이다. mesh 품질을 표적으로 한 사례는 찾지 못했다.
+**보완(08-09)**: InstantSplat v6 본문 3.4절에서 confidence-aware optimizer 확인. **위협 후보로 격상.** MASt3R confidence로 점별 학습률을 조정하되 방향이 우리와 반대다(저신뢰 점을 더 크게 움직임, "prioritizing points with lower confidence"). 평가는 여전히 NVS이며 mesh 지표 없음. 위협표 등재 여부와 개입 방향 반대를 차별화 논거로 쓸지 판단 필요.
 
 
 새로 발견된 인접 위협이다.
@@ -121,6 +124,7 @@ Table 3 기준 Random Init 대 Full의 30K 평균은 20.42 대 26.05 (격차 5.6
 **결과**: 공표 정확도는 실내와 근거리에 몰려 있다 (`wiki/comparisons/prior-model-reported-accuracy.md`). Depth Anything V2의 기본 출력은 affine-invariant inverse depth(상대)이고, 절대 깊이는 Hypersim·Virtual KITTI 미세조정 별도 판본이며 **그 정량 결과가 원논문에 없다**.
 저자들이 영교차 표의 수치가 강점을 반영하지 못한다고 스스로 유보를 달았다. 하늘(구름) 깊이 오예측을 실패 사례로 자인한다. DA-2K 실외 93.9퍼센트는 거리 오차가 아니라 상대 순위 정답률이다.
 법선은 StableNormal 기준 벤치마크 넷이 **전부 실내**이며 평균각오차가 13~20도다. 실외 대규모의 근거는 깊이·법선 모두 없다.
+**보완(08-09)**: DSINE 원논문(arXiv 2403.00712) Table 2 확보 — NYUv2 16.4/8.4, ScanNet 16.2/8.3, iBims-1 17.1/6.1. StableNormal 표가 전하는 DSINE 수치와 다르므로(NYUv2 18.6 대 16.4) 인용 시 출처 표를 명시할 것. 실내 한정 결론은 불변.
 
 
 주입하는 prior를 얼마나 믿을 수 있는지 기준을 세우기 위함이다.
@@ -135,6 +139,7 @@ Table 3 기준 Random Init 대 Full의 30K 평균은 20.42 대 26.05 (격차 5.6
 **결과**: 기존 벤치마크는 비어야 할 영역을 재지 않고 재기 전에 지운다 (`wiki/questions/empty-region-evaluation-practice.md`). **Spires 논문 자신이 Nerfacto에 대해 하늘을 특별히 제거해야 한다고 적었고**, GT가 재구성되지 않은 영역 밖의 재구성 점도 걸러낸다. 임계는 5cm와 10cm.
 SS3DM은 비가시 삼각형 제거와 카메라 궤적 25m 확장 크롭을 쓰며, 근거로 원거리 점이 지표를 지배해 근거리 차이를 가린다는 점을 든다. T&T는 겹치는 경계 상자 크롭 후 ICP 정렬이다.
 구분 지표는 이미 있다(없음=completeness/recall, 허위=accuracy/precision). 다만 마스크 필터가 후자를 무력화한다는 지적이 있고 절두체 합집합 기준(unmasked 규약)이 대안이다. **accuracy 포기 결정 재검토 필요.**
+**보완(08-09)**: unmasked 규약 원문 확인(Sakuma·Okutomi, arXiv 2606.20856v2). DTU·MobileBrick 전 실험에서 masked/unmasked Chamfer를 별도 열로 병기하는 보고 형식까지 확인. DTU 표준 평가 코드도 직접 확인 — accuracy만 ObsMask로 걸러지고 completeness는 바닥 평면 필터만 받는 **비대칭 구조**라, 관측 영역 밖 허위 기하는 accuracy에 아예 안 들어온다.
 
 
 - 하늘처럼 mesh가 존재해서는 안 되는 영역을 기존 표면 재구성 벤치마크가 어떻게 처리하는지 조사
@@ -147,6 +152,7 @@ SS3DM은 비가시 삼각형 제거와 카메라 궤적 25m 확장 크롭을 쓰
 **결과**: 같은 무대에서 MVS와 GS를 비교한 표를 확보했다 (Petrovska·Jutzi, ISPRS Annals X-G-2025). **MVS가 정확도와 완전성 모두 앞선다.** 실내 RMSE 1.43mm 대 3DGS-Basic 4.74mm, 식생 뒤 3.23mm 대 7.49mm. 대신 MVS가 가장 느리다(1시간 15분 대 15~49분). 상세는 `wiki/comparisons/mvs-vs-gs-surface-reconstruction-evidence.md`.
 저자들이 **기하가 이미지 재구성 loss로 만들어지기 때문에 GS와 NeRF의 정확도가 낮다**고 명시한다. 우리 서사와 같은 진단이며 인용 가치가 높다. GS 쪽 이점 근거는 속도와 식생 뒤 기하 복원이다.
 도시 규모에서는 GS 논문들이 고전 MVS와 비교하지 않는다(City-Mesh3R은 GS 계열끼리만, F1 0.11 수준). 고전 MVS의 도시 규모 비용 원전은 유료 접근으로 확보하지 못했다. **A1은 읽기로 닫히지 않는다는 등록부 판단이 유지된다.**
+**보완(08-09)**: SS3DM Table 2 확보 — 도로 규모 같은 GT mesh 위에서 SuGaR(F 0.056)가 StreetSurf neural SDF(F 0.198)에 진다. SuGaR 도로면에 "bubble-like structures" 지적. 고전 MVS는 이 표에도 없어 도시 규모 직접 대결은 여전히 문헌에 없음이 확정적. MDPI 대규모 리뷰는 403 차단으로 미확보 유지.
 
 
 "point cloud 기반 재구성으로도 도시 규모가 되는데 왜 GS인가"라는 지적에 답하기 위한 재료 수집이다. 논거 구성 자체는 위키 판단 세션이 한다.
@@ -170,7 +176,13 @@ mesh 자체의 기하 품질을 정밀하게 다루는 분야를 참고한다. �
 - 그 지표들이 재구성된 mesh 평가에 쓰인 사례가 있는지, 아니면 생성 및 시뮬레이션 용도로만 쓰이는지
 - 표면 재구성 논문에서 Chamfer와 F1 외에 mesh 자체 품질을 함께 보고한 사례
 
-### Q-09. 통제 무대 SOTA 현황 측정의 준비물 확인 [대기] (우선순위 2)
+### Q-09. 통제 무대 SOTA 현황 측정의 준비물 확인 [완료] (우선순위 2)
+
+**결과**: 후보 6종 전부 공식 저장소와 mesh 추출 스크립트가 있다 (`wiki/comparisons/controlled-stage-sota-toolkit.md`). **Gaussian Wrapping의 정체는 "From Blobs to Spokes"(arXiv 2604.07337, 2026-04)이며 코드 공개 확인**(diego1401/GaussianWrapping). 단 DTU 평가는 "coming soon"이고, CUDA 요구가 11.3(GOF)~13.0(RaDe-GS)으로 갈라져 환경 공존이 어려울 수 있다.
+2026년 신규 코드 공개는 Gaussian Wrapping(wrapping shell)과 MeshSplat(AAAI 2026, feed-forward 일반화 계열이라 per-scene 비교군 편입 여부는 판정 사항). 계열 커버리지는 TSDF(2DGS·PGSR)/field(GOF·RaDe-GS)/in-loop(MILo)/wrapping(GW)로 4계열.
+Blender 자산은 Poly Haven이 CC0 확정, 구멍 물체는 기본 primitive로 직접 제작이 정확하다. 카메라 궤적 선례는 OB3D(Blender Python API, 단 dense GT mesh 미포함)와 BlenderNeRF 애드온, 가늘고 긴 구조물은 PipeForge3D 생성기가 있다.
+**2차 보완(08-09)**: 라이선스는 전 후보 비상업 연구 라이선스(2DGS·GOF·RaDe-GS·GW가 Inria-MPII GS 라이선스, PGSR은 ZJU 커스텀, 원문 확인). Blender transforms.json 직접 입력은 2DGS·GOF·RaDe-GS만 지원하고 PGSR·GW·MILo는 COLMAP 전용이다. **Blender 로더의 초기화는 무작위 점군이라(코드 확인) Q-03 결과와 맞물려 초기화 경로 통일이 통제 변인이 된다.**
+추천 3안은 2DGS(TSDF)+RaDe-GS 또는 GOF(field)+GW(wrapping)이며 MILo 기준점 포함 시 4계열 커버. 선정은 판단 필요. 실사 데이터셋 중 "근거리+원거리 공존, 물체별 호 폭 상이" 조건은 **찾지 못함** — 물체 중심 실사는 물체가 하나뿐이고 궤적 고정 실사는 호 폭이 궤적에 박혀 있어 "원거리+넓은 호" 대조를 원리적으로 못 만든다. 합성 제작 근거 성립. 궤도 캡처는 BlenderNeRF의 Camera on Sphere 방식이 호 폭 통제에 직접 쓰인다.
 
 물체 난이도 × 관측 호 폭 격자에서 SOTA 표면 재구성 현황을 측정하는 실험의 준비물이다. 등록부 C7 항목.
 
@@ -204,23 +216,26 @@ mesh 자체의 기하 품질을 정밀하게 다루는 분야를 참고한다. �
 
 ## 8. 완료 항목
 
-2026-08-05 조사 세션에서 Q-01부터 Q-08까지 전부 1차 수행했다. 상태는 각 항목에 적었고 산출 페이지는 아래와 같다.
+2026-08-05 1차 수행(Q-01~Q-08), 2026-08-09 보완 수행(미검증 해소 + Q-09). 상태는 각 항목에 적었고 산출 페이지는 아래와 같다.
 
 | 항목 | 상태 | 산출 페이지 |
 | --- | --- | --- |
-| Q-01 통제된 실험 무대 후보 | 완료 | `wiki/comparisons/gt-mesh-benchmark-candidates.md` |
+| Q-01 통제된 실험 무대 후보 | 완료 (scan65 검증, 라이선스 보완) | `wiki/comparisons/gt-mesh-benchmark-candidates.md` |
 | Q-02 삼각측량각 선례 | 찾지 못함 (인접 3건) | `wiki/questions/triangulation-angle-in-training-precedent.md` |
-| Q-03 3DGS 초기화 ablation | 완료, 인용 가능 | `wiki/claims/3dgs-random-init-background-degradation.md` |
-| Q-04 학습 프론트엔드 confidence | 판단 필요 | `wiki/questions/learned-frontend-confidence-usage.md` |
-| Q-05 prior 공표 정확도 | 완료 | `wiki/comparisons/prior-model-reported-accuracy.md` |
-| Q-06 빈 영역 평가 관행 | 판단 필요 | `wiki/questions/empty-region-evaluation-practice.md` |
-| Q-07 GS를 써야 할 이유 | 부분 완료, 판단 필요 | `wiki/comparisons/mvs-vs-gs-surface-reconstruction-evidence.md` |
+| Q-03 3DGS 초기화 ablation | 완료, 게재본 대조 완료, 인용 가능 | `wiki/claims/3dgs-random-init-background-degradation.md` |
+| Q-04 학습 프론트엔드 confidence | 판단 필요 (InstantSplat v6 위협 후보 격상) | `wiki/questions/learned-frontend-confidence-usage.md` |
+| Q-05 prior 공표 정확도 | 완료 (DSINE 원 수치 확보) | `wiki/comparisons/prior-model-reported-accuracy.md` |
+| Q-06 빈 영역 평가 관행 | 판단 필요 (unmasked 규약·ObsMask 원전 확인) | `wiki/questions/empty-region-evaluation-practice.md` |
+| Q-07 GS를 써야 할 이유 | 부분 완료, 판단 필요 (SS3DM 표 추가) | `wiki/comparisons/mvs-vs-gs-surface-reconstruction-evidence.md` |
 | Q-08 CAD mesh 품질 관행 | 판단 필요 | `wiki/comparisons/mesh-intrinsic-quality-metrics.md` |
+| Q-09 SOTA 측정 준비물 | 완료 (2차 보완: 라이선스·Blender 입력·추천 3안·실사 공백 확인) | `wiki/comparisons/controlled-stage-sota-toolkit.md` |
 
-### 후속 조사로 남은 것 (판정 후 큐에 올릴 후보)
+### 보완 후에도 닫히지 않은 것
 
-- InstantSplat 최신판 본문 확인. 공개 페이지가 말하는 점별 기울기 조정이 사실이면 Q-04의 위협 분류가 바뀐다
-- 고전 MVS의 도시 규모 달성 범위와 비용. ISPRS 저널 계열이 유료라 접근 경로가 필요하다
-- 표면 재구성 전용 GS(2DGS, GOF, MILo)와 MVS를 같은 표에 놓은 문헌 재탐색
-- Curve-aware GS와 EdgeGaussians 본문 정독 (가늘고 긴 구조물 표적 선례)
-- DTU 원전에서 scan65의 물체 이름표 확인
+- **고전 MVS의 도시 규모 달성 범위와 비용** (Q-07): ISPRS 저널 두 편 유료, MDPI 리뷰(Remote Sensing 16(5):773)는 403 차단. 기관 프록시 등 접근 경로가 있어야 닫힌다
+- 표면 재구성 전용 GS와 **고전** MVS의 동일 무대 비교는 문헌에 없음이 거의 확정 (SS3DM도 상대가 neural SDF)
+- Curve-aware GS(2506.21401)와 EdgeGaussians(2409.12886) 본문 정독
+- Shelly·OmniObject3D 라이선스, T&T 라이선스 명칭 확정
+- Splatt3R·MASt3R-GS·DroneSplat 등 DUSt3R 계열 본문 (감독 배분 사례 추가 존재 가능성)
+- Frey·Borouchaki 표면 mesh 품질 원전(IJNME), valence 지표 원전
+- Spires IJRR 게재본 대조, T&T 공식 crop 작성 기준

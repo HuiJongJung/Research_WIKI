@@ -66,6 +66,22 @@ Petrovska, Jutzi, "3D Gaussian Splatting Methods for Real-World Scenarios", ISPR
 
 **이 표는 A1에 유리하지 않다.** 정확도와 완전성 모두 MVS가 앞서고 GS의 이점은 속도와 가림 뒤 복원 쪽에 있다. 다만 무대가 물체 하나이며 GS 계열 중 표면 재구성 전용 기법(2DGS, GOF, MILo 등)이 아니라 렌더링용 구현들이 비교되었다는 한계가 있다.
 
+## 1-1. 도로 규모의 같은 무대 비교, SS3DM (2026-08-09 보완)
+
+SS3DM(arXiv 2410.21739, NeurIPS 2024 D&B)의 Table 2가 표면 재구성 전용 GS(SuGaR)를 비 GS 계열과 같은 GT mesh 위에 놓는다.
+
+| 방법 | 계열 | 평균 F-score ↑ | 평균 Chamfer ↓ |
+| --- | --- | ---: | ---: |
+| StreetSurf (Full) | neural SDF | **0.198** | **0.569m** |
+| SuGaR | GS 표면 재구성 | 0.056 | 0.914m |
+| R3D3 | 다중 뷰 깊이 추정 | 0.007 | (IoU 0.003) |
+
+- **같은 무대에서 GS 표면 재구성이 neural SDF에 진다.** 저자들은 SuGaR의 도로면에 "bubble-like structures"가 남는다고 적는다
+- R3D3는 학습 기반 다중 뷰 깊이 계열이며 **고전 MVS(COLMAP+OpenMVS 류)는 이 표에도 없다.** 프레임별 깊이가 부정확해 잡음 표면이 된다고 보고된다
+- 실행 시간 비교는 없다 (A100 80GB 단일 GPU 사용만 명시)
+
+1절(물체 규모, MVS 우세)과 합치면 규모별 그림이 생긴다. 물체 규모에서는 고전 MVS가 GS를 이기고, 도로 규모에서는 neural SDF가 GS를 이기며, 고전 MVS와 GS 표면 재구성의 도시 규모 직접 대결은 **여전히 문헌에 없다.**
+
 ## 2. 대규모에서는 같은 표가 없다
 
 - **City-Mesh3R** (arXiv 2605.30310, 2026-05): 도시 규모 watertight mesh. 비교 대상은 CityGaussian v2와 CityGaussian-X, 소규모 기법으로 MILo, MeshSplatting, Radiance Meshes다. **고전 MVS 파이프라인과의 비교가 없다.** 실행 시간은 CUHK-LOWER에서 자기 방법 95분, CityGS-v2 341분, CityGS-X 75분. 기하 지표는 같은 씬에서 F1 0.1110 대 0.1009 수준이다
@@ -81,6 +97,6 @@ Petrovska, Jutzi, "3D Gaussian Splatting Methods for Real-World Scenarios", ISPR
 
 ## 4. 남긴 것
 
-- 고전 MVS의 **도시 규모** 달성 범위와 비용을 다룬 원전을 확보하지 못했다. ISPRS 저널 계열 두 편이 유료 접근이라 초록도 읽지 못했다 `[미검증]`
-- 표면 재구성 전용 GS 기법(2DGS, GOF, MILo)과 MVS를 같은 표에 놓은 문헌은 **찾지 못했다**
+- 고전 MVS의 **도시 규모** 달성 범위와 비용을 다룬 원전을 여전히 확보하지 못했다. MDPI Remote Sensing 리뷰(16(5):773)도 403으로 차단되었고 ISPRS 저널 두 편은 유료다 `[미검증]`
+- 표면 재구성 전용 GS와 **고전** MVS를 같은 표에 놓은 문헌은 **찾지 못했다.** SS3DM(1-1절)이 가장 가까우나 비교 상대가 neural SDF와 학습 기반 깊이 계열이다
 - ULSR-GS 저널 판본 본문 미확인

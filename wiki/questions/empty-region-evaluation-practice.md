@@ -63,7 +63,17 @@ SS3DM의 크롭 근거는 **본 연구의 문제 제기와 정확히 반대 방�
 
 문제는 지표가 없는 것이 아니라 **후자가 앞 단계의 필터로 이미 무력화된다는 것이다.**
 
-이 지적을 명시적으로 한 문헌이 있다. "Stochastic Signed Distance Processes" (arXiv 2606.20856, DTU와 MobileBrick에서 평가)는 앞선 연구들이 전경 마스크 기반 visual hull 바깥의 정점을 지우고 평가하는 관행이 **허위 표면에 대한 벌점을 과소평가하며 거짓 양성과 거짓 음성의 절충을 평가하기 어렵게 만든다**고 적는다. 대안으로 visual hull 대신 **모든 카메라 절두체의 합집합**으로 거른 결과를 함께 보고하며, 절두체 기준을 unmasked, visual hull 기준을 masked 규약이라 부른다. `[부분 검증]` 본문을 직접 읽지 않았고 검색 요약 두 번이 일관되게 이 논문을 가리켰다.
+이 지적을 명시적으로 한 문헌이 있다. Sakuma, Okutomi, "Stochastic Signed Distance Processes" (Institute of Science Tokyo, arXiv 2606.20856v2, 2026-06). **본문 확인 완료 (2026-08-09).**
+
+- 비판 원문: "This process underestimates the penalty for spurious surfaces, making it difficult to evaluate a trade-off between false positives and false negatives."
+- 대안 원문: "We additionally evaluate the reconstructed mesh filtered with the union of viewing frustums instead of the visual hull."
+- 절두체 기준을 unmasked, visual hull 기준을 masked 규약이라 부르고, **DTU와 MobileBrick 전 실험에서 두 규약의 Chamfer를 별도 열로 나란히 보고한다** (Table 2와 3). 두 규약 병기가 실제로 실행 가능한 보고 형식임을 보여주는 선례다.
+
+DTU 표준 평가의 내부 구조도 확인했다 (DTUeval-python 코드 직접 확인, 2026-08-09).
+
+- accuracy: 재구성 점 중 **ObsMask**(관측 가능 영역을 표시한 3D 격자) 안에 있는 것만 남겨 GT까지의 거리를 잰다
+- completeness: GT 점 중 **바닥 평면 위**의 것만 남기되 ObsMask는 적용하지 않고 재구성까지의 거리를 잰다
+- 즉 필터가 비대칭이다. **관측 영역 밖의 허위 기하는 accuracy에 아예 들어오지 않는다.** 위 비판이 겨냥하는 구조가 표준 구현에 그대로 있다.
 
 ## 4. 본 연구에 걸리는 지점
 
@@ -73,8 +83,8 @@ SS3DM의 크롭 근거는 **본 연구의 문제 제기와 정확히 반대 방�
 
 ## 5. 남긴 것
 
-- DTU의 ObsMask 처리 방식을 원전에서 확인하지 않았다 `[미검증]`
+- ~~DTU ObsMask~~ **해소.** 3절에 반영했다 (accuracy만 걸러지는 비대칭 구조)
+- ~~arXiv 2606.20856 본문~~ **해소.** 3절에 verbatim 인용과 보고 형식을 반영했다
 - T&T 공식 crop 파일이 어떤 기준으로 만들어졌는지 원전 확인하지 않았다
 - Spires 논문의 필터 문장은 arXiv v2 본문에서 읽었고 IJRR 게재본과 대조하지 않았다
-- "Stochastic Signed Distance Processes" 본문 미독. unmasked 규약의 구체적 구현과 그 결과 수치를 보지 않았다
 - 하늘 점이 GT 점군에 찍히는 경우의 처리는 사례를 찾지 못했다. TLS와 레이저 스캔은 하늘에서 반사를 얻지 못하므로 애초에 점이 생기지 않는다는 것이 일반적 이해이나 원전으로 확인하지 않았다

@@ -42,17 +42,18 @@ tags:
 
 ## 2. 해골 씬의 정체
 
-**DTU scan65가 해골이다.** 다만 GT는 mesh가 아니라 구조광 점군이다.
+**DTU scan65가 해골이다. 검증 완료.**
 
-- 근거는 2차 자료 두 건이다. 공개 설정 파일이 scan65를 `skull`로 명명하고, 공개 데이터 사본이 `dtu-scan65`를 해골 재구성에 쓴다. **DTU 원전에서 물체 이름표를 직접 확인하지는 못했다.** `[부분 검증]`
-- DTU를 통제 무대로 쓸 경우 GT는 점군이며, mesh 대 mesh 비교를 하려면 GT를 별도로 mesh화해야 한다. 그 mesh화가 평가에 개입한다는 점을 명시해야 한다.
+- 2026-08-09 보완 조사에서 공개 배포된 scan65 입력 이미지(1600x1200, DTU 규격 일치)를 내려받아 직접 확인했다. 두개골 모형이 맞다. 공개 설정 파일들의 `skull` 명명과도 일치한다
+- DTU를 통제 무대로 쓸 경우 GT는 점군이며, mesh 대 mesh 비교를 하려면 GT를 별도로 mesh화해야 한다. 그 mesh화가 평가에 개입한다는 점을 명시해야 한다
+- **DTU 표준 평가의 마스크 구조** (DTUeval-python 코드 확인): accuracy는 재구성 점을 ObsMask(관측 가능 영역의 3D 격자) 안의 것만 남겨 계산하고, completeness는 GT 점을 바닥 평면(Plane 파일) 위의 것만 남기되 ObsMask 없이 계산한다. 비대칭 필터이며, 관측 밖 허위 기하는 accuracy에 잡히지 않는다. Q-06의 관행 목록과 같은 구조다.
 
 ## 3. 구멍과 가늘고 긴 구조물을 표적으로 삼은 선행
 
 직접 표적으로 삼은 것은 **가늘고 긴 구조물 쪽만 찾았다.** 구멍 있는 물체를 표적으로 명시한 재구성 연구는 **찾지 못했다.**
 
-- Curve-aware Gaussian Splatting (ICCV 2025): 3D 매개변수 곡선 재구성. 전선과 기둥 같은 선형 구조가 대상. `[제목 수준 확인, 본문 미독]`
-- EdgeGaussians (WACV 2025): Gaussian splatting으로 3D edge를 매핑. `[제목 수준 확인, 본문 미독]`
+- Curve-aware Gaussian Splatting (Gao 외, ICCV 2025, **arXiv 2506.21401**): 다중 뷰 edge map에서 3D 매개변수 곡선을 직접 최적화하는 1단계 프레임워크. 곡선과 edge 지향 Gaussian의 양방향 결합. `[초록 수준 확인, 본문 미독]`
+- EdgeGaussians (Chelani, Benbihi, Sattler, Kahl, WACV 2025, **arXiv 2409.12886**): Gaussian splatting으로 3D edge를 매핑. `[제목 수준 확인, 본문 미독]`
 - SBP-Net (arXiv 2606.04251): 가늘고 긴 구조 재구성 전용. 산업용 배관 합성 데이터 PipeForge3D(mesh와 점군 형식, 모델 50개)와 폐동맥 CT(PARSE 2022), 실측 점군을 씀. 지표는 Chamfer, Hausdorff, **연결 성분 수(Connected Components)**
 - Asset Inspection Benchmark: crane 씬의 트러스 구조에서 기존 기법이 부분을 뭉개는 현상을 보고한다
 
@@ -68,8 +69,15 @@ tags:
 - 마스크의 용도는 대상 선별이 아니라 **visual hull 구성을 통한 초기화**다. 뷰 절두체와 마스크의 교집합 안에서 rejection sampling으로 점을 뿌린다
 - 평가는 LPIPS, PSNR, SSIM만이며 **mesh나 표면 정확도는 보고하지 않는다**
 
-## 5. 남긴 것
+## 5. 라이선스 보완 확인 (2026-08-09)
 
-- MobileBrick, Shelly, OmniObject3D, Tanks and Temples의 라이선스 원문 미확인
-- Curve-aware GS와 EdgeGaussians는 본문을 읽지 않았다. 정확한 arXiv 번호도 미확보
-- NeRF-Synthetic(Blender 8씬)이 GT mesh를 배포하는지 확인하지 않았다. 배포물은 이미지와 포즈뿐인 것으로 알려져 있으나 원전 확인 전이다
+- **MobileBrick**: 저장소는 MIT 라이선스. GT mesh는 PLY로 제공되며 README에 따르면 `gt_mesh.ply`는 GT depth의 TSDF fusion으로 만들어진다. LEGO 기지 기하가 mesh로 직접 배포되는 것이 아니라 한 단계 가공을 거친다는 점을 유의
+- **Tanks and Temples**: 공식 라이선스 페이지에 CC BY 4.0 표기와 함께 "any use for commercial purposes, is prohibited" 문구가 공존한다. **비상업 제한은 확실하나 페이지 문구가 혼재하므로 정확한 라이선스 명칭은 재확인 필요** `[부분 검증]`
+- **NeRF-Synthetic**: GT mesh를 직접 배포하지 않으나 **Blender .blend 파일이 제공**되어 거기서 mesh와 깊이를 뽑는 관행이 있다. TriaGS와 RayDF 등이 이렇게 얻은 GT로 Chamfer를 보고하며, RayDF 계열은 관측 가능 영역 마스크를 씌워 잰다
+- **Shelly**: 공식 배포처와 라이선스를 **찾지 못했다.** NVIDIA 프로젝트 페이지에 데이터 링크가 없고 후속 논문들이 사본으로 평가한 것으로 보인다
+- **OmniObject3D**: 접근은 OpenDataLab(OpenXLab) 경유이며 라이선스 문구는 공식 페이지에서 확인하지 못했다 `[미검증]`
+
+## 6. 남긴 것
+
+- Curve-aware GS와 EdgeGaussians 본문 미독
+- OmniObject3D와 Shelly 라이선스, T&T 라이선스 명칭의 최종 확정

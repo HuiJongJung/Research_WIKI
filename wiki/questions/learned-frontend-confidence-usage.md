@@ -29,7 +29,7 @@ tags:
 
 | 사례 | confidence의 출처 | 쓰이는 지점 | 3D로 올렸는가 | 표적 | 위협 분류 |
 | --- | --- | --- | --- | --- | --- |
-| InstantSplat (arXiv 2403.20309) | DUSt3R per-pixel confidence | **초기화 시 적응적 다운샘플링.** 복셀별 평균 confidence로 유지 점 수를 정함 | **예.** k³ 복셀로 공간을 나누고 복셀별 평균 confidence를 계산 | NVS 지표(PSNR/SSIM/LPIPS)와 포즈 지표(ATE/RPE)만 보고 | **비위협.** 점 유지량 결정이며 감독 배분이 아니다 |
+| InstantSplat (arXiv 2403.20309, v6 확인) | MASt3R/DUSt3R per-pixel confidence | **초기화 시 적응적 다운샘플링 + 학습 중 점별 학습률 조정** (아래 2-1절) | **예.** k³ 복셀로 공간을 나누고 복셀별 평균 confidence를 계산 | NVS 지표(PSNR/SSIM/LPIPS)와 포즈 지표(ATE), 보충에 깊이 Rel/τ. mesh 지표 없음 | **위협 후보로 격상.** 학습 중 사용이 v6 본문에서 확인됨 |
 | VGGT-X (arXiv 2509.25191) | VGGT depth confidence | **쓰지 않기로 했다.** 대신 대응점 가중치로 초기화 점을 고름 | 아니오 | NVS | **비위협.** 오히려 반례다 |
 | CDGS (arXiv 2502.14684) | 단안 깊이의 다중 단서 + 희소 SfM 깊이 | **학습 중 깊이 감독의 화소별 가중과 전역 가중** | 아니오. 이미지 공간 | T&T에서 F-score와 M3C2 거리까지 보고 | **위협 후보.** 아래 3절 |
 | AREA3D (arXiv 2512.05131) | 피드포워드 모델의 per-pixel depth confidence | **복셀 격자 위의 3D 불확실도 field.** 뷰별 점수를 프레임에 걸쳐 누적 | **예** | **능동 촬영 시점 선택** | 용도가 다름. 아래 4절 |
@@ -39,6 +39,24 @@ tags:
 - **초기화 시 점 필터링과 다운샘플링**이 가장 흔하다. DUSt3R 계열의 점군은 고 confidence 영역에서만 정확하다는 인식이 공유되어 있다
 - **손대지 않는 경우도 있다.** VGGT-X는 VGGT의 깊이 confidence를 대리 지표로 쓰는 것이 최적이 아니라고 명시하고 대응점 기반 가중으로 대체했다
 - **감독 배분에 쓴 경우는 CDGS 한 건을 확인했다.** 다만 그 confidence는 학습 프론트엔드의 출력이 아니다
+- **학습 중 점별 학습률 조정에 쓴 경우가 한 건 확인되었다.** InstantSplat 최신판이다 (2-1절)
+
+### 2-1. InstantSplat v6의 confidence-aware optimizer (2026-08-09 확인)
+
+arXiv 2403.20309 v6 (2025-07-03) 3.4절에서 확인했다. 초판 조사 때 v2 본문에 없던 내용이 최신판에 있다.
+
+- MASt3R의 per-pixel confidence를 초기화 때 점에 부여해 두고, Gaussian Bundle Adjustment 중 **점별 학습률을 조정**한다. 정규화는 confidence의 sigmoid를 1에서 뺀 값에 배율 하이퍼파라미터를 곱하는 형태다
+- 방향이 중요하다. 원문은 "By prioritizing points with lower confidence"다. **confidence가 낮은 점일수록 학습률을 키워 더 많이 움직이게 한다.** 오류에 취약한 점을 빨리 고치겠다는 논리다
+- 평가는 여전히 NVS와 포즈이며 mesh 지표가 없다
+
+본 연구와의 대비.
+
+- **겹치는 것**: 학습 전에 확보한 점별 confidence가 학습 중의 갱신 강도를 좌우한다는 구조
+- **다른 것 첫째, 양의 출처**: 네트워크가 자기 예측에 갖는 확신 대 촬영 기하의 물리량
+- **다른 것 둘째, 개입 방향이 반대다**: InstantSplat은 저신뢰 점을 **더 크게 움직이고**, 본 연구는 저신뢰 영역의 photometric 감독을 **덜 믿고 prior로 대체**한다. 전자는 값을 고칠 수 있다고 보고, 후자는 그 자리의 감독 자체가 결정력이 없다고 본다
+- **다른 것 셋째, 표적**: NVS 대 표면 재구성
+
+**판단 필요**: 이 사례를 위협표에 올릴지, 개입 방향의 반대를 차별화 논거로 쓸지.
 
 ## 3. CDGS를 어떻게 볼 것인가
 
@@ -70,6 +88,6 @@ AREA3D (arXiv 2512.05131, 2025-11 제출, 2026-07 개정)는 피드포워드 모
 ## 5. 남긴 것
 
 - Splatt3R, MASt3R-GS, DroneSplat, LM-Gaussian 등 DUSt3R 계열 GS 논문 다수는 본문을 읽지 않았다. `[미검증]` 감독 배분에 쓴 사례가 더 있을 수 있다
-- InstantSplat 공개 페이지는 "point-wise uncertainty로 점별 기울기를 동적으로 조정하는 confidence-aware optimization"을 명시하지만 **arXiv v2 본문에서는 확인되지 않았다.** 확장판에만 있을 가능성이 있으므로 최신판 본문 확인이 필요하다. 사실이면 위협 분류가 바뀐다
+- ~~InstantSplat 최신판 확인 필요~~ **해소.** v6 본문 3.4절에서 확인했고 2-1절에 반영했다
 - AREA3D의 field 구성은 검색 요약과 초록으로 확인했고 본문 수식은 보지 않았다
 - mesh 품질을 표적으로 한 학습 프론트엔드 confidence 사례는 **찾지 못했다.** CDGS가 점군 거리(M3C2)까지 가는 것이 가장 멀리 간 경우다

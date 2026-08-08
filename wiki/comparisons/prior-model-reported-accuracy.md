@@ -67,7 +67,9 @@ tags:
 | iBims-1 | 17.248 | 8.057 | 66.655 |
 | DIODE-indoor | 13.701 | 9.460 | 63.447 |
 
-비교 대상은 DSINE("Rethinking Inductive Biases for Surface Normal Estimation", CVPR 2024)과 GeoWizard다. StableNormal은 iBims-1, ScanNet, DIODE-indoor에서 앞서고 NYUv2에서는 DSINE보다 근소하게 뒤진다고 적는다. `[주의]` 표에서 읽은 DSINE의 NYUv2와 ScanNet 값이 동일하게 나왔다. 변환 과정의 중복일 가능성이 있으므로 DSINE 수치를 인용하려면 원문 표를 다시 확인해야 한다.
+비교 대상은 DSINE("Rethinking Inductive Biases for Surface Normal Estimation", CVPR 2024, arXiv 2403.00712)과 GeoWizard다. StableNormal은 iBims-1, ScanNet, DIODE-indoor에서 앞서고 NYUv2에서는 DSINE보다 근소하게 뒤진다고 적는다.
+
+**DSINE 원논문 수치 확보 (2026-08-09).** DSINE 자신의 Table 2는 평균각오차/중앙값을 NYUv2 16.4/8.4, ScanNet 16.2/8.3, iBims-1 17.1/6.1로 보고한다. StableNormal 표가 전하는 DSINE 수치(NYUv2 18.610/9.885)와 **다르다.** 두 논문의 평가 프로토콜이나 GT 처리 차이로 보이며, DSINE 수치를 인용할 때는 **어느 논문의 표에서 가져왔는지 명시**해야 한다. 벤치마크가 전부 실내라는 결론은 양쪽 모두 동일하다.
 
 **규모 감각**: 최선의 실내 조건에서도 평균각오차가 13도에서 20도 사이다. 법선 prior를 각도 정밀도가 필요한 곳에 그대로 신뢰하기 어렵다.
 
@@ -80,6 +82,6 @@ tags:
 ## 5. 남긴 것
 
 - Metric3D V2, UniDepth, Marigold, Lotus 등 다른 계열은 확인하지 않았다
-- DSINE 원논문의 표를 직접 보지 않았다
+- ~~DSINE 원논문 표~~ **해소.** 위 3절에 반영했다
 - Depth Anything V2의 Table 14 전체 시나리오 값과 Figure 15는 보지 않았다
 - 실외 대규모(수백 미터 이상) 거리대의 정확도를 보고한 논문을 따로 찾지 않았다. 필요하면 별도 조사 항목이 되어야 한다
