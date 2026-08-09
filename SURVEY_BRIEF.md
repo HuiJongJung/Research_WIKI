@@ -254,6 +254,8 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 | Q-09 SOTA 측정 준비물 | 완료 (2차 보완: 라이선스·Blender 입력·추천 3안·실사 공백 확인) | `wiki/comparisons/controlled-stage-sota-toolkit.md` |
 | Q-10 SOTA 역추적·C7 보강 | 판단 필요 (AmbiSuR=실행 가능 SOTA, MILo 서면 위치 확정) | `wiki/comparisons/gs-surface-recon-sota-2026.md` |
 
+**추가 질의 (2026-08-10)**: "복잡 오브젝트 + GT mesh + 실내/단일 물체" 단일 무대 추천 질의에 **MobileBrick**으로 답함 (근거 4·유보 2·차순위 포함, `gt-mesh-benchmark-candidates.md` 6절). DTU 부분호 예비판과 보완 관계. 채택 판정 필요.
+
 ### 보완 후에도 닫히지 않은 것
 
 - **고전 MVS의 도시 규모 달성 범위와 비용** (Q-07): ISPRS 저널 두 편 유료, MDPI 리뷰(Remote Sensing 16(5):773)는 403 차단. 기관 프록시 등 접근 경로가 있어야 닫힌다

@@ -60,7 +60,9 @@ GS 기반 표면 재구성은 **under-constrained 영역**(관측은 되지만 �
 | --- | --- | --- |
 | H1 | SfM 통계로 유효한 confidence field 구성 가능 (관측 수 기반으로는 불가) | **성립** (13개 씬) |
 | H2 | 낮은 confidence가 SOTA artifacts 위치와 대응 (거리 통제 후에도) | **정식 성립** (Spires 2개 사이트) |
-| H3 | 그 영역은 차등 개입으로 개선 가능 | **미결.** 도구 완성, 판정 대기 |
+| H3 | 그 영역은 차등 개입으로 개선 가능 | **1차 판정 실패 (08-10).** lever③(prior) 경로 없음 — 각이 좁을수록 더 해로움. lever⑤(예산 중립 정규화 차등)도 사전 기준 미충족 — DEGEN에서 baseline보다 악화. 남은 후보 = 가산형 ⑤와 ④′(clone 억제) 단독. 둘 다 실패 시 진단 중심 재편은 사용자 결정 대기 |
+
+**수렴 명제 (08-10, 게이트 A + D1 + E4-reg)**: 퇴화 영역은 감독을 더 얹어서 회수되는 곳이 아니다. 정보 총량은 오차를 예측하지 못하고, 학습된 prior는 각이 좁을수록 해로우며, 자기일관성 정규화는 틀린 mesh를 굳힌다. **정보 부재는 감독 조작으로 메워지지 않는다.** 감독은 기하가 이미 잡힌 곳에서만 값을 한다.
 
 ## 4. 4상태 정의
 
@@ -129,7 +131,9 @@ COLMAP의 점 생존 규칙은 **구현 확인으로 확정됐다 (08-09, 실험
 - 진단 주장(H1·H2): **Oxford Spires** TLS 실측 기준. christ-church와 Blenheim. 유지
 - 대조: T&T Ignatius (거짓 경보 없음 확인용)
 - 개입 증명·현황 측정: **Blender 합성 제작 통제 무대** (확정). "원거리 + 넓은 호" 대조 조건을 줄 수 있는 기성 실사가 없음이 확인됨. BlenderNeRF Camera on Sphere로 호 폭 통제. 실사 검증 보조는 MobileBrick
-- 통제 무대 모델 (08-09 Q-10 반영 확정): **MILo(base) + 2DGS(공통 기준선) + RaDe-GS(field 계열, 폴백 GOF) + AmbiSuR(실행 가능 SOTA, DTU 0.46·T&T 0.589) + Gaussian Wrapping(가는 구조).** 예비판은 MILo + 2DGS. GeoSVR은 GS가 아니므로 제외(related work 한 줄 인정)
+- 통제 무대 모델 (08-09 Q-10 반영 확정): **MILo(base) + 2DGS(공통 기준선) + RaDe-GS(field 계열, 폴백 GOF) + AmbiSuR(실행 가능 SOTA, DTU 0.46·T&T 0.589) + Gaussian Wrapping(가는 구조).** GeoSVR은 GS가 아니므로 제외(related work 한 줄 인정)
+- **비교 표준 = 4열 (08-10 확정)**: MILo / MILo+전역(예산 일치 균일 = 핵심 대조군) / MILo+Ours / AmbiSuR(초기화 상이 병기). 전역 열 없이는 "정규화를 더 넣은 효과" 반박 불가
+- **GT mesh 정밀 평가 무대 = MobileBrick (08-10 채택, 본판)**: 후보 중 유일하게 GT 오차 문제 없음 + masked/unmasked 병기 선례(DTU+MobileBrick 조합)가 accuracy 부활 판정과 정합. 표기 규율: 정밀 주장 시 "GT depth 기반 fusion mesh"로 명시. 역할 분담 — DTU scan65 = 호 폭 프로토콜·발표 비교 / MobileBrick = 정밀 평가 본판
 - 통제 무대 초기화 규약: 전 모델 공통 **GT 포즈 + 포즈 고정 COLMAP 재삼각측량 점군**. 무작위 초기화 금지 (점군 유무가 배경을 가른다는 3DGS 원논문 확인이 근거)
 
 **지표 3축 체계**
