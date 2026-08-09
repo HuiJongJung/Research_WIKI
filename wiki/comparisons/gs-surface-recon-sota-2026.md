@@ -54,8 +54,11 @@ DTU는 mean Chamfer(mm, ↓), T&T는 mean F1(↑). 셀의 괄호는 수치 출�
 | RaDe-GS | 2024 | 0.68 (M3) `[자기 표 미확인]` | 0.40 (M2) | 공개 | GS, rasterized depth |
 | GS2Mesh | ECCV 2024 | 0.68 (A1) | 미확인 | 공개 (yanivw12/gs2mesh) | GS + stereo 깊이 |
 | Gaussian Wrapping | arXiv 2604.07337 | 부록 (미확보) | 자체 프로토콜 0.48/0.53, **표준 프로토콜 수치 없음** | 공개 (diego1401/GaussianWrapping) | GS, wrapping shell |
+| GVGS | arXiv 2601.20331 (2026-04 v3) | 0.49 (자기 표) | 0.53 (자기 표, 60k iter) | 공개 (GVGScode/GVGS) | GS, 가시성 인지 다중 뷰 기하 |
 | GOF | SIGGRAPH Asia 2024 | 0.74 (A1=M3) | 0.46 (A2=M2) / 0.453 (C) | 공개 | GS, opacity field |
 | 2DGS | SIGGRAPH 2024 | 0.80 (A1=M3) | 0.30 (M2) | 공개 | GS, surfel + TSDF |
+
+GVGS 주의: "establishes a new state-of-the-art with a mean Chamfer Distance of 0.49 mm"를 주장하나 **비교표에 GeoSVR(0.47)와 AmbiSuR(0.46)가 없다.** 브리프가 경고한 "자기 표에서만 성립하는 SOTA 주장"의 실사례다.
 
 프로토콜 주의 세 건.
 
@@ -95,6 +98,7 @@ DTU는 mean Chamfer(mm, ↓), T&T는 mean F1(↑). 셀의 괄호는 수치 출�
 
 - GeoSVR·RaDe-GS·GausSurf의 **자기 논문 표**를 열지 않았다 (GeoSVR·RaDe-GS는 제3자 표 수치만, GausSurf는 검색 요약 경유)
 - GW의 DTU 부록 수치 미확보
-- GGGS, VCR-GauS, QGS, SOF 미추적
+- GGGS는 최종 검토에서도 독립 논문으로 특정하지 못했다. GW 저장소가 코드베이스로 참조할 뿐 검색으로 실체가 잡히지 않는다. VCR-GauS, QGS, SOF 미추적
+- 최종 검토(08-09)에서 추가 확인: GVGS(위 표, 0.49/0.53, 코드 공개)와 Direct SDF Learning(arXiv 2509.07493, DTU 0.50 주장) 모두 AmbiSuR 아래. AmbiSuR를 이기는 주장을 확인한 논문 없음
 - GausSurf 코드 상태는 "coming soon"을 2026-08-09 검색 요약으로 확인했으며 저장소 직접 방문은 하지 않았다
 - AmbiSuR 저장소의 라이선스 종류 미확인 (LICENSE.md 존재만 확인)
