@@ -215,6 +215,12 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 - CoMapGS가 covisibility를 쓰면서도 COLMAP track이 아니라 MASt3R를 새로 돌린 이유가 논문에 적혀 있는지 확인. 있으면 "왜 이미 있는 것을 안 쓰는가"에 대한 인용 가능한 답이 된다
 - 없으면 "찾지 못함"으로 명확히 결론낼 것. Q-02와 합쳐 "SfM 부산물 통계 전반이 감독 배분에 쓰인 적 없다"는 서술이 가능해진다
 
+### Q-11. SfM 부산물을 점 이상으로 쓴 선례 (측량각 역산 포함) [완료] (우선순위 2)
+
+**결과**: 각을 점별로 역산해 하류에서 쓴 사례는 넓힌 범위에서도 **찾지 못했다** (`wiki/questions/sfm-byproducts-beyond-points-precedent.md`). Q-02 결론 유지.
+다른 부산물의 선례 셋: DS-NeRF(CVPR 2022, 재투영 오차→깊이 감독 불확실도, few-shot 개선+2~6배 가속 주장), DRGS 계열(점 위치→단안 깊이 척도 정렬, StereoGS가 "균일 척도" 조잡함 비판), CoMapGS(covisibility 개수→재가중, 기존 위협표 상대).
+각은 COLMAP 안에서 필터로 소비되고 **출력 파일에 값이 남지 않아 역산이 필요**하다. 재투영 오차(출력에 있음)와의 이 구조적 차이는 조사 세션의 해석이며 문헌에 명시된 이유는 없다. 재투영 오차=측정 잔차 대 측량각=기하 조건성의 대비는 CoMe 반박 논리와 동형이라 인용 사다리로 쓸 수 있다.
+
 ---
 
 ## 7. 결과 인계 형식
@@ -254,6 +260,7 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 | Q-08 CAD mesh 품질 관행 | 판단 필요 | `wiki/comparisons/mesh-intrinsic-quality-metrics.md` |
 | Q-09 SOTA 측정 준비물 | 완료 (2차 보완: 라이선스·Blender 입력·추천 3안·실사 공백 확인) | `wiki/comparisons/controlled-stage-sota-toolkit.md` |
 | Q-10 SOTA 역추적·C7 보강 | 판단 필요 (AmbiSuR=실행 가능 SOTA, MILo 서면 위치 확정) | `wiki/comparisons/gs-surface-recon-sota-2026.md` |
+| Q-11 SfM 부산물 활용 선례 | 완료 (각 역산 사례 없음, 부산물 선례 3갈래 확보) | `wiki/questions/sfm-byproducts-beyond-points-precedent.md` |
 
 **추가 질의 (2026-08-10)**: "복잡 오브젝트 + GT mesh + 실내/단일 물체" 단일 무대 추천 질의에 **MobileBrick**으로 답함 (근거 4·유보 2·차순위 포함, `gt-mesh-benchmark-candidates.md` 6절). DTU 부분호 예비판과 보완 관계. 채택 판정 필요.
 
