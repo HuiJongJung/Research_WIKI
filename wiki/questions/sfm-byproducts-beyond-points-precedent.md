@@ -61,6 +61,25 @@ Deng, Liu, Zhu, Ramanan, "Depth-supervised NeRF: Fewer Views and Faster Training
 - PanoLOG (arXiv 2607.08769): 시차각에서 깊이 불확실도를 유도하되 용도는 학습 전 공간 분할
 - TriaGS (arXiv 2512.06269): 삼각측량 합의점 거리를 loss로 쓰되 각은 계산하지 않음
 
+## 2-6. 2차 검토 (2026-08-11, 검색 각도를 바꿔 재확인)
+
+각이 숨어 들어갈 수 있는 경로 네 갈래를 추가로 뒤졌다. **결론은 유지된다: 측량각을 점별로 역산해 GS에 쓴 사례는 없다.** 대신 "왜"에 답하는 인용 가능 문헌 셋을 확보했다.
+
+### 뒤진 경로와 결과
+
+1. **삼각측량 공분산 경유 초기화**: 각 정보는 삼각측량점의 3D 공분산(시선 방향으로 길쭉한 타원체)에 인코딩되므로, SfM 점 공분산으로 Gaussian 공분산을 초기화한 사례가 있다면 각을 간접 사용한 것이 된다. **찾지 못했다.** 표준 3DGS와 파생 전부가 이웃 점 평균 거리 기반의 **등방** 초기화를 쓴다
+2. **SLAM 깊이 공분산 가중**: SplatMAP(arXiv 2501.07015)이 "깊이 주변 공분산으로 가중한 깊이 loss"를 초록에 내걸지만, 본문 확인 결과 그 불확실도는 **optical flow 신뢰도(ConvGRU 가중치)에서 오며 시차·기선·삼각측량각 언급이 없다.** ablation의 이득 귀속도 깊이 가중이 아니라 적응적 densification 쪽이다. 인접이되 각 아님
+3. **사진측량 용어(intersection/convergence angle)**: 위성 GS에서 담론을 찾았다. **SatSplat**(Song, Kim, Qin, Ohio State, arXiv 2606.28581, 2026-06)이 초록에서 저하 원인으로 "multi-date, high-altitude acquisitions (with small intersection angles)"를 명시한다. 그러나 **방법에는 각 값이 전혀 들어가지 않는다.** 가중도 게이트도 초기화도 아니고 문제 서술로만 존재한다. **"각이 문제임은 인지되되 방법으로는 아무도 쓰지 않는다"는 공백 주장(B7)의 직접 증거**
+4. **초기화 무효화 담론**: Desiatov, Sattler, "The Role of Initialization in 3D Gaussian Splatting" (arXiv 2603.20714, 2026-03, v3 07-18). 결론이 양날이다. **"dense initialization does not lead to consistent visual improvements when paired with strong densification"** — 초기화에 실은 점별 정보가 시각 품질에서는 densification에 씻겨나간다는 무효화 반론의 근거. 동시에 초기화가 **"significantly improves geometric consistency of the scene representation"**과 궤적 밖 시점 일반화에는 유의미하게 남는다고 적는다
+
+### 4번이 주는 답의 구조
+
+"이 정보가 의미 없는가"라는 질문에 문헌이 주는 답은 표적에 따라 갈린다.
+
+- **NVS(시각 품질)가 표적이면**: 초기화 수준의 점별 정보는 강한 densification 아래서 씻겨나갈 수 있다 (Desiatov & Sattler). SfM 부산물을 초기화에만 싣는 접근이 흔적을 못 남기는 이유의 후보
+- **기하(표면)가 표적이면**: 같은 논문이 초기화 정보가 기하 일관성에 유의미하게 남는다고 보고한다. **각 정보를 기하 표적에 쓰는 것이 의미 있다는 방향의 외부 근거**
+- 단 이 논문이 잰 것은 초기화 점군의 밀도·품질이지 각 기반 가중이 아니다. 확대 해석하지 않도록 인용 범위를 지킬 것
+
 ## 3. 참고문헌 뱅크로서의 정리
 
 | 쓰임새 | 인용 |
@@ -71,6 +90,9 @@ Deng, Liu, Zhu, Ramanan, "Depth-supervised NeRF: Fewer Views and Faster Training
 | 개수 기반 재가중의 선행 | CoMapGS (E4 인용 사다리와 동일) |
 | 각과 깊이 불확실도의 기하학 | Rumpler 외 (AAPR 2011) |
 | 각이 하류로 전달되지 않는 구조 | COLMAP 원전 (B1) + 조사 세션 해석 (명시 표기 필요) |
+| **GS 논문이 작은 교차각을 저하 원인으로 명시 (방법에는 미사용)** | SatSplat (arXiv 2606.28581) |
+| **초기화 점별 정보의 무효화 반론과 그 반전 (기하에는 남음)** | Desiatov & Sattler (arXiv 2603.20714) |
+| SLAM 깊이 불확실도 가중 (각 아님, 구분용) | SplatMAP (arXiv 2501.07015, optical flow 신뢰도) |
 
 ## 4. 남긴 것
 

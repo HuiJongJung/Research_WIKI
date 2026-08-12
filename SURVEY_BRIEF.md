@@ -220,6 +220,8 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 **결과**: 각을 점별로 역산해 하류에서 쓴 사례는 넓힌 범위에서도 **찾지 못했다** (`wiki/questions/sfm-byproducts-beyond-points-precedent.md`). Q-02 결론 유지.
 다른 부산물의 선례 셋: DS-NeRF(CVPR 2022, 재투영 오차→깊이 감독 불확실도, few-shot 개선+2~6배 가속 주장), DRGS 계열(점 위치→단안 깊이 척도 정렬, StereoGS가 "균일 척도" 조잡함 비판), CoMapGS(covisibility 개수→재가중, 기존 위협표 상대).
 각은 COLMAP 안에서 필터로 소비되고 **출력 파일에 값이 남지 않아 역산이 필요**하다. 재투영 오차(출력에 있음)와의 이 구조적 차이는 조사 세션의 해석이며 문헌에 명시된 이유는 없다. 재투영 오차=측정 잔차 대 측량각=기하 조건성의 대비는 CoMe 반박 논리와 동형이라 인용 사다리로 쓸 수 있다.
+**2차 검토(08-11)**: 공분산 경유 초기화·SLAM 깊이 공분산·사진측량 용어·초기화 무효화 담론 네 갈래로 재확인. 결론 유지(각 역산 사례 없음). 추가 확보: SatSplat(arXiv 2606.28581)이 작은 교차각을 저하 원인으로 초록에 명시하되 **방법에는 안 씀**(공백의 직접 증거), Desiatov & Sattler(arXiv 2603.20714)가 초기화 점별 정보는 시각 품질에선 densification에 씻기지만 **기하 일관성에는 유의미하게 남는다**고 보고(기하 표적 사용의 외부 근거). SplatMAP의 공분산 가중은 각이 아니라 optical flow 신뢰도로 확인.
+**읽기 지도 작성(08-11)**: 확보 문헌을 "읽을 순서 + 논문마다 건질 것" 단위로 `wiki/comparisons/sfm-byproduct-citation-reading-map.md`에 정리. 티어 1 정독 4편(DS-NeRF, Desiatov & Sattler, Rumpler, COLMAP 재확인 1건), 티어 2 절 단위 5편, 이미 확보되어 안 읽어도 되는 것 5건 명시. 읽기 배정과 인용 채택은 방향 세션 판정 사항.
 
 ---
 
@@ -260,7 +262,7 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 | Q-08 CAD mesh 품질 관행 | 판단 필요 | `wiki/comparisons/mesh-intrinsic-quality-metrics.md` |
 | Q-09 SOTA 측정 준비물 | 완료 (2차 보완: 라이선스·Blender 입력·추천 3안·실사 공백 확인) | `wiki/comparisons/controlled-stage-sota-toolkit.md` |
 | Q-10 SOTA 역추적·C7 보강 | 판단 필요 (AmbiSuR=실행 가능 SOTA, MILo 서면 위치 확정) | `wiki/comparisons/gs-surface-recon-sota-2026.md` |
-| Q-11 SfM 부산물 활용 선례 | 완료 (각 역산 사례 없음, 부산물 선례 3갈래 확보) | `wiki/questions/sfm-byproducts-beyond-points-precedent.md` |
+| Q-11 SfM 부산물 활용 선례 | 완료 (각 역산 사례 없음, 부산물 선례 3갈래 확보) | `wiki/questions/sfm-byproducts-beyond-points-precedent.md` + `wiki/comparisons/sfm-byproduct-citation-reading-map.md` |
 
 **추가 질의 (2026-08-10)**: "복잡 오브젝트 + GT mesh + 실내/단일 물체" 단일 무대 추천 질의에 **MobileBrick**으로 답함 (근거 4·유보 2·차순위 포함, `gt-mesh-benchmark-candidates.md` 6절). DTU 부분호 예비판과 보완 관계. 채택 판정 필요.
 
