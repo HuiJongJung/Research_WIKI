@@ -223,6 +223,12 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 **2차 검토(08-11)**: 공분산 경유 초기화·SLAM 깊이 공분산·사진측량 용어·초기화 무효화 담론 네 갈래로 재확인. 결론 유지(각 역산 사례 없음). 추가 확보: SatSplat(arXiv 2606.28581)이 작은 교차각을 저하 원인으로 초록에 명시하되 **방법에는 안 씀**(공백의 직접 증거), Desiatov & Sattler(arXiv 2603.20714)가 초기화 점별 정보는 시각 품질에선 densification에 씻기지만 **기하 일관성에는 유의미하게 남는다**고 보고(기하 표적 사용의 외부 근거). SplatMAP의 공분산 가중은 각이 아니라 optical flow 신뢰도로 확인.
 **읽기 지도 작성(08-11)**: 확보 문헌을 "읽을 순서 + 논문마다 건질 것" 단위로 `wiki/comparisons/sfm-byproduct-citation-reading-map.md`에 정리. 티어 1 정독 4편(DS-NeRF, Desiatov & Sattler, Rumpler, COLMAP 재확인 1건), 티어 2 절 단위 5편, 이미 확보되어 안 읽어도 되는 것 5건 명시. 읽기 배정과 인용 채택은 방향 세션 판정 사항.
 
+### Q-12. 복셀 confidence field의 가림 문제와 대안 설계 재료 [판단 필요] (우선순위 2)
+
+**결과**: 문제가 문헌에 인지되어 있다. VAD-GS(arXiv 2510.09364)가 다중 뷰 점군 누적이 가림 인지가 없어 광선이 가려진 구조를 통과해 비가시 기하를 잘못 갱신한다고 명시한다. 상세는 `wiki/questions/occlusion-aware-confidence-field-design.md`.
+대안 재료 4갈래: ⓐ z-buffer 가시 판정을 복셀에 붙이기(VAD-GS), ⓑ 표면점 기준 reconstructability로 재정의(Smith 외 SIGGRAPH Asia 2018 — 가시성·거리·각도가 원래 한 식), ⓒ 표면 confidence를 복셀로 누적(arXiv 2405.02568), ⓓ TSDF의 입사각·거리 가중 관행(우리 각 판별값과 직교하는 축).
+**즉시 확인 가능한 것**: COLMAP track은 실제 정합된 이미지만 담으므로 **point 채널은 이미 가림을 반영하고 pose 채널만 눈이 멀었다**(조사 세션 관찰). 두 채널의 불일치를 가림 지표로 쓰는 안은 새 계산 없이 기존 데이터 재판독으로 확인 가능. 선택지 A~D 표로 정리, 채택은 B4 판정.
+
 ---
 
 ## 7. 결과 인계 형식
@@ -263,6 +269,7 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 | Q-09 SOTA 측정 준비물 | 완료 (2차 보완: 라이선스·Blender 입력·추천 3안·실사 공백 확인) | `wiki/comparisons/controlled-stage-sota-toolkit.md` |
 | Q-10 SOTA 역추적·C7 보강 | 판단 필요 (AmbiSuR=실행 가능 SOTA, MILo 서면 위치 확정) | `wiki/comparisons/gs-surface-recon-sota-2026.md` |
 | Q-11 SfM 부산물 활용 선례 | 완료 (각 역산 사례 없음, 부산물 선례 3갈래 확보) | `wiki/questions/sfm-byproducts-beyond-points-precedent.md` + `wiki/comparisons/sfm-byproduct-citation-reading-map.md` |
+| Q-12 복셀 field의 가림 문제 | 판단 필요 (대안 4갈래, 무비용 선택지 C 존재) | `wiki/questions/occlusion-aware-confidence-field-design.md` |
 
 **추가 질의 (2026-08-10)**: "복잡 오브젝트 + GT mesh + 실내/단일 물체" 단일 무대 추천 질의에 **MobileBrick**으로 답함 (근거 4·유보 2·차순위 포함, `gt-mesh-benchmark-candidates.md` 6절). DTU 부분호 예비판과 보완 관계. 채택 판정 필요.
 
@@ -275,3 +282,15 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 - Splatt3R·MASt3R-GS·DroneSplat 등 DUSt3R 계열 본문 (감독 배분 사례 추가 존재 가능성)
 - Frey·Borouchaki 표면 mesh 품질 원전(IJNME), valence 지표 원전
 - Spires IJRR 게재본 대조, T&T 공식 crop 작성 기준
+
+### Q-12. 배경·무경계 영역 mesh 산출을 표방한 기법 조사 [대기] (우선순위 1)
+
+**배경**: AmbiSuR를 논적 자리에서 내리고 참조선으로 재배치했다(08-12 판정). 정당한 논적 후보를 찾는 항목이다. **못 찾는 결과도 유효하며 오히려 주장 (B)의 확증이 된다** — 편향 없이 조사할 것.
+
+- 3DGS 계열 표면 재구성 기법 중 **무경계(unbounded) 씬의 mesh 추출을 명시적으로 기여로 내건** 것을 열거한다. TSDF 볼륨이나 최대 연결 성분 후처리로 중심부만 남기지 않는다고 주장하는 기법이 대상이다
+- 각 후보에 대해 확인할 것 넷: ① 무경계 mesh를 방법 기여로 표방하는가(초록·기여 목록에 명시) ② **배경 영역을 정량 평가하는가** — 마스크·crop 없이 재는 실험이 논문에 있는가 ③ 평가 무대와 지표 ④ limitations에 배경을 적었는가
+- ②가 핵심이다. 표방만 하고 평가는 crop 안에서 하는 경우가 많을 것으로 예상되며, 그렇다면 "표방은 있으나 검증은 없다"로 기록한다
+- 촬영 계획, NVS 전용, 실내 한정은 제외한다. **표면 재구성 + 무경계**만 본다
+- 하나도 찾지 못하면 "찾지 못함"으로 명확히 결론낸다. 느슨하게 관련된 기법으로 대체하지 않는다
+
+**참고 맥락**: 우리 실측에서 d/R≥4 면수가 MILo 172k 대 AmbiSuR 0이다. 즉 우리 base인 MILo는 이미 그 영역을 산출한다. 산출과 평가는 별개이므로 "산출하는 기법"과 "평가하는 기법"을 구분해 기록할 것.
