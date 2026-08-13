@@ -56,6 +56,15 @@ Q-11 읽기 지도의 첫 번째. **그들의 결론이 우리 실험과 같은 
 - [ ] 각↔불확실도 관계의 공식 형태와 유도 (인용 가능한 형태로)
 - [ ] 그들이 이 관계를 **어디에 썼는지**(촬영 계획인지 재구성인지) — 사다리 3번 칸 확인
 
+## 3-2. Smith 외 2018 원문 수식 확인 [신규, 목표 하나]
+
+Smith 외, "Aerial path planning for urban scene reconstruction", SIGGRAPH Asia 2018, TOG 37(6).
+
+reconstructability가 2018년부터 **가시성·거리·각도를 한 식**에 갖고 있었고 우리는 그중 하나만 쓴다. 확장이 아니라 축소이므로 **"왜 둘을 버렸나"에 답할 수 있어야 한다.** 답은 "버린 두 항은 기하를 요구하고 우리는 기하가 생기기 전에 판정한다"이며, 실수가 아니라 대가를 아는 설계 선택으로 서술한다.
+
+- [ ] 세 인자(가시성·거리·각도)의 정확한 형태와 결합 방식
+- [ ] 가시성·거리 항이 요구하는 입력이 무엇인지 (기하 의존성 확인)
+
 ## 4. Expo-GS 훑기 (30분)
 
 - [ ] ablation 표 수집 (균일 제약 유해: 41.38 → 36.59)
@@ -86,6 +95,7 @@ Q-11 읽기 지도의 첫 번째. **그들의 결론이 우리 실험과 같은 
 | 샘플링 도구 결함 수정 | 진행 — 수정 전 해당 수치 인용 금지 |
 | use_mono (DA3 세대 효과) | 후순위 |
 | COLMAP points3D 각 필드 부재 확인 | 신규 (문헌보다 코드로 확정) |
+| **채널 불일치 지도 + 광선 위 점 판정** | **신규 최우선 (CPU 30분)** — A 경로의 문을 열지 닫을지 결정 |
 
 ### 조사 세션
 
@@ -111,5 +121,5 @@ CoMapGS, CoMe, AmbiSuR, 3DGS 원논문 초기화 ablation, Depth Anything V2·V3
 | G4Splat, Two-Stage, StreetSurf, Free360 | related work 집필 착수 시 |
 | GaussianObject | 표적을 물체로 전환 확정 시 (현재 스코프상 가능성 낮음) |
 | FSGS, DNGaussian | sparse-view 구별 문단 집필 시 |
-| ~~reconstructability, Mostegel~~ | **해제됨 — Q-11 사다리 3번 칸으로 당겨 조사 세션 배정** |
+| ~~reconstructability, Mostegel~~ | **해제됨** — Mostegel과 나머지는 Q-11 사다리 3번 칸(조사 세션), **Smith 2018은 본인 읽기 3-2**(반론 방어용) |
 | TurboGS, LeGS, GSFixer, Motive, LASER, NBV view-sampling | 개입 재설계 착수 시 |
