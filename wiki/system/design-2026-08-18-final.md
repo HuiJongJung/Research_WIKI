@@ -217,3 +217,65 @@ f. `ray_min` 프로파일 진단
 - `clone_thr_scale` docstring이 실제 배선(이진)과 반대를 주장 → 배선 후 자동 해소
 - `train_field.py:357-359` "total lambda is unchanged" 주석 → 마스크 내 정규화로 고치거나 주석 정정
 - kappa 주석의 cancellation 근거, `q_geo=0.5 등방` 표기 정정
+
+---
+
+## 7. 구현 사양 확정 (2026-08-18, 재료 실사 후 추가)
+
+이전 서술이 모호해 구현자가 설계를 겸하게 되는 지점이 있었다. 아래로 고정한다.
+
+### 7-1. `a_max` — k-극단 집합 의사코드
+
+```
+입력: dirs (n,3) 단위벡터 (voxel → 각 가시 카메라 방향), k = 8
+출력: a_max (도), pair (p,q)
+
+S = []                                     # 극단 집합 인덱스
+mean = normalize(sum(dirs))
+S.append( argmin_i <dirs[i], mean> )       # 평균에서 가장 먼 것 하나로 시작
+for t in 1 .. k-1:
+    j = argmax_i ( min_{s in S} <dirs[i], dirs[s]> 의 음수 )
+      = argmax_i ( max_{s in S} angle(dirs[i], dirs[s]) )   # 이미 뽑힌 것들에서 가장 먼 것
+    S.append(j)                            # 중복은 건너뜀
+(p,q) = argmax_{a,b in S, a<b} angle(dirs[a], dirs[b])      # 전수 쌍 (k=8이면 28)
+a_max = angle(dirs[p], dirs[q])
+```
+
+카메라 순회 k회. k = 4 / 8 / 16을 모두 시도해 수렴을 확인하고 표로 보고한다.
+
+### 7-2. `a_perp` — 정의 확정 (하나만)
+
+```
+n_hat = normalize( cross(dirs[p], dirs[q]) )    # 최대 쌍이 이루는 평면의 법선
+out_i = arcsin( clip(<dirs[i], n_hat>, -1, 1) ) # 각 방향의 면외 각 (부호 있음)
+a_perp = max_i(out_i) - min_i(out_i)            # 면외 총 퍼짐 (도)
+```
+
+**대체 정의를 쓰지 않는다.** 이 정의를 택한 이유: 카메라가 완전한 수평 호로만 돌면 모든 방향이 한 평면에 있어 `<dirs[i], n_hat> = 0`, 따라서 **`a_perp = 0`으로 정확히 표적 실패 모드를 짚는다.** 전 구면 촬영이면 크다.
+
+전체 n개 방향에 대해 계산한다(k-극단 집합만이 아님). 순회 1회 추가.
+
+### 7-3. 점유 마스크
+
+```
+occupied = (n_pts > 0)
+occupied = occupied | dilate_26neighbor(occupied)   # 1회
+```
+
+`TEXTURELESS`·`divergence` 카운트를 **조건화 전후 둘 다** 보고한다.
+
+### 7-4. 재사용할 기존 자산 (새로 짜지 말 것)
+
+| 목적 | 기존 도구 | 비고 |
+| --- | --- | --- |
+| 런 전체 파이프라인 | `hj_scripts/run_ignatius_additive.sh` | base2·발화율 게이트·추출·4열·crop 밖 채점이 이미 엮여 있다. **템플릿으로 복제해 델타만 수정** |
+| 4열 평가·정성·map | `run_4col_final.sh` | 뷰 76/103/231 고정 |
+| far0 외벽 뷰 | `render_mesh_arms.py`의 `far_views()` | **현재 `--n_far 0`으로 꺼져 있다.** `--n_far 1` 이상 + `--far_band_min 4.0` |
+| `ray_min` 진단 | `diag_lookup.py` | at_surface·ray_min·ray_mean과 밴드별 gap을 이미 산출. **새로 만들지 말고 로그를 읽는다** |
+| 판별값 비교표 | `c6_signal_table.py` | `--field --voxels --tag`. F0~F5는 이 도구를 확장 |
+| crop 밖 밴드 채점 | `tnt_gt_check.py` | |
+| prior arm 설정 | `configs/depth_order/field.yaml` | DAv2 vitl, `reduction: none`까지 이미 맞춰져 있다 |
+
+### 7-5. prior 가중 스케줄 (해석 시 필수 인지)
+
+`field.yaml`의 prior 가중은 **학습 중 감쇠**한다: iter 600에 1.0 → 1500에 0.1 → 3000에 0.01 → 8000에 0.001 → 13000에 0.0001. 즉 **prior는 초반에만 강하게 작용**한다. 배치 실험(P-low/high/uniform) 결과를 읽을 때 "초반 형상 형성기의 배치 효과"로 해석해야 하며, 학습 후반의 효과가 아니다. 세 arm이 같은 스케줄을 쓰므로 배치 비교 자체는 유효하다.
