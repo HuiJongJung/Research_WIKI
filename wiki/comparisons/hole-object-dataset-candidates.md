@@ -31,7 +31,7 @@ tags:
 | 후보 | **hole 실물 (구체)** | 촬영 | GT 형식 | 라이선스 | GS 선례 | 다운로드 |
 | --- | --- | --- | --- | --- | --- | --- |
 | **DTU scan65 (해골)** | **안와(눈구멍) 2개, 비강 개구, 치아 사이 틈, 하악-두개 사이 공간** — 입력 이미지에서 직접 확인 `[원문 확인, 08-09 이미지]` | 실사 49/64장 | 구조광 점군 | free+인용 요구 | 표면 재구성 표준 | 공개 (전처리판 다수) |
-| **DTU scan37 (금속 가위)** | **손잡이 링 관통 2개** — 가위 구조상 확실. RaDe-GS가 "Metal Scissor of DTU"로 실패 씬 명시 = 씬 존재·촬영·GT 확증 `[원문 확인, RaDe-GS §5]` | 실사 | 구조광 점군 | 동일 | RaDe-GS가 실패 사례로 사용 | 공개 |
+| **DTU scan37 (금속 가위)** | **손잡이 링 관통 2개** — 가위 구조상 확실. **근거 분리 (08-19 위키 정정)**: RaDe-GS는 "Metal Scissor of DTU"라고만 하며 **scan 번호를 명시하지 않는다** `[원문 확인, RaDe-GS Limitations·Fig.7]`. scan37=가위 매핑은 독립 논문들로 별도 확인 — "scissors' handles in Scan37"(arXiv 2408.02079), "fuse together in Scan37" `[원문 확인, 08-19 위키 검증]`. 후자의 "붙어버림"은 링 닫힘 = **hole 닫힘 실패의 직접 문헌 근거**로 승격 후보 | 실사 | 구조광 점군 | 동일 | RaDe-GS가 실패 사례로 사용 | 공개 |
 | **OmniObject3D 선별** | **teapot(핸들 링 관통 + 주둥이 개구 + 뚜껑), handbag(핸들 관통), kennel(개집 — 입구 개구 + 내부 공간), pan(핸들)** — Gaussian Sculpting의 12물체 목록에서 확정 `[원문 확인, Table 1]` | 실사 멀티뷰 영상 | 실물 스캔 textured mesh | 미확인 `[미검증]` | **Gaussian Sculpting이 mesh 평가에 사용** — hole 물체 선별 선례 자체 | OpenXLab 등록 |
 | **MobileBrick (LEGO)** | 스터드 사이 틈, 브릭 하부 공동(내부 공간), 조립 틈새. 관통 구멍은 모델별(테크닉류) `[2차 자료]` | 실사 | GT depth의 TSDF fusion mesh | 저장소 MIT | GS2Mesh 평가 코드 | GitHub 공개 |
 | **NeRF-Synthetic** | **lego(불도저 — 캐터필러 트레드 틈, 캐빈 개구, 버킷 오목), mic(그릴 망 + 스탠드 링), chair(등받이·팔걸이 개구), ship(난간·마스트)** — 세부는 blend 렌더로 확인 필요 `[미검증, 통용 서술]` | 렌더 (blend 제공) | blend에서 GT mesh 추출 관행 (TriaGS·RayDF) `[원문 확인, 08-09]` | 공개 | 표준 무대 | 공개 |
