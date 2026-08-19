@@ -181,6 +181,7 @@ COLMAP의 점 생존 규칙은 **구현 확인으로 확정됐다 (08-09, 실험
 
 - base: MILo (base 중 하나로 강등, 08-19) + 추후 다양화(X7). **다양화 시 primitive 유형 축(3D 대 평면)을 명시** — SatSplat §4.5가 오목 over-smoothing의 원인을 2DGS 평면 가정으로 지목했고, AmbiSuR의 기반 PGSR도 평면 계열이다
 - SOTA 참조: AmbiSuR (배경 이탈로 비교 정당성 문제 소멸, 단일 물체 무대에서 정면 비교 성립)
+- **PGSR — 핵심 씬 한정 3번째 모델 (08-19 사용자 확정)**: scan65·보어 블록에만. 목적 둘 — AmbiSuR 효과 분리(PGSR 대 PGSR+ambiguity 처리), **PGSR의 학습 중 occlusion 추정이 깊은 구멍에서 성공/실패하는지가 우리 "학습 전 예측" 구도의 직접 대조**
 - Gaussian Sculpting: 코드 미공개 — 비교군 보류, mesh 자체 품질 지표(내각·sliver)의 **인용 선례**로 사용
 
 **지표 (08-19 방향 확정)**
