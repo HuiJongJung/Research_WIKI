@@ -283,7 +283,7 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 - Frey·Borouchaki 표면 mesh 품질 원전(IJNME), valence 지표 원전
 - Spires IJRR 게재본 대조, T&T 공식 crop 작성 기준
 
-### Q-13. 배경·무경계 영역 mesh 산출을 표방한 기법 조사 [대기] (우선순위 1)
+### Q-13. 배경·무경계 영역 mesh 산출을 표방한 기법 조사 [보류 — 08-19 방향 전환으로 우선순위 소멸]
 
 > 번호 정정: 조사 세션이 가림 문제 조사에 Q-12를 먼저 사용했으므로 이 항목을 Q-13으로 옮긴다.
 
@@ -296,3 +296,61 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 - 하나도 찾지 못하면 "찾지 못함"으로 명확히 결론낸다. 느슨하게 관련된 기법으로 대체하지 않는다
 
 **참고 맥락**: 우리 실측에서 d/R≥4 면수가 MILo 172k 대 AmbiSuR 0이다. 즉 우리 base인 MILo는 이미 그 영역을 산출한다. 산출과 평가는 별개이므로 "산출하는 기법"과 "평가하는 기법"을 구분해 기록할 것.
+
+
+---
+
+## ★08-19 방향 전환 후 신규 큐 (Q-14~Q-21)
+
+> **전제가 바뀌었다.** 배경 재구성은 폐기됐고 새 표적은 **hole 있는 단일 오브젝트의 mesh 품질**이다. 시작 전에 `wiki/system/research-status.md` 상단 배너와 `wiki/system/progress-2026-08-19.md`를 읽을 것. 배경·원거리 전제의 기존 페이지들과 충돌하면 새 방향이 우선.
+
+### Q-14. 단일 물체 GS mesh recon SOTA와 실패 사례 [대기] (우선순위 1)
+
+- 단일 물체 표면 재구성에서 현재 SOTA로 인정되는 GS 계열 기법 열거 (AmbiSuR 포함, 그 외 — 2DGS·PGSR·GOF 계열의 최신 후속 포함)
+- **각 기법이 스스로 인정하는 실패 사례** 수집: hole·오목·내부·self-occlusion·얇은 구조. limitations 절과 실패 그림을 원문에서
+- 목적: motivation의 "SOTA는 [특정 케이스]에서 실패한다"를 원문 근거로 채우는 것. **실패 사례가 가장 중요한 산출물**
+- 평가 무대·지표(DTU Chamfer 등)와 대표 수치도 표로
+
+### Q-15. 표적 데이터셋 — hole·segmentation·바이오 [대기] (우선순위 1)
+
+- hole 있는 단일 오브젝트를 포함한 데이터셋 (GT mesh 또는 정밀 점군 보유 필수)
+- **segmentation 정보가 함께 제공되는** 3D 데이터셋
+- **바이오 계열: 해골 스캔·장기·뼈** (교수 선호 확인됨). 의료 영상 유래 mesh 데이터셋 포함
+- 기존 후보와 통합 검토: DTU scan65(구조광 점군), MobileBrick(GT depth fusion), Thingi10K(Q-09 잔여), NeRF-Synthetic blend 추출
+- 각 후보: 규모 / GT 형식 / 라이선스 / GS 계열 사용 선례 / segmentation 유무
+- 참고: "기존 데이터셋에 오브젝트를 추가해도 된다"는 허가 있음 — 합성 삽입 선례도 한 줄
+
+### Q-16. self-occlusion을 다룬 판별·가시성 선행 [대기] (우선순위 2)
+
+- **학습 전 단계에서** 자기 가림을 추정한 기법 (SfM track 기반, 점군 가시성, hidden point removal 등)
+- 가시성 정보를 학습 supervision에 쓴 사례
+- 우리 계획(track은 실제 매칭만 담아 가림을 반영)과 같은 발상의 선행이 있는지 — 있으면 인용, 없으면 "찾지 못함" 명시
+
+### Q-17. densification 과잉 → 품질 저하 선행 [대기] (우선순위 2)
+
+- clone/split 과잉이 품질을 떨어뜨린다는 문제 제기 논문들 (0.7+0.7=1.4 기전)
+- **ICML의 강화학습 기반 densification 조절** (교수 언급) — 정체 특정
+- densification 조절로 **mesh 품질**(렌더링 아니라)을 개선한 사례가 있는지
+
+### Q-18. GS 개선 → mesh 개선 연결을 다룬 선행 [대기] (우선순위 2)
+
+- Gaussian 품질(수·밀도·배치)과 추출 mesh 품질의 관계를 정량으로 다룬 논문
+- **mesh-in-the-loop가 아닌 기법**(학습 후 TSDF/Poisson 추출)에서 GS 개선이 mesh 개선으로 이어졌는지
+- 이 연결이 자명하지 않다는 반례(렌더링은 좋은데 mesh는 나쁜 사례)가 문헌에 있는지
+
+### Q-19. point cloud → mesh를 GT로 쓴 선례 [대기] (우선순위 3)
+
+- 스캔 점군에서 만든 mesh(Poisson 등)를 GT로 평가한 논문이 있는지, 어떤 조건·표기로
+- MobileBrick의 "GT depth 기반 fusion mesh" 관행과 비교
+
+### Q-20. mesh 품질 지표 — CAD 계열과 FID [대기] (우선순위 3)
+
+- CAD/기하처리 쪽 지표(dihedral angle, edge length 분포, 법선 일관성 등)가 GS/NeRF mesh recon 평가에 쓰인 사례
+- FID의 mesh 평가 사용 사례 (렌더 이미지 FID 보조 사용 포함. 없으면 "없음" 확정)
+- 위상 지표(성분 수·경계 변·watertight)의 사용 선례 — 기존 C4 검토와 통합
+
+### Q-21. segmentation 기반 평가의 실체 [대기] (우선순위 3)
+
+- 두 해석 확인: (a) semantic seg를 재구성 품질 판별의 입력으로 (b) **부위별(per-part) mesh 채점**
+- (b) 사례 우선 — 부위 나눠 채점한 mesh 평가 논문
+- seg 정보를 confidence/uncertainty에 연결한 사례가 있는지
