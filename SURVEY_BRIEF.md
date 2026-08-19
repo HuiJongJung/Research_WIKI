@@ -448,3 +448,15 @@ FID는 3D 생성 계열의 렌더 이미지 관행(OctFusion 등 20시점)이고
 - ② PARIS·Neural Part Priors **원문**에서 부위별 채점·결손 부위 처리 규칙 확인 (현재 전부 2차 자료)
 - ③ Gaussian Sculpting 코드 공개 여부·후속 판본 추적
 - ④ LeGS 게재처 확인 (ICML 2026 여부)
+
+
+### Q-24. 표적 정의 정밀화 재조사 — "깊은 구멍" [대기] (우선순위 1)
+
+사용자가 hole의 정의를 좁혔다. **관통 링(가위류)이 아니라 깊은 오목·관·내부 공간** — 파이프 내부, 컵·화병 안쪽, 개구로만 보이는 공동. 핵심 변수 = **깊이 대 개구 비**. 주의: 막힌 깊은 구멍은 genus 0이므로 **위상 필터로는 못 고른다** (Q-22의 genus 선별 기준은 이 표적에 부적합 판정됨).
+
+1. **파이프·관 데이터셋** — Q-09 잔여 PipeForge3D 확인 포함(정체·GT·라이선스), 산업 배관·점검 계열, 파이프/터널/보어 내부 재구성 선행의 무대
+2. **기존 확보분 재선별** — OmniObject3D의 깊은 내부 카테고리(kennel 확보, mug·cup·vase·bottle·jar — Gaussian Sculpting 12물체 밖 포함), DTU 124스캔 중 깊은 오목 물체(문헌·웹 확인 가능분만), Thingi10K를 깊이 기준으로 고르는 방법
+3. **깊이 대 개구 비의 정량 측도 선례** — accessibility·ambient occlusion·shape diameter function 등이 물체 선별이나 부위 채점에 쓰인 재구성 논문
+4. **깊은 오목·내부 recon을 표적한 선행** — cavity·bore·interior를 명시한 GS/NeRF/MVS 논문의 실패 자인과 무대
+
+산출: 후보별 구멍의 실물 / 깊이 대 개구 비 추정 / 촬영 유무 / GT / 라이선스.
