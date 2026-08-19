@@ -75,9 +75,24 @@ Sulzer, Marlet, Vallet, Landrieu, "A Survey and Benchmark of Automatic Surface R
 
 **판단 필요**: 자체 지표에 위상 지표를 추가할지, 밴드별 completeness 단일 축을 유지할지.
 
+## 3-1. 08-19 보강 — CAD 지표의 사용 사례 발견과 FID (Q-20)
+
+**Q-08 때 "찾지 못함"이었던 "CAD 지표를 재구성 mesh 평가에 쓴 사례"가 발견됐다.**
+
+- **Gaussian Sculpting** (arXiv 2608.10602v1, 2026-08-11) `[원문 확인]`: OmniObject3D 12물체 + NeRF Synthetic 재구성 평가에서 Chamfer와 함께 **mesh 자체 품질 지표(내각 분포, sliver 삼각형 비율)를 보고**한다. GS 계열 표면 재구성에서 CAD 계열 지표를 쓴 첫 확인 사례이며, 새 표적(mesh 품질)의 지표 선례로 직접 인용 가능
+- 상세는 [[single-object-sota-failure-modes]] 1절
+
+**FID의 mesh 평가 사용 사례** (Q-20 두 번째 질문):
+
+- **3D 생성 계열의 관행이다.** OctFusion(arXiv 2408.14732) 등이 mesh를 20개 균일 시점에서 렌더한 이미지로 FID를 계산해 형상 품질·다양성을 잰다 `[2차 자료]`
+- **재구성 계열 사용 사례**: PointDreamer(arXiv 2406.15811, 점군→textured mesh 재구성)가 재구성 mesh의 렌더 이미지를 GT mesh 렌더와 FID로 비교한다 `[2차 자료]`
+- **GS/NeRF 표면 재구성 벤치마크에서 FID를 표준 지표로 쓴 사례는 찾지 못했다.** 관행은 기하 지표(Chamfer·F1)와 렌더 지표(PSNR/SSIM/LPIPS)의 병렬이며 FID는 생성·텍스처 쪽 어휘다. 채택한다면 "미관측 영역의 지각 품질"(FID가 분포 비교라 GT 정합이 없는 영역도 잰다는 성질) 논거가 선례에서 읽힌다 `[2차 자료]`
+
+탐색 경로: FID mesh evaluation / rendered FID recon 검색, Gaussian Sculpting 본문(08-19).
+
 ## 4. 남긴 것
 
 - Frey, Borouchaki의 표면 mesh 품질 평가 원전(IJNME)에 접근하지 못했다 `[미검증]`
 - valence 계열 지표의 원전 미확인
 - Sulzer 외 survey의 저널 게재 정보와 최종본 지표 목록을 대조하지 않았다
-- CAD 쪽 지표를 재구성 mesh에 적용한 사례를 **찾지 못했다.** 없다는 증명은 아니다
+- ~~CAD 쪽 지표를 재구성 mesh에 적용한 사례를 찾지 못했다~~ **해소(08-19).** Gaussian Sculpting이 그 사례다 (3-1절)

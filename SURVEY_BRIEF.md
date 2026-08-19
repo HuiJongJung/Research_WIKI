@@ -290,6 +290,14 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 | Q-10 SOTA 역추적·C7 보강 | 판단 필요 (AmbiSuR=실행 가능 SOTA, MILo 서면 위치 확정) | `wiki/comparisons/gs-surface-recon-sota-2026.md` |
 | Q-11 SfM 부산물 활용 선례 | 완료 (각 역산 사례 없음, 부산물 선례 3갈래 확보) | `wiki/questions/sfm-byproducts-beyond-points-precedent.md` + `wiki/comparisons/sfm-byproduct-citation-reading-map.md` |
 | Q-12 복셀 field의 가림 문제 | 판단 필요 (대안 4갈래, 무비용 선택지 C 존재) | `wiki/questions/occlusion-aware-confidence-field-design.md` |
+| Q-14 단일 물체 SOTA·실패 사례 | 완료 (자인 부재=측정 부재 관찰, Gaussian Sculpting 위협 판단 필요) | `wiki/comparisons/single-object-sota-failure-modes.md` |
+| Q-15 표적 데이터셋 hole·seg·바이오 | 완료 (교집합 부재 — 실사 축+렌더 축 조합 불가피, M2 판정 대기) | `wiki/comparisons/target-datasets-hole-seg-bio.md` |
+| Q-16 self-occlusion 선행 | 완료 (Nerfbusters 프러스텀 한계 자인, VAD-GS track 가시성 선행) | `wiki/questions/pretraining-self-occlusion-estimation.md` |
+| Q-17 densification 과잉 선행 | 완료 (Bulò 원전, LeGS 특정, CoMe·Expo-GS mesh 개선 사례) | `wiki/questions/densification-excess-quality-degradation.md` |
+| Q-18 GS→mesh 연결 선행 | 완료 (반례 원문 확보, 정량 분해 논문은 부재 — X3 빈자리) | `wiki/questions/gs-improvement-mesh-improvement-link.md` |
+| Q-19 점군→mesh GT 선례 | 완료 (관행 3종, 성립 조건 3개) | `wiki/questions/pointcloud-derived-mesh-as-gt.md` |
+| Q-20 CAD 지표·FID | 완료 (Q-08 부재 해소 — Gaussian Sculpting 사례) | `wiki/comparisons/mesh-intrinsic-quality-metrics.md` 3-1절 |
+| Q-21 seg 기반 평가 | 완료 (부위별 채점 선례 확보, GS 이식은 빈자리) | `wiki/questions/segmentation-based-mesh-evaluation.md` |
 
 **추가 질의 (2026-08-10)**: "복잡 오브젝트 + GT mesh + 실내/단일 물체" 단일 무대 추천 질의에 **MobileBrick**으로 답함 (근거 4·유보 2·차순위 포함, `gt-mesh-benchmark-candidates.md` 6절). DTU 부분호 예비판과 보완 관계. 채택 판정 필요.
 
@@ -324,14 +332,22 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 
 > **전제가 바뀌었다.** 배경 재구성은 폐기됐고 새 표적은 **hole 있는 단일 오브젝트의 mesh 품질**이다. 시작 전에 `wiki/system/research-status.md` 상단 배너와 `wiki/system/progress-2026-08-19.md`를 읽을 것. 배경·원거리 전제의 기존 페이지들과 충돌하면 새 방향이 우선.
 
-### Q-14. 단일 물체 GS mesh recon SOTA와 실패 사례 [대기] (우선순위 1)
+### Q-14. 단일 물체 GS mesh recon SOTA와 실패 사례 [완료] (우선순위 1)
+
+**결과**: SOTA 순위는 08-09 표 재사용(AmbiSuR 0.46 > GeoSVR 0.47 > GVGS 0.49 > PGSR 0.52, MILo 0.68). 실패 자인을 원문으로 수집했다 (`wiki/comparisons/single-object-sota-failure-modes.md`). 표적과 가장 가까운 자인: PGSR §VI "missing or limited viewpoints → incomplete geometry" + occlusion 추정 제거 시 F1 0.52→0.28, 2DGS §7 densification의 질감 편향("favors texture-rich over geometry-rich areas")과 over-smoothing, MILo p.2–3의 cavity·thin over-inflation/erosion, PhysGaussian의 hollow shell(내부 원전).
+**핵심 관찰(판단 필요)**: hole·오목·내부·self-occlusion을 정면 자인한 SOTA는 드물다. 공통 자인은 반사·투명·질감 부족·관측 결핍 4종. 자인의 부재는 "측정하지 않기 때문"(ObsMask 관행)으로 읽히며, motivation은 인용+실측 시연 결합이 필요하다.
+**신규 발견**: Gaussian Sculpting(arXiv 2608.10602v1, 2026-08-11) — OmniObject3D 12물체에서 mesh 자체 품질 지표(내각 분포·sliver 비율)까지 보고하고 "limited viewpoints의 missing structures 복원"을 표방. 새 표적과 최근접. **위협 분류 판단 필요.**
 
 - 단일 물체 표면 재구성에서 현재 SOTA로 인정되는 GS 계열 기법 열거 (AmbiSuR 포함, 그 외 — 2DGS·PGSR·GOF 계열의 최신 후속 포함)
 - **각 기법이 스스로 인정하는 실패 사례** 수집: hole·오목·내부·self-occlusion·얇은 구조. limitations 절과 실패 그림을 원문에서
 - 목적: motivation의 "SOTA는 [특정 케이스]에서 실패한다"를 원문 근거로 채우는 것. **실패 사례가 가장 중요한 산출물**
 - 평가 무대·지표(DTU Chamfer 등)와 대표 수치도 표로
 
-### Q-15. 표적 데이터셋 — hole·segmentation·바이오 [대기] (우선순위 1)
+### Q-15. 표적 데이터셋 — hole·segmentation·바이오 [완료] (우선순위 1)
+
+**결과**: 촬영 보유 축(DTU scan65 해골, MobileBrick LEGO, OmniObject3D 실물 6천)과 렌더 필요 축(MedShapeNet 의료 10만+, PartNet seg 57만 부위, Thingi10K)으로 정리했다 (`wiki/comparisons/target-datasets-hole-seg-bio.md`).
+바이오 정답 후보는 **MedShapeNet**(arXiv 2308.16139, 뼈·장기·혈관 mesh 10만+, 대부분 CC/CC BY 4.0, 렌더 필요)이고, seg 정답 후보는 **PartNet**(부위 채점 라벨의 사실상 유일 공급원, ShapeNet 등록제). 촬영+바이오 교집합은 DTU scan65뿐이다.
+**구조적 발견(판단 필요)**: 촬영+GT mesh+seg+바이오를 동시에 주는 기성 데이터셋은 없다. 실사 축과 렌더 축의 조합이 불가피하며 렌더 정당성 선례(Asset Inspection·OB3D·NeRF-Synthetic 관행)는 확보됨. 조합 확정은 M2.
 
 - hole 있는 단일 오브젝트를 포함한 데이터셋 (GT mesh 또는 정밀 점군 보유 필수)
 - **segmentation 정보가 함께 제공되는** 3D 데이터셋
@@ -340,37 +356,87 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 - 각 후보: 규모 / GT 형식 / 라이선스 / GS 계열 사용 선례 / segmentation 유무
 - 참고: "기존 데이터셋에 오브젝트를 추가해도 된다"는 허가 있음 — 합성 삽입 선례도 한 줄
 
-### Q-16. self-occlusion을 다룬 판별·가시성 선행 [대기] (우선순위 2)
+### Q-16. self-occlusion을 다룬 판별·가시성 선행 [완료] (우선순위 2)
+
+**결과**: 학습 전 도구는 HPR(Katz·Tal·Basri, SIGGRAPH 2007 — 표면·법선 없이 점군 가시성, Open3D 구현 존재). 가시성→supervision 직접 선례는 Nerfbusters §4.4의 가시성 loss이며, **"does not handle occlusions, instead overestimates the number of views" 자인이 원문에 있다** — 우리 프러스텀 한계(E1 20배 과대평가)와 동일 구조의 선행 자인 (`wiki/questions/pretraining-self-occlusion-estimation.md`).
+**우리 발상(track=가림 반영)의 선행은 있다**: VAD-GS가 복셀 가시성을 "구성 점들의 관측 뷰 합집합"으로 정의(08-11 원문 확인). 단 용도가 densification 판정이며 감독 배분이 아니다. "찾지 못함"이 아니라 "용도가 다른 선행 존재"가 결론.
+인용 사다리: HPR(도구)→Nerfbusters(loss+한계 자인)→VAD-GS(track 가시성)→본 연구(감독 배분+각 결합). **VAD-GS 위협표 등재 판단 필요.**
 
 - **학습 전 단계에서** 자기 가림을 추정한 기법 (SfM track 기반, 점군 가시성, hidden point removal 등)
 - 가시성 정보를 학습 supervision에 쓴 사례
 - 우리 계획(track은 실제 매칭만 담아 가림을 반영)과 같은 발상의 선행이 있는지 — 있으면 인용, 없으면 "찾지 못함" 명시
 
-### Q-17. densification 과잉 → 품질 저하 선행 [대기] (우선순위 2)
+### Q-17. densification 과잉 → 품질 저하 선행 [완료] (우선순위 2)
+
+**결과**: "0.7+0.7" 기전의 원전은 Bulò 외 "Revising Densification in Gaussian Splatting"(ECCV 2024, arXiv 2404.06109) §3.3 — clone 시 합성 가중이 (1−α)→(1−α)²로 부풀며 보정식 α̂=1−√(1−α). 단 개선 보고는 SSIM·LPIPS뿐, 기하 지표 없음 (`wiki/questions/densification-excess-quality-degradation.md`).
+**ICML RL densification의 정체 = LeGS** "Beyond Heuristics: Learnable Density Control"(arXiv 2605.00408, sensitivity 기반 보상으로 RL 정책이 clone/split 결정). 게재처 ICML 2026 여부는 미확정 [미검증]. 인접 RLGS(2508.04078).
+**densification 조절→mesh 개선 사례 있음**: CoMe Table 5(조절 끄면 primitive 20%↑·F1 하락), Expo-GS SDF 조향(기존 위키). 남는 자리: 학습 전 촬영 기하 판별값으로 조향한 사례는 없음 — lever④′ novelty 경계. **판단 필요.**
 
 - clone/split 과잉이 품질을 떨어뜨린다는 문제 제기 논문들 (0.7+0.7=1.4 기전)
 - **ICML의 강화학습 기반 densification 조절** (교수 언급) — 정체 특정
 - densification 조절로 **mesh 품질**(렌더링 아니라)을 개선한 사례가 있는지
 
-### Q-18. GS 개선 → mesh 개선 연결을 다룬 선행 [대기] (우선순위 2)
+### Q-18. GS 개선 → mesh 개선 연결을 다룬 선행 [완료] (우선순위 2)
+
+**결과**: 반례(렌더링 좋음·mesh 나쁨)는 원문으로 존재한다 — 2DGS 초록 "3DGS fails to accurately represent surfaces", MILo p.2 "fine detail이 mesh 추출에서 사라질 수 있다", 3DGS 원논문 §8은 mesh화를 열린 문제로 남김 (`wiki/questions/gs-improvement-mesh-improvement-link.md`).
+분리 실측: Desiatov & Sattler(시각 개선 없이 기하 일관성 개선), ISPRS(같은 무대에서 GS가 MVS에 열세), CoMe Table 5(primitive 20%↑인데 F1 하락 — 비단조). **"Gaussian 상태의 어떤 양이 mesh 품질을 예측하는가"의 정량 분해 논문은 찾지 못함** — X3 실험이 선행과 겹치지 않는 것으로 보임.
+**보너스 원문**: 2DGS p.2 "noisy reconstructions, due to the inherently unconstrained nature of 3D reconstruction tasks" — 우리 용어의 최근접 원문. 인용 은행 등록 가치. **판단 필요.**
 
 - Gaussian 품질(수·밀도·배치)과 추출 mesh 품질의 관계를 정량으로 다룬 논문
 - **mesh-in-the-loop가 아닌 기법**(학습 후 TSDF/Poisson 추출)에서 GS 개선이 mesh 개선으로 이어졌는지
 - 이 연결이 자명하지 않다는 반례(렌더링은 좋은데 mesh는 나쁜 사례)가 문헌에 있는지
 
-### Q-19. point cloud → mesh를 GT로 쓴 선례 [대기] (우선순위 3)
+### Q-19. point cloud → mesh를 GT로 쓴 선례 [완료] (우선순위 3)
+
+**결과**: 파생 mesh를 GT로 쓰는 관행 셋 확보 (`wiki/questions/pointcloud-derived-mesh-as-gt.md`). MobileBrick(GT depth의 TSDF fusion, README 각주로 유래 명시 — 수용된 표기 형식), MedShapeNet(환자 영상에서 직접 모델링, seg→mesh 절차는 미검증), DTU 비공식 관행(Poisson 참조 mesh, 개별 논문 미특정 [2차 자료]).
+성립 조건 셋이 읽힌다: 유래 명시, 원본 정밀도가 평가 대상보다 한 급 위, 파생 절차의 개입 인정. DTU 공식 평가는 파생 mesh를 쓰지 않고 점군 기준이다(코드 확인 08-09). 대규모 실측(Spires·T&T)은 mesh화하지 않는다는 대조도 기록.
 
 - 스캔 점군에서 만든 mesh(Poisson 등)를 GT로 평가한 논문이 있는지, 어떤 조건·표기로
 - MobileBrick의 "GT depth 기반 fusion mesh" 관행과 비교
 
-### Q-20. mesh 품질 지표 — CAD 계열과 FID [대기] (우선순위 3)
+### Q-20. mesh 품질 지표 — CAD 계열과 FID [완료] (우선순위 3)
+
+**결과**: Q-08의 "CAD 지표 사용 사례 찾지 못함"이 **해소됐다** — Gaussian Sculpting(arXiv 2608.10602)이 OmniObject3D 재구성 평가에서 내각 분포·sliver 비율을 보고한다. 기존 페이지에 3-1절로 병합 (`wiki/comparisons/mesh-intrinsic-quality-metrics.md`).
+FID는 3D 생성 계열의 렌더 이미지 관행(OctFusion 등 20시점)이고 재구성 쪽은 PointDreamer(점군→textured mesh) 사례가 있으나, **GS/NeRF 표면 재구성 벤치마크의 표준 지표로 쓴 사례는 찾지 못했다.** 채택 시 논거는 "분포 비교라 GT 정합 없는 영역도 잰다"는 성질.
+위상 지표(성분 수·경계 변)의 기존 검토는 유효하며, 단일 물체 무대에서는 "닫힌 물체 전제" 제약이 사라져 **오히려 적용이 쉬워진다**. 판단 필요.
 
 - CAD/기하처리 쪽 지표(dihedral angle, edge length 분포, 법선 일관성 등)가 GS/NeRF mesh recon 평가에 쓰인 사례
 - FID의 mesh 평가 사용 사례 (렌더 이미지 FID 보조 사용 포함. 없으면 "없음" 확정)
 - 위상 지표(성분 수·경계 변·watertight)의 사용 선례 — 기존 C4 검토와 통합
 
-### Q-21. segmentation 기반 평가의 실체 [대기] (우선순위 3)
+### Q-21. segmentation 기반 평가의 실체 [완료] (우선순위 3)
+
+**결과**: (b) 부위별 mesh 채점 **사례 있음** — articulated object 계열의 표준이다 (`wiki/questions/segmentation-based-mesh-evaluation.md`). PARIS(ICCV 2023)가 전체/정적/가동 CD를 분리 보고하고, Neural Part Priors가 의미 대응 부위 쌍별 Chamfer + **결손 부위 처리 규칙**(중심 대체 후 평균)까지 명시한다. 결손 처리 규칙은 hole 표적과 직결.
+(a) seg를 품질 판별 입력으로 쓴 사례와 seg→confidence 연결 사례는 **찾지 못했다**. 부위별 채점을 GS 표면 재구성에 가져온 논문도 없음 — 빈자리로 보이며 새 평가 설계 채택은 판단 필요.
+전부 검색 요약 경유 [2차 자료]라 채점 규칙 인용 전 원문 확인 필요.
 
 - 두 해석 확인: (a) semantic seg를 재구성 품질 판별의 입력으로 (b) **부위별(per-part) mesh 채점**
 - (b) 사례 우선 — 부위 나눠 채점한 mesh 평가 논문
 - seg 정보를 confidence/uncertainty에 연결한 사례가 있는지
+
+
+### Q-22. 데이터셋 재조사 — hole 오브젝트 중심, 조건 완화판 [대기] (우선순위 1)
+
+> Q-15의 조건을 사용자가 완화했다. **교집합 데이터셋을 찾는 문제가 아니다.**
+
+**필수 조건 (이것만)**
+- **hole·관통·오목·내부 공간이 있는 단일 오브젝트**가 들어 있을 것
+- 정확도 평가가 가능한 참조가 있을 것 — GT mesh면 최선, 정밀 점군·GT depth도 가능
+
+**가산점 (필수 아님)**
+- GT mesh 제공 (없으면 아쉬운 정도)
+- multi-view 실사 촬영 이미지가 이미 있음 (없으면 mesh 렌더로 대체 가능 — 렌더 정당성 선례는 Q-15에서 확보됨)
+- GS 계열 사용 선례, 명확한 라이선스, hole 크기·개수의 다양성
+- segmentation(부위 라벨), 바이오 계열 — 둘 다 **비필수 가산점**으로 강등
+
+**산출 요구**
+- 후보별로: **hole이 있는 실물 예시**(어떤 오브젝트에 어떤 hole인지 구체적으로 — "구멍 있는 물체 있음"이 아니라 "핸들 관통 머그, 눈구멍 있는 두개골"식) / 촬영 유무 / GT 형식 / 라이선스 / GS 선례 / 실제 다운로드 가능 여부
+- **기존 데이터셋에 hole 오브젝트를 추가하는 경로도 한 절로**: 표준 mesh(Stanford bunny 등)를 씬에 삽입·렌더한 관행의 선례 (사용자가 교수로부터 허가 확인받음)
+- 기존 확보분(DTU scan65 해골·MobileBrick·OmniObject3D·MedShapeNet·Thingi10K)은 재조사하지 말고 **hole 관점에서 한 줄 재평가**만
+
+### Q-23. 잔여 확인 묶음 [대기] (우선순위 2)
+
+- ① 오목 자인 문장 원전 특정 (GSSA 후보, MDPI 403 — 다른 경로 시도)
+- ② PARIS·Neural Part Priors **원문**에서 부위별 채점·결손 부위 처리 규칙 확인 (현재 전부 2차 자료)
+- ③ Gaussian Sculpting 코드 공개 여부·후속 판본 추적
+- ④ LeGS 게재처 확인 (ICML 2026 여부)
