@@ -28,8 +28,8 @@ tags:
 
 | 논문 | 채점 방식 | 격 |
 | --- | --- | --- |
-| **PARIS** (ICCV 2023, arXiv 2308.07391) | 전체 CD-w에 더해 **정적 부위 CD-s와 가동 부위 CD-m을 분리 보고** | `[2차 자료]` |
-| **Neural Part Priors** (arXiv 2203.09375) | 의미적으로 대응하는 **부위 쌍마다** 부위당 1만 점을 표집해 Chamfer 계산. **부위가 한쪽에만 있으면 mesh 중심을 결손 부위로 취급**하고, 부위 점수를 평균해 물체 점수로 | `[2차 자료]` |
+| **PARIS** (ICCV 2023, arXiv 2308.07391v1) | §5.3·Table 1: Chamfer-L1, 표면당 1만 점 양방향 표집 후 평균("we sample 10,000 points on each surface"), 수치는 ×1000 단위(A-SDF·Ditto 관례). **CD-w(전체)/CD-s(정적)/CD-m(가동) 분리 보고.** 결손 부위 규칙은 본문에 명시 없음(실패는 표에 F/* 표기) | `[원문 확인, Q-23②]` |
+| **Neural Part Priors** (CVPR 2022, arXiv 2203.09375) | 부록 B: "we sample 10,000 points per part", 의미 대응 부위 쌍별 Chamfer("for every pair of semantically matching parts"), **결손 부위 규칙 명시**: "we use the center of the mesh as a missing part", 부위 평균으로 물체 점수 | `[원문 확인, Q-23②]` |
 | Ditto (arXiv 2202.08227) | 같은 계열 (부위 단위 재구성·평가) | `[2차 자료]` |
 
 읽히는 규칙 셋: ① 부위 대응을 먼저 확정하고(의미 라벨 매칭) ② 부위별 지표를 따로 보고하며 ③ **결손 부위의 처리 규칙을 명시**한다(중심 대체 등). 셋째가 우리 hole 표적과 직결된다 — 부위가 아예 안 만들어진 경우를 지표가 삼키지 않게 하는 장치가 선례에 있다.
@@ -43,6 +43,6 @@ tags:
 
 검색: per-part / part-level Chamfer / segmentation-based error breakdown / region-wise. 부위 채점은 articulated 계열에서 즉시 확인. (a)·seg→confidence는 같은 검색과 기존 위키(OccluGaussian·AREA3D) 대조로 부재 판정.
 
-- PARIS·Neural Part Priors·Ditto 전부 본문 미독 (검색 요약 경유). 채점 규칙을 인용하려면 원문 표기 확인 필요
+- ~~PARIS·Neural Part Priors 본문 미독~~ **해소(Q-23②).** 원문 확인 완료, 인용 가능. Ditto만 [2차 자료] 잔존
 - PartNet 계열 seg 라벨과 이 채점 관행을 잇는 GS 논문은 찾지 못했다 — **부위별 채점을 GS 표면 재구성에 가져오는 것 자체가 빈자리**로 보인다. **판단 필요: 새 평가 설계에 채택할지**
 - 바이오 무대(해골 부위: 안와·비강·하악)에 부위 채점을 적용한 선례는 미탐색

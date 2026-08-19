@@ -41,7 +41,7 @@ tags:
 | 4 | GausSurf (arXiv 2411.19454) | 0.52 `[2차 자료]` | coming soon | GS + MVS 반복 |
 | — | MILo (SIGGRAPH Asia 2025) | 0.68 | 공개 | GS, in-loop. **base 중 하나** |
 
-**신규 발견 (08-19)**: Gaussian Sculpting (arXiv 2608.10602v1, 2026-08-11, DUT 외) `[원문 확인]`. SDF를 직접 최적화하고 Gaussian을 mesh 표면에 앵커된 렌더 프록시로 쓴다. **무대가 OmniObject3D 실물 스캔 12물체 + NeRF Synthetic 5씬**이고, Chamfer 외에 **mesh 자체 품질 지표(내각 분포, sliver 삼각형 비율)를 보고**한다. "limited viewpoints로 인한 missing structures 복원"을 표방한다. 새 표적과 무대·지표·문제의식이 전부 겹치는 최근접 논문이다. DTU 수치가 없어 위 표와 직접 비교 불가. 코드 공개 여부 미기재 `[코드 미확인]`. **판단 필요: 위협 분류.**
+**신규 발견 (08-19)**: Gaussian Sculpting (arXiv 2608.10602v1, 2026-08-11, DUT 외) `[원문 확인]`. **코드 미공개, v1이 최신** (Q-23③, 08-19 확인 — 공식 저장소 검색 불발, 추적 계속). SDF를 직접 최적화하고 Gaussian을 mesh 표면에 앵커된 렌더 프록시로 쓴다. **무대가 OmniObject3D 실물 스캔 12물체 + NeRF Synthetic 5씬**이고, Chamfer 외에 **mesh 자체 품질 지표(내각 분포, sliver 삼각형 비율)를 보고**한다. "limited viewpoints로 인한 missing structures 복원"을 표방한다. 새 표적과 무대·지표·문제의식이 전부 겹치는 최근접 논문이다. DTU 수치가 없어 위 표와 직접 비교 불가. (위협 분류는 08-19 판정 완료 — 경쟁 후보 등재, novelty 위협 아님. progress-2026-08-19 참조)
 
 ## 2. 자인된 실패 사례 (원문 수집)
 
@@ -62,9 +62,14 @@ tags:
 | **Gaussian Wrapping** | §6 (arXiv v1, 2026-04-08) `[원문 확인]` | PAM의 균일 표집이 고디테일 씬에 suboptimal. **논문에는 실패 자인이 거의 없음.** 단 저장소 README는 "후처리 mesh가 씬의 물체를 제거하는 경우"를 자인 | 논문 주장과 코드 실물의 간극 사례 |
 | **PhysGaussian** | §3.7, Fig.6 `[원문 확인, 위키 concepts]` | 3DGS 재구성은 내부가 관측되지 않아 **hollow shell**로 남는다 (시뮬레이션을 위해 내부 채움이 필요했다는 것 자체가 근거) | **내부 문제의 원전** |
 
-### 2-2. 오목(concavity) 자인 — 출처 미특정 1건
+### 2-2. 오목(concavity) 자인 — 원전 특정 완료 (Q-23①, 08-19)
 
-검색 요약에 "strict piecewise planar assumptions of 2DGS ... **over-smoothing in challenging narrow concavities**, failing to recover deep architectural gaps"라는 문장이 잡혔으나 **원전을 특정하지 못했다** `[2차 자료, 출처 미특정]`. 후보는 GSSA(MDPI Remote Sensing 18(15):2497, 403 차단)와 Gaussian Sculpting(본문에서 해당 문구 못 찾음). 인용하려면 출처 특정이 선행되어야 한다.
+**SatSplat §4.5 Limitations and Failure Cases, Fig. 10** (arXiv 2606.28581v1) `[원문 확인]`:
+
+> "the strict piecewise planar assumptions of the 2DGS representation can lead to **over-smoothing in challenging narrow concavities**, failing to recover deep architectural gaps. This issue is absent when using the more flexible, volumetric 3DGS primitive, indicating that it is a direct consequence of the 2DGS surface assumptions struggling to represent high-frequency depth discontinuities."
+
+- **2DGS의 오목 실패를 정면 자인한 유일하게 확보된 원문**이다. 위성 무대 맥락이지만 서술은 표현(primitive)의 가정에 대한 일반 진술이다
+- 덤: "3DGS primitive에서는 이 문제가 없다"는 대비까지 있어, 오목 실패가 **표현의 가정에서 오는 기전**임을 SOTA 계열이 스스로 서술한 형태다. motivation 인용 은행 등재 후보
 
 ## 3. 핵심 관찰 (판단 필요)
 
@@ -81,7 +86,7 @@ tags:
 ## 5. 남긴 것
 
 - PGSR HTML의 arXiv 판본 번호 미기록 (§VI 문구는 확인)
-- 오목 자인 문장의 원전 특정 (GSSA 후보)
-- Gaussian Sculpting의 코드 공개 여부, DTU 부재로 인한 순위 비교 불가
+- ~~오목 자인 문장의 원전 특정~~ **해소(Q-23①).** SatSplat §4.5 (2-2절)
+- ~~Gaussian Sculpting 코드 공개 여부~~ **해소(Q-23③).** 미공개·v1 최신, 추적 계속. DTU 부재로 인한 순위 비교 불가는 유지
 - GVGS·GausSurf의 limitations 미수집 (전자는 자기 표 SOTA 문제가 이미 기록됨)
 - 실패 그림(figure) 수집은 하지 않았다. 필요 시 2DGS Fig.12, RaDe-GS Metal Scissor, MILo Fig.8(interior 단면)이 후보

@@ -46,7 +46,7 @@ Bulò, Porzi, Kontschieder, "Revising Densification in Gaussian Splatting" (ECCV
 ## 2. ICML의 RL densification — 정체 특정
 
 - **LeGS, "Beyond Heuristics: Learnable Density Control for 3D Gaussian Splatting"** (arXiv 2605.00408, 2026-05) `[2차 자료]`. density control을 **RL 정책 네트워크**로 재정식화하고, Gaussian 하나가 재구성 품질에 주는 한계 기여를 sensitivity 분석으로 정량화한 **보상 함수**로 학습한다. 손설계 규칙(gradient 임계) 대체가 목표
-- 교수 언급의 "ICML 강화학습 densification"은 LeGS로 특정된다. 본인 ICML 2026 청취 기록에도 LeGS가 있다 `[본인 청취 기록]`. **단 게재처가 ICML 2026인지는 arXiv 페이지에서 확정하지 못했다** `[미검증]`
+- 교수 언급의 "ICML 강화학습 densification"은 LeGS로 특정된다. **게재처 ICML 2026 확정** (Q-23④, 08-19): 공식 저장소 AaronNZH/LeGS가 "[ICML 2026]"을 표제에 명시하며 **코드도 공개돼 있다** `[원문 확인, 저장소]`
 - 인접: RLGS (arXiv 2508.04078, 2025-08) `[2차 자료]` — densification 임계 포함 하이퍼파라미터를 RL로 동적 조정하는 plug-and-play 모듈
 
 두 편 모두 **평가는 렌더링(NVS)**으로 보인다. mesh 지표 보고 여부는 본문 미독 `[미검증]`.
@@ -66,7 +66,7 @@ Bulò, Porzi, Kontschieder, "Revising Densification in Gaussian Splatting" (ECCV
 
 검색: ICML 2026 RL densification, RL adaptive density control reward. 원문: Bulò ar5iv, 2DGS 게재본 p.8. 위키 재사용: confidence-steered-densification, sdf-guided-density-control.
 
-- LeGS 본문 미독 (보상 함수의 구체형, mesh 지표 유무, 게재처)
+- LeGS 본문 미독 (보상 함수의 구체형, mesh 지표 유무 — 게재처는 해소)
 - RLGS 본문 미독
 - Mini-Splatting·Taming 3DGS 등 densification 예산 계열은 훑지 않았다 (렌더링 표적으로 보이나 미확인)
 - 3DGS-MCMC(densification의 MCMC 재해석)도 미조사 — C7 예비판과 무관하지 않을 수 있음

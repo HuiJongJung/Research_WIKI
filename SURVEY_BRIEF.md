@@ -249,7 +249,6 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 대안 재료 4갈래: ⓐ z-buffer 가시 판정을 복셀에 붙이기(VAD-GS), ⓑ 표면점 기준 reconstructability로 재정의(Smith 외 SIGGRAPH Asia 2018 — 가시성·거리·각도가 원래 한 식), ⓒ 표면 confidence를 복셀로 누적(arXiv 2405.02568), ⓓ TSDF의 입사각·거리 가중 관행(우리 각 판별값과 직교하는 축).
 **즉시 확인 가능한 것**: COLMAP track은 실제 정합된 이미지만 담으므로 **point 채널은 이미 가림을 반영하고 pose 채널만 눈이 멀었다**(조사 세션 관찰). 두 채널의 불일치를 가림 지표로 쓰는 안은 새 계산 없이 기존 데이터 재판독으로 확인 가능. 선택지 A~D 표로 정리, 채택은 B4 판정.
 
----
 
 ## 7. 결과 인계 형식
 
@@ -415,9 +414,13 @@ FID는 3D 생성 계열의 렌더 이미지 관행(OctFusion 등 20시점)이고
 - seg 정보를 confidence/uncertainty에 연결한 사례가 있는지
 
 
-### Q-22. 데이터셋 재조사 — hole 오브젝트 중심, 조건 완화판 [대기] (우선순위 1)
+### Q-22. 데이터셋 재조사 — 조건 완화판, hole 실물 특정 [완료] (우선순위 1)
 
-> Q-15의 조건을 사용자가 완화했다. **교집합 데이터셋을 찾는 문제가 아니다.**
+**결과**: hole 실물을 후보별로 특정했다 (`wiki/comparisons/hole-object-dataset-candidates.md`). 촬영까지 보유한 최강 조합은 **DTU scan65(안와·비강·치간, 이미지 확인) + scan37 금속 가위(손잡이 링 관통 2개, RaDe-GS가 실패 씬으로 명시해 존재 확증) + OmniObject3D 선별(teapot 핸들 관통·kennel 내부 공간 — Gaussian Sculpting 12물체 목록에서 확정) + MobileBrick**.
+렌더 축의 hole 다양성은 Thingi10K(genus 통계로 선별 가능, 설계 mesh라 GT 논란 없음) > MedShapeNet(두개골·척추 추공·골반 폐쇄공 후보, 품목 확인 필요) > Stanford(Happy Buddha·Dragon "free holes", Bunny는 바닥 결손 구멍 — GT 자체에 hole이 있는 유명 사례).
+삽입 경로는 3층 선례로 성립: 표준 test model 관행(teapot·bunny) + 벤치마크 제작 선례(Asset Inspection·OB3D) + 도구(BlenderNeRF COS). **M2 확정 대기.**
+
+> 원 지시 (위키 판단 세션):
 
 **필수 조건 (이것만)**
 - **hole·관통·오목·내부 공간이 있는 단일 오브젝트**가 들어 있을 것
@@ -434,7 +437,12 @@ FID는 3D 생성 계열의 렌더 이미지 관행(OctFusion 등 20시점)이고
 - **기존 데이터셋에 hole 오브젝트를 추가하는 경로도 한 절로**: 표준 mesh(Stanford bunny 등)를 씬에 삽입·렌더한 관행의 선례 (사용자가 교수로부터 허가 확인받음)
 - 기존 확보분(DTU scan65 해골·MobileBrick·OmniObject3D·MedShapeNet·Thingi10K)은 재조사하지 말고 **hole 관점에서 한 줄 재평가**만
 
-### Q-23. 잔여 확인 묶음 [대기] (우선순위 2)
+### Q-23. 잔여 확인 묶음 [완료] (우선순위 2)
+
+**결과**: 4건 전부 해소.
+① 오목 자인 원전 = **SatSplat §4.5 Limitations, Fig. 10** (GSSA 아니었음). "over-smoothing in challenging narrow concavities" + **3DGS primitive에서는 이 문제가 없다는 대비까지** 원문 확보 — 오목 실패가 표현의 가정에서 온다는 기전 서술. 인용 가능 (`single-object-sota-failure-modes.md` 2-2절).
+② PARIS(§5.3: 1만 점 양방향·×1000 단위, 결손 규칙은 본문 미명시)·Neural Part Priors(CVPR 2022 부록 B: 부위 쌍별 1만 점, **"we use the center of the mesh as a missing part"** — 결손 규칙 verbatim) 원문 확인 승격 (`segmentation-based-mesh-evaluation.md`).
+③ Gaussian Sculpting **코드 미공개, v1(08-11)이 최신.** 추적 계속. ④ **LeGS = ICML 2026 확정 + 코드 공개**(AaronNZH/LeGS 저장소 표제) — 교수 언급과 일치 (`densification-excess-quality-degradation.md`).
 
 - ① 오목 자인 문장 원전 특정 (GSSA 후보, MDPI 403 — 다른 경로 시도)
 - ② PARIS·Neural Part Priors **원문**에서 부위별 채점·결손 부위 처리 규칙 확인 (현재 전부 2차 자료)
