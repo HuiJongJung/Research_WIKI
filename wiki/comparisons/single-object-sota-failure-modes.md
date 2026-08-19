@@ -85,7 +85,7 @@ tags:
 
 ## 5. 남긴 것
 
-- PGSR HTML의 arXiv 판본 번호 미기록 (§VI 문구는 확인)
+- ~~PGSR HTML의 arXiv 판본 번호 미기록~~ **해소(08-19, 로컬 PDF 정독).** arXiv:2406.06521**v2** (2025-01-10), 게재본 TVCG DOI 10.1109/TVCG.2024.3494046. §VI 문구·ablation 0.52→0.28 모두 이 판본에서 재확인. 상세는 [[pgsr-planar-gaussian-splatting]]
 - ~~오목 자인 문장의 원전 특정~~ **해소(Q-23①).** SatSplat §4.5 (2-2절)
 - ~~Gaussian Sculpting 코드 공개 여부~~ **해소(Q-23③).** 미공개·v1 최신, 추적 계속. DTU 부재로 인한 순위 비교 불가는 유지
 - GVGS·GausSurf의 limitations 미수집 (전자는 자기 표 SOTA 문제가 이미 기록됨)
