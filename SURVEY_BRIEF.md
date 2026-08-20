@@ -466,7 +466,11 @@ FID는 3D 생성 계열의 렌더 이미지 관행(OctFusion 등 20시점)이고
 산출: 후보별 구멍의 실물 / 깊이 대 개구 비 추정 / 촬영 유무 / GT / 라이선스.
 
 
-### Q-25. confidence의 표현 층 선례 — voxel 격자 밖 [대기] (우선순위 2)
+### Q-25. confidence의 표현 층 선례 — voxel 격자 밖 [완료] (우선순위 2)
+
+**결과**: `wiki/questions/confidence-representation-layer-precedents.md`. **per-primitive a priori confidence는 빈자리 확정.** per-Gaussian 통계 추적(hit count·투과율·기여도)은 LightGaussian·Mini-Splatting·PUP 3D-GS 등에서 표준 관행이나 전부 ⓐ 학습된 렌더 상태의 통계이고 ⓑ 용도가 pruning·압축이다. 학습 전 카메라 기하량을 primitive별로 계산해 감독 배분에 쓴 사례는 찾지 못함 — 인프라는 어디에나 있으므로 구현 장벽이 아니라 발상의 빈자리.
+감독 라우팅 field는 기존 4종(G4Splat 이진 가시성·AREA3D 능동·VAD-GS densification·CoMapGS 개수)이 전부이고 octree·다해상도 라우팅은 없음. OCSplats(arXiv 2508.01239, 관측 완전성→noise 분리)는 정의 미확인 인접 [미검증, 본문 확인 가치].
+캐시 대 직접 평가 트레이드는 재구성 문헌에 없고, 그래픽스 고전(Ambient Occlusion Fields, I3D 2005 — 연속량의 격자 baking)이 인접 프레임 — **"voxel은 방법이 아니라 캐시" 서술을 그래픽스 관행 언어로 세울 수 있다.** 판단 필요: v2 설계 서술 채택.
 
 물체 무대 전환으로 구현 층을 재검토 중이다. 배경: 현행 96³ 수축 격자는 무한 씬용 설계라 물체에는 낭비이며, 물체 규모(카메라 ~100대)에서는 conf(x)를 Gaussian 위치에서 직접 계산해도 싸다. 선례를 확인한다.
 
@@ -475,7 +479,11 @@ FID는 3D 생성 계열의 렌더 이미지 관행(OctFusion 등 20시점)이고
 3. voxel 캐시 대 연속 함수 직접 평가의 트레이드를 논한 사례
 4. 없으면 "찾지 못함" — per-primitive a priori confidence가 빈자리라는 뜻
 
-### Q-26. 가는 구조 계열과 구멍 — GW의 hole 거동 [대기] (우선순위 2)
+### Q-26. 가는 구조 계열과 구멍 — GW의 hole 거동 [완료] (우선순위 2)
+
+**결과**: `wiki/questions/thin-structure-methods-and-holes.md`. ①(08-20 단독 회신 완료) **진단 런 가능** — 코드 전부 공개·CUDA 11.8·COLMAP 입력, 비후처리 mesh로 판독할 것. 핵심 신규 확인: **GW vacancy(Eq.7)는 카메라 광선 carving**("iterating over the set of all training camera rays")이라 관통은 열릴 구조적 이유가, 막힌 공동은 닫힐 구조적 이유가 있다 — 진단 런 예측을 문헌이 미리 지지 [원문 확인].
+② 스포크 성공은 wrapping(표현)+carving(관측)의 합작이며, 구멍 열기로의 이전은 **광선 통과 가능할 때만** 성립하는 조건부다. curve 계열은 곡선 재구성이라 표면 위상 무관.
+③ 관통 대 깊은 내부를 구분해 명시한 현대 재구성 선행은 **찾지 못함** — 구분의 원리는 Laurentini 1994(visual hull)에 있고, 그것을 GS 문헌에 명시적으로 가져오는 것은 빈자리 = **우리 서술 자산 유지, 단 발명이 아니라 고전 재소환으로 서술**.
 
 사용자 관찰: Gaussian Wrapping 계열이 자전거 살(가는 고체)을 잘 재구성했다. **가는 고체(표현 한계)와 빈 공동(관측 한계)은 반대 문제**라는 가설 아래:
 
@@ -484,7 +492,11 @@ FID는 3D 생성 계열의 렌더 이미지 관행(OctFusion 등 20시점)이고
 3. **관통(위상 보존)과 깊은 내부(관측 결핍)를 구분해 명시한 선행**이 있는가 — 없으면 이 구분 자체가 우리 서술 자산
 
 
-### Q-27. 구멍 있는 물체를 다룬 케이스 전반 — wrapping 계열 밖 [대기] (우선순위 1)
+### Q-27. 구멍 있는 물체를 다룬 케이스 전반 — wrapping 계열 밖 [완료] (우선순위 1)
+
+**결과**: `wiki/questions/real-hole-preservation-precedents.md`. **실물 구멍 보존을 표적한 연구는 존재하나 전부 GS/NeRF 밖이다** — 최근접은 "Inverse Rendering for High-Genus 3D Surface Meshes with Persistent Homology Priors"(arXiv 2601.12155, 2026-01, Gu 그룹): 다중 뷰 이미지→mesh 역렌더링 + PH prior로 tunnel·handle 보존, Thingi10K 무대, Betti 채점 [원문 확인]. GS/NeRF에서 genus·위상을 표적·채점한 논문은 **찾지 못함 — 빈자리 확정.**
+위상 채점 도구는 준비돼 있다: Betti·PH 제약(TopoSculpt TIB), "voxel 겹침 측도는 위상 정확성을 못 잡는다" 서술 확보. implicit+PH 계열(STITCH 등)은 점군 입력이고 STITCH의 제약은 단일 성분 강제라 오히려 구멍 제거 방향일 수 있음. shape completion은 보존/메움의 명시 서술 자체를 찾지 못함.
+**visual hull 고전 앵커 확보**: Laurentini, IEEE TPAMI 16(2) 150–162 (1994) — hull 표면 위 특징만 실루엣으로 재구성 가능, 오목은 원리적 불가. 관통(실루엣이 봄) 대 깊은 내부(못 봄) 구분의 원전이며, GW vacancy carving(Eq.7)이 이 논리의 GS판임까지 연결됨(Q-26). "hole=메울 결함" 대세의 실례가 GW 논문 안에도 있음("closing holes"=shell 틈).
 
 Q-14(SOTA 자인)·Q-24(깊은 내부 표적 선행)보다 넓은 그물이다. **어떤 계열이든** 실물 구멍이 있는 물체를 명시적으로 다룬 사례를 찾는다.
 
@@ -497,3 +509,13 @@ Q-14(SOTA 자인)·Q-24(깊은 내부 표적 선행)보다 넓은 그물이다. 
 5. shape completion 계열이 구멍을 보존하는지 메우는지 — 학습 prior가 구멍을 어떻게 취급하는가
 
 산출: 계열별 표(무엇을 보존/메움, 무대, GS 이식 가능성). 엄밀성 규칙 상시.
+
+
+### Q-28. GS mesh recon 계보 지도 [대기] (우선순위 1)
+
+사용자의 지식 체계화용 등뼈. **기존 위키 소화분(2DGS·PGSR·MILo·AmbiSuR·GOF·RaDe-GS 소스 페이지들)을 재사용해 조립하고, 빈 마디만 신규 조사한다.**
+
+- 한 장 계보: 3DGS → SuGaR → 2DGS → GOF → RaDe-GS → PGSR → MILo → GeoSVR/AmbiSuR/GS Sculpting. **각 마디마다: 무슨 문제를 물려받았고, 무엇을 풀었고, 무엇을 남겼나** (한 줄씩)
+- 축 둘로 정리: primitive 유형(3D vs 평면 vs SDF 앵커), mesh 추출 시점(사후 TSDF vs in-loop)
+- 각 마디의 "남긴 문제"에서 **hole·오목·관측 결핍이 어디에 등장하는지** 표시 — 우리 자리가 계보 어디에 꽂히는지가 산출물
+- 형식: comparison 페이지 1장 + (가능하면) 그림용 계보도 텍스트 스펙
