@@ -21,7 +21,7 @@
 | `wiki/system/rules-deck.md` | 규율 — 발표 자료 구성 (쌓기, 스킬과 동기화) |
 | `wiki/system/rules-talk.md` | 규율 — 발표 방법 (쌓기, 사용자 열람용) |
 | `wiki/system/open-items.md` | 열린 항목 등록부 (상태·담당 표기, 갱신) |
-| `wiki/system/my-tasks.md` | 사용자 직접 작업 목록 (현재분만, 덮어씀) |
+| `direction/할일.md` | 사용자 to-do 리스트 (현재분만, 덮어씀, 위키 인덱스 비대상) |
 | `direction/26년M월N주차.md` | **주간 방향 일지** (위키 인덱스 비대상, 큰 전환 시 새 파일) |
 | `wiki/system/progress-YYYY-MM-DD.md` | 이전 형식 진행 이력 (08-21에 종료, 더 만들지 않음) |
 | `wiki/system/feedback-YYYY-MM-DD-*.md` | 세미나 피드백 기록 (동결, 갱신하지 않음) |
