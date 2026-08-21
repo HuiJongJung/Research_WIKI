@@ -513,7 +513,11 @@ Q-14(SOTA 자인)·Q-24(깊은 내부 표적 선행)보다 넓은 그물이다. 
 산출: 계열별 표(무엇을 보존/메움, 무대, GS 이식 가능성). 엄밀성 규칙 상시.
 
 
-### Q-29. ★GS mesh recon survey 존재 확인 [대기] (우선순위 1 — 최우선, 짧은 항목)
+### Q-29. ★GS mesh recon survey 존재 확인 [완료] (우선순위 1 — 최우선, 짧은 항목)
+
+**결과**: **존재한다.** Xu·Chen·Li·Chen·Cheng, "A survey on surface reconstruction based on 3D Gaussian splatting", **PeerJ Computer Science, 2025-08-05** (PMC12453780) [원문 확인, PMC 게재본]. 약 60+ 기법 커버(2DGS·SuGaR·PGSR·GOF·RaDe-GS·GS2Mesh·DN-Splatter·GSDF·NeuSG 등), 분류는 3단계 처리 흐름(장면 표현 → Gaussian 최적화 → 표면 추출, 각각 정적/동적 구분).
+**우리 표적을 다루는 절은 없다** — hole·오목·가림·미관측 영역을 체계적으로 다루는 절이 부재하고, 실패 언급은 "표면 불연속·왜곡 가능", "SDF는 투명 물체 곤란" 수준의 산발 문장뿐 [원문 확인]. survey의 분류 축 자체에 관측 결핍이 없다는 것이 측정 공백 서사의 보강 재료. 단 1-3 반론("필요 없었던 것") 검토용으로 부재 사실 그대로 기록.
+MILo·AmbiSuR·Gaussian Sculpting 커버 여부는 확인 목록에 없었음 [미검증 — 2025-08 출판이라 시기상 MILo까지는 가능]. 2026년판 전용 survey는 검색에서 미발견(탐색: survey/review+GS+surface/mesh 2026, arXiv 목록 대조). 대체 후보: 일반 GS survey의 표면 절(arXiv 2401.03890, 2407.17418), 준-survey로는 MILo related work(2단계 계보 정리 충실, 위키 소스 기확보)와 Gaussian Sculpting(2026-08이라 최신 지형 반영).
 
 **질문**: GS 기반 표면/mesh 재구성을 다룬 **survey·리뷰 논문이 존재하는가.** 사용자가 계보 공부의 출발점으로 삼을 문서를 찾는 것이 목적이다.
 
