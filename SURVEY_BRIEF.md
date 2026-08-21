@@ -26,12 +26,14 @@
 ## 2. 세션 시작 시 읽을 파일 (이 순서)
 
 1. **연구 공용 최신본**: `wiki/system/research-status.md` (이 저장소)
-   연구 방향, 가설과 판정, 핵심 명제, 4상태 정의, 확보된 실측, 경쟁 기법과의 차이, 평가 무대, 용어 규칙, 현재 진행이 전부 여기 있다. **세 갈래 세션이 공유하는 단일 최신본이며 이것만 읽으면 맥락이 선다.**
-2. (필요 시) **실험 상태**: `C:\Users\jinsw712\Desktop\Files\UnderConstrained-GS-Recon\EXPERIMENT.md`
+   연구 한 줄, 남긴 아이디어, 열린 질문, related work, 폐기 목록, 용어 규칙이 전부 여기 있다. **세 갈래 세션이 공유하는 단일 최신본이며 이것만 읽으면 맥락이 선다.** (08-21 전면 재작성 — 배경 시대 내용은 `raw/status-archive/`로 이동, 옛 큐 항목의 배경·판별값 맥락은 그 스냅샷에 있다)
+2. **연구 방법 규율**: `wiki/system/rules-research.md`
+   특히 **1-5 (문헌은 의도를 축으로 잇는다)** — 이 세션의 모든 논문 정리는 이 형식을 따른다: 꼬집는 문제 상황 → 방향성·방법 → **의도(왜 그 방법이 그 문제를 풀 것이라 생각했는가)** → 결과 지표 → 남는 한계.
+3. (필요 시) **실험 상태**: `C:\Users\jinsw712\Desktop\Files\UnderConstrained-GS-Recon\EXPERIMENT.md`
    조사 항목이 특정 실험 결과와 얽힐 때만 해당 절을 읽는다. 전체 정독 불필요.
-3. (필요 시) **연구 이력**: `wiki/system/progress-YYYY-MM-DD.md`
+4. (필요 시) **연구 이력**: `wiki/system/progress-YYYY-MM-DD.md`
    "언제 왜 이렇게 정해졌나"가 필요할 때만 날짜를 지정해 읽는다. 평소에는 읽지 않는다.
-4. (필요 시) **용어 상세**: `C:\Users\jinsw712\.claude\projects\C--Users-jinsw712-Desktop-Files-Research-WIKI\memory\terminology-preferences.md`
+5. (필요 시) **용어 상세**: `C:\Users\jinsw712\.claude\projects\C--Users-jinsw712-Desktop-Files-Research-WIKI\memory\terminology-preferences.md`
    확정 용어표 전문과 인용문 은행. 핵심 금지어는 위 1번에 이미 들어 있다.
 
 **읽지 않는 것**: `journal.md`, `harness/`, `specs/`, `PRD.md`, `TASK.md`, `docs/`, `AGENTS.md`. 2026년 6월에 끝난 위키 MCP 도구 개발 프로젝트의 유물이다.
@@ -511,6 +513,31 @@ Q-14(SOTA 자인)·Q-24(깊은 내부 표적 선행)보다 넓은 그물이다. 
 산출: 계열별 표(무엇을 보존/메움, 무대, GS 이식 가능성). 엄밀성 규칙 상시.
 
 
+### Q-29. ★GS mesh recon survey 존재 확인 [대기] (우선순위 1 — 최우선, 짧은 항목)
+
+**질문**: GS 기반 표면/mesh 재구성을 다룬 **survey·리뷰 논문이 존재하는가.** 사용자가 계보 공부의 출발점으로 삼을 문서를 찾는 것이 목적이다.
+
+- 있으면: 제목·발표처·버전·범위(다루는 기법 목록)와 함께 **"우리 표적(hole·오목·관측 결핍)을 다루는 절이 있는지"**를 확인해 보고
+- 없으면: "없음"을 탐색 경로와 함께 확정하고, 대체 후보를 제시 — ① 인접 survey(NeRF 계열 surface recon, 고전 MVS survey 중 최신) ② related work 절이 특히 충실한 논문 2~3편 (준-survey 역할)
+- **부재 자체가 정보다**: 부재 시 "필요 없었던 것 아닌가"(rules-research 1-3)의 반론 검토 재료로 부재 사실을 그대로 기록
+
+### Q-30. "photometric 개선 = mesh 개선" 통념 검증 재료 [대기] (우선순위 1)
+
+research-status §4 **Q-A**의 조사 담당분. 사용자 체감: photometric을 올리며 geometry를 희생하는 케이스가 많다(특히 NVS). 통념의 성립·불성립 양쪽 재료를 모은다.
+
+1. **확보된 단서 원문 재확인**: CoMe Table 5(수치와 주장 verbatim), Desiatov & Sattler(기하≠시각 — 정확한 주장 범위와 실험 조건)
+2. **추가 사례 수집**: photometric 지표(PSNR 등)가 오르면서 geometry 지표(Chamfer/F1/normal)가 내려간 실측이 있는 논문. shape-radiance ambiguity 계열(NeRF++), floater/geometry 희생을 자인한 GS 논문
+3. **반대편도 공정하게**: photometric과 geometry가 같이 오른다는 실측·주장이 있으면 그것도 기록 (불리한 발견 우선 보고 규율)
+4. 산출: 인용문 은행 (verbatim + 표·절 번호). 판정은 하지 않는다 — "판단 필요"로 넘긴다
+
+### Q-31. 차등 supervision의 learnable threshold 선례 [대기] (우선순위 2)
+
+research-status §4 **Q-B**의 조사 담당분. confidence에 따른 차등에서 임계·가중을 **learnable 파라미터로 둔 선례**가 있는가 (GS·NeRF·MVS 불문).
+
+- 각 선례: 무엇을 learnable로 뒀나 / 어떻게 파라미터화했나(sigmoid 온도, soft threshold 등) / 무엇이 그것을 감독하나 / 잘 됐나
+- 반대 노선도: 임계를 분포 기반으로 유도한 사례 (learnable 없이 근거를 만든 쪽)
+- 정리 형식: rules-research 1-5 (의도 축)
+
 ### Q-28b. ★문제의 계보 — 관측 결핍 처리의 역사 [대기] (우선순위 1, Q-28a보다 먼저)
 
 **이것이 우리 문제의 계보다.** Q-28a(GS mesh recon)는 무대의 계보일 뿐이다. 질문: **"관측이 결정하지 못하는 영역을 어떻게 다룰 것인가"**를 다뤄온 마디들과, 각 마디가 무엇을 전제했고 무엇을 남겼는가.
@@ -524,6 +551,7 @@ Q-14(SOTA 자인)·Q-24(깊은 내부 표적 선행)보다 넓은 그물이다. 
 5. **Shape completion** — 관측 없는 곳을 prior로 채우는 반대 노선
 
 **산출 요구**
+- 정리 형식은 rules-research 1-5(의도 축): 각 마디의 꼬집는 문제 → 의도 → 결과 → 남긴 한계
 - 마디별 한 줄: 무엇을 물려받았나 / 무엇을 풀었나 / **무엇을 전제했나**(이게 핵심 — 각 답이 성립하려면 무엇이 가능해야 했는가)
 - **빈칸 확인**: "촬영을 바꿀 수 없고 + 채우기를 원하지 않을 때"를 정면으로 다룬 마디가 있는가. 없으면 그것이 우리 자리
 - 원전 인용문 확보 (photo hull 정의, visual hull의 오목 한계는 특히 정확히)
