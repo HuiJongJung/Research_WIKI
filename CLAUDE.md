@@ -17,6 +17,9 @@
 | 경로 | 내용 |
 | --- | --- |
 | `wiki/system/research-status.md` | 연구 현재 상태 (공용 최신본, 항상 덮어씀) |
+| `wiki/system/rules-research.md` | 규율 — 연구 방법 (쌓기) |
+| `wiki/system/rules-deck.md` | 규율 — 발표 자료 구성 (쌓기, 스킬과 동기화) |
+| `wiki/system/rules-talk.md` | 규율 — 발표 방법 (쌓기, 사용자 열람용) |
 | `wiki/system/open-items.md` | 열린 항목 등록부 (상태·담당 표기, 갱신) |
 | `wiki/system/my-tasks.md` | 사용자 직접 작업 목록 (현재분만, 덮어씀) |
 | `wiki/system/progress-YYYY-MM-DD.md` | 진행 이력 (날짜별로 쌓기만 함, 평소엔 안 읽음) |
@@ -28,6 +31,24 @@
 | `wiki/assets/` | 논문 그림 crop |
 | `SURVEY_BRIEF.md` | 문헌 조사 세션 전용 임무 문서와 큐 |
 | `src/`, `tests/`, `tools/` | 위키 MCP 서버 구현 (연구 작업과 무관) |
+
+## 3축 규율 문서 (항상 참조 + 항상 갱신)
+
+세 파일은 **덮어쓰는 최신본이 아니라 쌓는 문서**다. 한 번 배운 규칙이 계속 적용된다. `wiki/system/`에 나란히 있다.
+
+| 파일 | 담는 것 | 언제 읽나 | 언제 쓰나 |
+| --- | --- | --- | --- |
+| `wiki/system/rules-research.md` | 연구 방법 규율 + **이 세션이 논의할 때 지켜야 할 것** | **연구 방향·가설·기여·novelty·설계를 논의할 때마다 먼저 읽는다** | 연구 방법에 관한 지적·조언을 들었을 때 |
+| `wiki/system/rules-deck.md` | 발표 자료 형식·구조·그림·문체·지표 제시 | 발표자료를 만들거나 검토할 때 (`seminar-deck-draft` 스킬이 이 내용을 정본으로 실행) | 자료 형식에 관한 피드백을 들었을 때 |
+| `wiki/system/rules-talk.md` | 발표 자리에서의 행동 팁 | **세션은 읽지 않는다.** 사용자가 발표 전에 직접 읽는 용도 | 발표 태도·응답에 관한 조언을 들었을 때 (쌓아만 둔다) |
+
+**새 조언이 들어오면 어느 파일인지 먼저 가른다.** 연구를 어떻게 할 것인가 → research, 자료를 어떻게 만들 것인가 → deck, 자리에서 어떻게 말할 것인가 → talk. 셋에 걸치는 지적은 축별로 쪼개서 각각 넣는다.
+
+**`rules-deck.md` 동기화 의무.** 이 파일을 고치면 스킬 사본도 함께 고친다. 한쪽만 고치면 다음 덱 작성이 구판으로 돌아간다.
+
+```
+awk 'NR==1 && /^---$/{f=1;next} f && /^---$/{f=0;next} !f' wiki/system/rules-deck.md > ~/.claude/skills/seminar-deck-draft/references/rules.md
+```
 
 ## 세션 역할
 
