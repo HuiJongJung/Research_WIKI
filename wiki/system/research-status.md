@@ -33,7 +33,8 @@ tags:
 | 연구 방향, 가설, 용어, 판정 | **이 문서** (최신본) |
 | **confidence map·regularization·densification·prior 4요소의 확정 설계** | **`wiki/system/design-2026-08-18-final.md`** — 구현 지시 전 반드시 읽는다. 이전 설계 서술과 충돌하면 그 문서가 우선 |
 | 발표 재료 배치 | `wiki/system/presentation-prep-2026-08.md` |
-| 연구가 어떻게 여기까지 왔는지 | `wiki/system/progress-YYYY-MM-DD.md` (필요할 때만) |
+| **내 연구가 어디로 가고 있는지 (주간 일지)** | **`wiki/system/direction-YYYY-MM-DD.md`** — 그 주 월요일 날짜 |
+| 연구가 어떻게 여기까지 왔는지 | `wiki/system/progress-YYYY-MM-DD.md` (08-21 종료된 이전 형식) |
 | 실험 상태, 수치, 실행 기록 | `C:/Users/jinsw712/Desktop/Files/UnderConstrained-GS-Recon/EXPERIMENT.md` (실험의 진실 원천) |
 | 실험 실행 단위 재현 기록 | 같은 저장소 `experiments/<날짜>_<슬러그>.md` |
 | 방향 결정의 변천사 | 같은 저장소 `design_log/` |
