@@ -21,7 +21,7 @@ tags:
 > 이 문서를 고치면 아래 명령으로 동기화한다 (frontmatter를 벗겨 복사).
 >
 > ```
-> awk 'NR==1 && /^---$/{f=1;next} f && /^---$/{f=0;next} !f' wiki/system/rules-deck.md > ~/.claude/skills/seminar-deck-draft/references/rules.md
+> powershell -ExecutionPolicy Bypass -File tools\sync-rules.ps1
 > ```
 
 

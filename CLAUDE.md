@@ -47,7 +47,13 @@
 **`rules-deck.md` 동기화 의무.** 이 파일을 고치면 스킬 사본도 함께 고친다. 한쪽만 고치면 다음 덱 작성이 구판으로 돌아간다.
 
 ```
-awk 'NR==1 && /^---$/{f=1;next} f && /^---$/{f=0;next} !f' wiki/system/rules-deck.md > ~/.claude/skills/seminar-deck-draft/references/rules.md
+powershell -ExecutionPolicy Bypass -File tools\sync-rules.ps1
+```
+
+`tools/sync-rules.ps1`이 frontmatter를 떼고 `~/.claude/skills/seminar-deck-draft/references/rules.md`로 덮어쓴다. 결과 확인은 아래가 아무것도 출력하지 않으면 일치.
+
+```
+diff <(awk 'NR==1 && /^---$/{f=1;next} f && /^---$/{f=0;next} !f' wiki/system/rules-deck.md) ~/.claude/skills/seminar-deck-draft/references/rules.md
 ```
 
 ## 세션 역할
