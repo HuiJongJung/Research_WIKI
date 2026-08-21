@@ -26,6 +26,7 @@
 | `wiki/system/progress-YYYY-MM-DD.md` | 이전 형식 진행 이력 (08-21에 종료, 더 만들지 않음) |
 | `wiki/system/feedback-YYYY-MM-DD-*.md` | 세미나 피드백 기록 (동결, 갱신하지 않음) |
 | `raw/feedback/` | 피드백 원본 파일 (인덱스 대상 아님) |
+| `raw/status-archive/` | research-status 이전 버전 보관 (덮어쓰기 전 스냅샷) |
 | `wiki/sources/` | 논문별 정리 페이지 |
 | `wiki/concepts/` | 재사용 가능한 개념 |
 | `wiki/comparisons/`, `wiki/claims/`, `wiki/questions/` | 비교표, 주장, 열린 질문 |
@@ -81,7 +82,7 @@ diff <(awk 'NR==1 && /^---$/{f=1;next} f && /^---$/{f=0;next} !f' wiki/system/ru
 방향이나 판정이 바뀌면 두 가지를 함께 한다.
 
 1. **주간 방향 일지** `wiki/system/direction-<그 주 월요일 날짜>.md`에 무엇이 왜 바뀌었는지 적는다. 파일이 없으면 만든다. **큰 방향 전환이 있으면 그날 날짜로 새 파일을 연다.**
-2. `wiki/system/research-status.md`의 해당 절을 덮어쓰고 상단 갱신일을 고친다.
+2. `wiki/system/research-status.md`의 해당 절을 덮어쓰고 상단 갱신일을 고친다. **덮어쓰기 전, 그날 첫 수정이면 이전 버전을 `raw/status-archive/research-status-<날짜>.md`로 복사해 보관한다.**
 
 일지는 **내 연구가 어디로 가고 있는지 돌아보기 위한 것**이고, 최신본은 **지금 어떤지**를 담당한다.
 
