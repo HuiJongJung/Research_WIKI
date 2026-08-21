@@ -26,7 +26,7 @@ tags:
 | 알고 싶은 것 | 볼 곳 |
 | --- | --- |
 | 연구 방법 원론 (논의 전 필독) | `wiki/system/rules-research.md` |
-| 내 연구가 어디로 가고 있는지 (주간 일지) | `wiki/system/direction-YYYY-MM-DD.md` |
+| 내 연구가 어디로 가고 있는지 (주간 일지) | `direction/26년M월N주차.md` (주 = 월~일, 주차 = 그 주 월요일 기준) |
 | **이전 연구 상황** | **`raw/status-archive/`** (버전 스냅샷) · `progress-*.md` (08-21 종료된 이전 형식) |
 | 발표 자료·발표 방법 규율 | `wiki/system/rules-deck.md` · `rules-talk.md` |
 | 실험 상태, 수치, 실행 기록 | `C:/Users/jinsw712/Desktop/Files/UnderConstrained-GS-Recon/EXPERIMENT.md` (실험의 진실 원천) |
@@ -133,7 +133,7 @@ tags:
 
 ## 9. 갱신 규칙
 
-- 방향이나 판정이 바뀌면 **주간 방향 일지(`direction-*.md`)에 무엇이 왜 바뀌었는지 적고, 이 문서의 해당 절을 덮어쓴다.**
+- 방향이나 판정이 바뀌면 **주간 방향 일지(`direction/26년M월N주차.md`)에 무엇이 왜 바뀌었는지 적고, 이 문서의 해당 절을 덮어쓴다.**
 - **덮어쓰기 전에 이전 버전을 보관한다.** 그날 첫 수정이면 `raw/status-archive/research-status-<날짜>.md`로 통째 복사한다 (하루 한 번이면 충분, 같은 날 나머지 변경은 git이 잡는다). 예전에 냈던 의견과 판단이 나중에 다시 쓸모 있을 수 있기 때문이다.
 - 실험 수치는 이 문서에 요약만 두고 상세는 `EXPERIMENT.md`에 남긴다. 두 곳의 숫자가 어긋나면 `EXPERIMENT.md`가 옳다.
 - 갱신 책임은 방향 논의 세션에 있다. 다른 세션은 이 문서를 읽기만 한다.
