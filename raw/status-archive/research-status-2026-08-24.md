@@ -19,7 +19,7 @@ tags:
 
 > **이 문서는 세 갈래 세션이 공유하는 단일 최신본이다.** 방향 논의 세션, 조사·문헌 세션, 실험 세션(`UnderConstrained-GS-Recon`)이 작업 시작 시 읽는다.
 >
-> 갱신일 **2026-08-24** (08-21 전면 재작성판의 첫 회수 갱신 — Q-29·30·28b·31 판정 반영). 배경 재구성 시대의 가설·판별값·실측을 정리하고 hole 오브젝트 무대 기준으로 다시 세웠다. **"현재 연구 상황"은 이 문서, "이전 연구 상황"은 `raw/status-archive/`의 날짜별 스냅샷이다.** 배경 시대의 상세(가설 H1~H3, 판별값 설계, 실측, 판정 이력)는 `raw/status-archive/research-status-2026-08-21.md`에 통째로 보존되어 있다.
+> 갱신일 **2026-08-21 — 전면 재작성.** 배경 재구성 시대의 가설·판별값·실측을 정리하고 hole 오브젝트 무대 기준으로 다시 세웠다. **"현재 연구 상황"은 이 문서, "이전 연구 상황"은 `raw/status-archive/`의 날짜별 스냅샷이다.** 배경 시대의 상세(가설 H1~H3, 판별값 설계, 실측, 판정 이력)는 `raw/status-archive/research-status-2026-08-21.md`에 통째로 보존되어 있다.
 
 ## 0. 참조 규칙
 
@@ -41,7 +41,6 @@ tags:
 
 - **잠정인 이유**: 문제 제기는 계보를 소화한 뒤에 한다 (`rules-research.md` 1-1). 지금 이 문장은 표적 선언이지 motivation이 아니다.
 - 관통 구멍(가위 손잡이 등)이 아니라 **깊이가 있는 내부**가 표적이다. 양쪽에서 보이는 구멍은 실패하지 않는다.
-- **정밀화 (08-24, Kutulakos & Seitz §2.2 채택)**: 질감 있는 오목은 photo-consistency가 깎을 수 있다 ("can contain concavities"). 따라서 남는 표적은 **어둡거나 무질감인 깊은 내부** — photo-consistency도 실루엣도 못 미치는 곳이다.
 
 ## 2. 지금 할 일 (병렬 두 줄기)
 
@@ -71,9 +70,9 @@ tags:
 
 | # | 질문 | 상태 |
 | --- | --- | --- |
-| Q-A | **"photometric을 개선하면 mesh도 개선되는 것이 정상"이라는 통념이 맞는가.** | **판정 (08-24): 3층 구분 채택.** "photometric"을 갈라야 답이 선다 — ① training view 적합: 기하와 원리적 무관 가능 (NeRF++ §3 shape-radiance ambiguity `[원문 확인]`) ② novel view 일반화: 부분 상관 ③ **mesh 품질: 역관계까지 실측** (Desiatov & Sattler §5.3 "inverse relationship between NVS quality and F1 scores" `[원문 확인]`). 통념은 ③층에서 성립하지 않는다. 사용자 체감("NVS에서 geometry 희생")이 근거로 승격됨. 인용문 은행: `wiki/questions/photometric-vs-mesh-quality-evidence.md`. 잔여 보강: PSNR↑·Chamfer↓ 동시 표 사례 미특정 |
-| Q-B | 차등 threshold를 **learnable**로 만들 수 있는가 | **재료 확보 (08-24), 노선 선택은 method 설계 시점으로 보류.** 문헌 주류는 "임계를 없애고 연속 가중을 학습"(Kendall & Gal→NeRF-W→CoMe)이며 **전부 잔차가 감독자** — 그런데 잔차 감독은 관측 결핍에서 침묵한다. 관문 질문 확정: **기하 유래 confidence의 learnable 임계는 무엇이 감독하는가** (후보: 합성 무대의 기하 오차 / 분포 기반 유도(AmbiSuR percentile·Bulò 닫힌형) / 연속 가중으로 임계 자체 회피). 선례 표: `wiki/questions/learnable-threshold-precedents.md` |
-| Q-C | GS를 개선했을 때 mesh에 **어떤 경로로** 영향이 가는가 | Q-A의 3층 구분이 부분 답 (training 적합↑이 mesh↑를 함의하지 않음이 이론·실측 양쪽 확보). 실측 경로 확인은 실험 줄기에서. 전제가 아니라 증명 대상 (`rules-research.md` 2-2) |
+| Q-A | **"photometric을 개선하면 mesh도 개선되는 것이 정상"이라는 통념이 맞는가.** 체감상 photometric을 올리며 geometry를 희생하는 케이스가 많다 (정확히는 NVS에서 그렇다는 생각). | 검토 대기. 반대 방향 단서 확보됨: CoMe Table 5, Desiatov & Sattler (기하≠시각) — 현 방향 기준으로 원문 재확인 필요 |
+| Q-B | 차등 threshold를 **learnable**로 만들 수 있는가. 선례는 무엇인가 | 조사 대상 |
+| Q-C | GS를 개선했을 때 mesh에 **어떤 경로로** 영향이 가는가 | 검토 대기. 전제가 아니라 증명 대상 (`rules-research.md` 2-2) |
 
 ## 5. related work (현 방향 기준 임시 정리)
 
@@ -88,12 +87,11 @@ tags:
 | Gaussian Sculpting | 최근접 경쟁 | 방법 차이, mesh 품질 지표(내각·sliver) 정의 |
 | CDGS | 인접 선행 — 학습 전 confidence로 깊이 감독 가중 | 차별화 축 |
 | VAD-GS | 인접 선행 — 가시성 + densification 조향 | 가시성 채널 설계 |
-| Desiatov & Sattler | Q-A 근거 (`[원문 확인]`) | §5.3 역관계 실측 — NVS 품질과 F1의 inverse relationship (ScanNet++ 레이저 GT) |
-| Kutulakos & Seitz (IJCV 2000) | 문제 계보 마디 1 — **명제의 원전** (`[원문 확인]`, 로컬 PDF) | "no finite set of input photographs can uniquely determine their shape" (§1.1), photo hull = 알고리즘 무관 최대 경계, §2.2 오목 정밀화 |
+| Desiatov & Sattler | Q-A 단서 | 기하≠시각 실측 |
 | Smith 외 2018 | 문제 계보 (uncertainty-aware) | 가시성·거리·각도 결합식의 원전 |
-| **Xu 외, GS surface recon survey** (PeerJ CS, 2025-08-05) | 공부 줄기 1번 — 지도 획득용 | 60+ 기법, 3단계 분류(표현→최적화→추출). **hole·오목·관측 결핍 절 없음 — 분류 축 자체에 부재** = 측정 공백 서사 보강 |
+| (survey 미확보) | — | GS mesh recon survey 존재 여부부터 조사 (조사 큐) |
 
-**문제의 계보 (Q-28b 완료, 08-24 판정)**: 5마디 정리 완료 — `wiki/comparisons/problem-genealogy-observation-deficit.md`. **빈칸의 존재는 채택**: "촬영 불변 + 채우기 비원" 조건을 다룬 마디가 없고(마디별 전제: 재촬영 가능/잔차 존재/채움 허용), survey 분류 축에도 관측 결핍이 없다(Q-29) — 이중 확인. 우리 자리 후보 = **마디 1(결정 불가 영역의 식별 가능성) × 마디 4(촬영 기하 사전 예측)를 고정 캡처의 학습 내부로 가져오는 것.** 단 **빈칸의 가치(수요)는 아직 미증명** — "필요 없었던 것" 반론(rules-research 1-3)은 SOTA가 실제로 실패하는 실측(실험 줄기)이 나와야 최종으로 막힌다.
+**문제의 계보 (Q-28b, 소화 중)**: space carving / photo hull → MVS visibility → uncertainty-aware recon → NBV·reconstructability → shape completion. **"다시 찍을 수 없고, 생성으로 채우고 싶지도 않다"의 빈칸이 우리 자리 후보** — 계보 소화 후 확정한다.
 
 참고: hole만 전담한 논문은 존재하지 않음이 확인되었다 (Q-24). 부재 자체가 자리일 수도, "필요 없었던 것"일 수도 있다 (`rules-research.md` 1-3의 반론을 먼저 받을 것).
 
@@ -101,7 +99,7 @@ tags:
 
 **현재 확정된 가설은 없다.** 배경 시대 가설(H1·H2·H3)은 §7과 함께 폐기했다.
 
-가설은 §2의 두 줄기(SOTA 실측 + 계보 소화)가 만나는 지점에서 다시 세운다. 계보 쪽 입력은 도착했다(§5 빈칸 판정) — **실험 줄기의 SOTA 실측이 남은 반쪽**이다. 세울 때 `rules-research.md` §2를 따른다 — **가설의 전제 자체를 증명 대상으로 명시한다.**
+가설은 §2의 두 줄기(SOTA 실측 + 계보 소화)가 만나는 지점에서 다시 세운다. 세울 때 `rules-research.md` §2를 따른다 — **가설의 전제 자체를 증명 대상으로 명시한다.**
 
 ## 7. 폐기 목록 (2026-08-21 확정, 이유와 함께)
 

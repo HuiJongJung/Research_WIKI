@@ -525,7 +525,11 @@ MILo·AmbiSuR·Gaussian Sculpting 커버 여부는 확인 목록에 없었음 [�
 - 없으면: "없음"을 탐색 경로와 함께 확정하고, 대체 후보를 제시 — ① 인접 survey(NeRF 계열 surface recon, 고전 MVS survey 중 최신) ② related work 절이 특히 충실한 논문 2~3편 (준-survey 역할)
 - **부재 자체가 정보다**: 부재 시 "필요 없었던 것 아닌가"(rules-research 1-3)의 반론 검토 재료로 부재 사실을 그대로 기록
 
-### Q-30. "photometric 개선 = mesh 개선" 통념 검증 재료 [대기] (우선순위 1)
+### Q-30. "photometric 개선 = mesh 개선" 통념 검증 재료 [완료 — 08-24 판정: 3층 구분 채택] (우선순위 1)
+
+**결과**: 인용문 은행 완성 (`wiki/questions/photometric-vs-mesh-quality-evidence.md`). **역관계의 실측 진술 확보** — Desiatov & Sattler §5.3 "inverse relationship between NVS quality and F1 scores"(ScanNet++ 레이저 GT, SfM 초기화 조건) [원문 확인]. 이론 원전은 NeRF++ §3 shape-radiance ambiguity("fit ... perfectly for an arbitrary incorrect geometry") [원문 확인]. photometric의 둔감성 정량은 CoMe p.31(primitive 26% 제거에 PSNR 손실 0.02dB), 기전 서술은 CoMe 문제 설정(photometric을 줄이는 유일한 길이 기하 왜곡).
+성립 방향도 공정 수집: NeRF++ 같은 절이 novel view에서는 기하 오류가 드러난다는 옹호 논리를 담고, 표면 계열은 기하 정규화 후 NVS 경쟁력 유지를 보고, D&S의 dense 초기화는 기하와 궤적 밖 일반화를 함께 올린다.
+**종합의 정밀화(판단 필요)**: "photometric"이 training view 적합(기하와 원리적 무관)인지 novel view 일반화(부분 상관)인지 mesh 품질(역관계 실측)인지로 답이 갈린다 — Q-A 판정 시 이 3층 구분의 채택 여부. PSNR↑·Chamfer↓를 한 표에서 보인 사례는 미특정(추가 수집 여지).
 
 research-status §4 **Q-A**의 조사 담당분. 사용자 체감: photometric을 올리며 geometry를 희생하는 케이스가 많다(특히 NVS). 통념의 성립·불성립 양쪽 재료를 모은다.
 
@@ -534,7 +538,11 @@ research-status §4 **Q-A**의 조사 담당분. 사용자 체감: photometric�
 3. **반대편도 공정하게**: photometric과 geometry가 같이 오른다는 실측·주장이 있으면 그것도 기록 (불리한 발견 우선 보고 규율)
 4. 산출: 인용문 은행 (verbatim + 표·절 번호). 판정은 하지 않는다 — "판단 필요"로 넘긴다
 
-### Q-31. 차등 supervision의 learnable threshold 선례 [대기] (우선순위 2)
+### Q-31. 차등 supervision의 learnable threshold 선례 [완료 — 08-24 판정: 관문 질문 확정, 노선은 설계 시점 보류] (우선순위 2)
+
+**결과**: `wiki/questions/learnable-threshold-precedents.md`. 원전은 Kendall & Gal(NeurIPS 2017)의 learned loss attenuation — 가중을 네트워크 출력 σ로 학습하고 loss(잔차/σ²+logσ)가 스스로 감독. 재구성 실물: CoMe(연속 confidence, 임계 자체를 제거, 단 β는 상수 잔존), NeRF-W(화소 β), InstantSplat(sigmoid 온도형 soft 변환), **임계 직접 learnable은 RL 계열**(RLGS가 densification 임계를 RL로, LeGS가 결정 자체를 정책으로).
+**패턴**: 주류는 "임계를 learnable로"가 아니라 "임계를 없애고 연속 가중을 학습" — 그리고 전부 잔차가 감독자다. 반대 노선(learnable 없이 근거): AmbiSuR percentile(비율 임계), Bulò 닫힌형 유도(α̂=1−√(1−α)), CoMe β 민감도 곡선.
+**Q-B 판정 재료**: learnable의 공통 전제 = 감독자 존재. 잔차 감독은 관측 결핍 영역에서 침묵하므로, 촬영 기하 유래 confidence의 임계를 learnable로 두려면 무엇이 감독하는지가 설계 질문(합성 무대면 기하 오차가 후보). **판단 필요.**
 
 research-status §4 **Q-B**의 조사 담당분. confidence에 따른 차등에서 임계·가중을 **learnable 파라미터로 둔 선례**가 있는가 (GS·NeRF·MVS 불문).
 
@@ -542,7 +550,11 @@ research-status §4 **Q-B**의 조사 담당분. confidence에 따른 차등에�
 - 반대 노선도: 임계를 분포 기반으로 유도한 사례 (learnable 없이 근거를 만든 쪽)
 - 정리 형식: rules-research 1-5 (의도 축)
 
-### Q-28b. ★문제의 계보 — 관측 결핍 처리의 역사 [대기] (우선순위 1, Q-28a보다 먼저)
+### Q-28b. ★문제의 계보 — 관측 결핍 처리의 역사 [완료 — 08-24 판정: 빈칸 존재 채택(가치는 SOTA 실측 대기), §2.2 표적 정밀화 채택] (우선순위 1)
+
+**결과**: 5마디 계보를 의도 축으로 완성 (`wiki/comparisons/problem-genealogy-observation-deficit.md`). **photo hull 원전 verbatim 확보** — Kutulakos & Seitz IJCV 2000 §1.1: "no finite set of input photographs can uniquely determine their shape ... uncountably-infinite equivalence class" + 기여 2 "tightest possible bound ... regardless of the specific algorithm being employed" [원문 확인, 공식 PDF p.201–203]. 덤: radiance 제약은 visual hull과 달리 "can contain concavities"(§2.2) — 질감 있는 오목은 깎이고 어두운 무질감 내부만 남는다는 표적 정밀화 재료.
+마디별 전제: ①carving=국소 radiance·배경 분리 ②MVS 가시성 필터(PMVS)=질감 존재 ③불확실도=잔차 유도 가능(관측 없으면 잔차도 없음) ④NBV(Smith 2018)=**촬영 변경 가능** ⑤completion=채우기가 목표에 부합.
+**빈칸 확정**: "촬영 불변 + 채우기 비원" 조건에서 결정 불가 영역을 다룬 마디 없음 — 마디 1(결정 불가 영역의 식별 가능성)과 마디 4(촬영 기하 사전 예측)를 고정 캡처의 학습 내부로 가져온 자리가 비어 있다. 1-3 반론은 Q-29 survey 부재 사실과 함께 판정으로 넘김. **판단 필요.**
 
 **이것이 우리 문제의 계보다.** Q-28a(GS mesh recon)는 무대의 계보일 뿐이다. 질문: **"관측이 결정하지 못하는 영역을 어떻게 다룰 것인가"**를 다뤄온 마디들과, 각 마디가 무엇을 전제했고 무엇을 남겼는가.
 
