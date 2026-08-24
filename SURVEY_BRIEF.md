@@ -572,7 +572,11 @@ research-status §4 **Q-B**의 조사 담당분. confidence에 따른 차등에�
 - **빈칸 확인**: "촬영을 바꿀 수 없고 + 채우기를 원하지 않을 때"를 정면으로 다룬 마디가 있는가. 없으면 그것이 우리 자리
 - 원전 인용문 확보 (photo hull 정의, visual hull의 오목 한계는 특히 정확히)
 
-### Q-28a. 무대의 계보 — GS mesh recon [대기] (우선순위 2)
+### Q-28a. 무대의 계보 — GS mesh recon [완료, 판단 필요] (우선순위 2)
+
+**결과**: 8마디 계보를 의도 축으로 조립 (`wiki/comparisons/stage-genealogy-gs-mesh-recon.md`). 3DGS→SuGaR→2DGS→{GOF, RaDe-GS}→PGSR→{MILo, AmbiSuR, Gaussian Sculpting}. 축 A(primitive: 3D→2D/평면→mesh·SDF 앵커)와 축 B(추출 시점: 사후 Poisson→사후 TSDF/level set→in-loop→SDF 주역)로 정리했고, **공통 추진력은 "mesh를 최적화에 점점 가깝게 끌어들이기"**다. 계보도 텍스트 스펙 포함(그림용).
+**핵심 관찰(판단 필요)**: hole·오목·관측 결핍은 **모든 마디의 "남긴 것" 칸에만 등장**하고 어느 마디도 표적으로 삼지 않았다. 3DGS §7.4에서 이미 자인됐고(계보 출발점부터 존재) PGSR §VI가 가장 직접적이며, PGSR만이 가림을 방법으로 다뤘으나 대상이 **뷰 간 모순의 배제**이지 결핍 영역의 처방이 아니다. 즉 우리 자리는 축 A·B의 다음 칸이 아니라 **전 마디에 이월된 잔여물**이라는 것이 표의 결론.
+신규 확인: SuGaR 문제 서술 verbatim("the Gaussians do not take an ordered structure in general and do not correspond well to the actual surface")과 정규화 대가(PSNR 27.27 대 3DGS 28.69, Table 1) — **기하-외관 절충의 계보 첫 수치**로 Q-30 은행에도 해당.
 
 사용자의 지식 체계화용 등뼈. **기존 위키 소화분(2DGS·PGSR·MILo·AmbiSuR·GOF·RaDe-GS 소스 페이지들)을 재사용해 조립하고, 빈 마디만 신규 조사한다.**
 

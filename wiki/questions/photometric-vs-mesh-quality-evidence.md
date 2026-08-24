@@ -69,6 +69,13 @@ Zhang·Riegler·Snavely·Koltun, "NeRF++: Analyzing and Improving Neural Radianc
 - GeoSVR 부록 I `[원문 확인, 08-19]`: "rendering quality slightly drops when the model is forced to learn accurate geometry" — 정확한 기하를 강제하면 렌더 품질이 내려간다는 자인
 - AmbiSuR `[원문 확인, 위키 소스]`: Mip-NeRF360 NVS에서 SOTA 아님을 인정 (표면 정확도와의 절충)
 
+### 1-5b. 계보의 첫 절충 수치 — SuGaR (08-21 Q-28a에서 교차 확보)
+
+SuGaR (CVPR 2024, arXiv 2311.12775v3) Table 1 `[원문 확인, HTML]`: mesh 추출을 위해 표면 정렬 정규화를 걸면 **R-SuGaR-15K PSNR 27.27 대 vanilla 3DGS 28.69**.
+
+- 함의: GS→mesh 계보의 **첫 마디부터 기하 강제가 photometric을 깎았다**. 이후 GeoSVR의 "rendering quality slightly drops when forced to learn accurate geometry"(1-5)와 같은 계열이며, 절충이 특정 기법의 사고가 아니라 계보의 상수임을 보여준다
+- 계보 맥락은 [[stage-genealogy-gs-mesh-recon]] 1절
+
 ### 1-6. 무대 실측 — ISPRS (기확보 재게)
 
 Petrovska & Jutzi (ISPRS Annals X-G-2025) `[원문 확인, 08-05]`: NVS 대표인 GS·NeRF가 같은 무대 cloud-to-mesh에서 MVS에 정확도·완전성 열세. 이유 명시 — "기하가 이미지 재구성 loss의 최소화로 만들어지기 때문".
