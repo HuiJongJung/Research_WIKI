@@ -675,7 +675,7 @@ MILo·GOF·2DGS·SuGaR 본문·limitations에 관통 구멍·개구부의 위상
 
 ---
 
-### Q-34. naive v0 설계 입력 — 미관측 구역의 표면 처리 선례 [대기] (우선순위 1)
+### Q-34. naive v0 설계 입력 — 미관측 구역의 표면 처리 선례 [완료, 판단 필요] (우선순위 1)
 
 > **요청 성격이 다르다.** 사용자가 지금 논문을 직접 읽을 수 없는 상황이라, **핵심만 추려 오는 것**이 목적이다. 각 항목 3~6줄. 전문 요약이나 방법 상세는 필요 없고, **우리 설계에 바로 꽂히는 사실과 verbatim 한두 개**만 가져온다.
 > 배경: `wiki/system/design-2026-08-26-naive-v0.md` (naive v0 — 자유공간 단언 + 미관측 구역 매끄러운 연장). §4-c와 §5가 이 조사의 소비처다.
@@ -704,3 +704,24 @@ Screened Poisson 배포물의 SurfaceTrimmer가 점 밀도 기반으로 외삽 �
 - **없으면 그것이 결론** — 부재를 탐색 경로와 함께 확정한다. 우리 §4-c가 새 자리라는 근거가 된다
 
 **산출 형식**: 이 큐 항목 바로 아래에 결과를 적는다. 새 위키 페이지는 만들지 않는다 (분량이 커지면 그때 판단 필요로 넘긴다). 출처 등급·절 번호 규율은 평소대로.
+
+---
+
+**결과 (08-26)**
+
+**① 곡률 연속 hole filling — 전용 가능, 단 경계는 닫힌 루프 전제**
+Liepa, "Filling Holes in Meshes" (Eurographics SGP 2003) `[2차 자료 — 원문 PDF 미확보, 공식 초록·구현 문서 경유]`. 4단계: 경계 식별 → 구멍 삼각분할(min-max 이면각 또는 최소 면적) → 세분 → **fairing**. 패치가 "interpolate the shape and density of the surrounding mesh" — 우리가 원하는 "경계 기하 이어받기"가 바로 이 문장이다.
+fairing은 umbrella 연산자 계열(uniform / scale-dependent / harmonic)로 이산 라플라시안을 최소화한다. 즉 막·박판 에너지의 이산판이며, **경계 정점의 위치·법선을 Dirichlet 조건으로 고정**하고 내부만 완화한다.
+**전용 판단**: 수학 자체(라플라시안 최소화 + 경계 고정)는 방향 무관이라 안쪽 연장에 그대로 쓸 수 있다. **단 박혀 있는 가정은 "경계가 닫힌 루프"**이며 — 삼각분할 단계가 루프를 전제로 패치를 만든다 — 정지 규칙이 **루프가 닫히는 순간**이다. 막힌 보어처럼 반대편 경계가 없으면 이 단계가 성립하지 않는다. **§4-c의 정지 규칙("FREE 증거가 닿는 데까지")은 Liepa식 루프 폐합을 대체하는 별도 장치여야 한다. 판단 필요.**
+
+**② 증거 없는 곳에 표면을 주장하지 않는 선례 — 인용 가능**
+Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배포 페이지·저장소 문서]`. 재구성기의 `--density` 플래그가 등위면 정점마다 **입력 표본까지의 추정 깊이(표집 밀도 신호)**를 함께 출력하고, SurfaceTrimmer가 그 값이 임계 미만인 부분을 잘라낸다.
+공식 문서 문구: 목적이 "removing parts of a reconstructed surface that are generated in **low-sampling-density regions**"이고, 결과로 **"allowing for the generation of non-water-tight surface"** — 즉 **watertight 강제를 의도적으로 푸는 공식 장치**다.
+**인용 가능 판정: 가능.** "증거 없는 곳엔 표면을 주장하지 않는다"의 기성 선례로 서며, Q-33 B축(Poisson=구조적 watertight)의 완화 장치가 배포물 자체에 있다는 점이 핵심이다.
+**임계는 사용자 지정 부동소수**이며 분포 기반 유도가 아니다 — Q-B에는 "관행도 임계를 손으로 정한다"는 재료로 쓰이지, 유도 노선의 모범은 아니다. `[미검증]` 원논문(TOG 2013)이 이 trimming을 본문에서 논하는지는 미확인.
+
+**③ normal consistency를 구역별로 차등 적용한 선례 — 찾지 못함**
+2DGS의 normal consistency를 **구역·화소별로 차등**한 사례를 GS·NeRF·MVS에서 찾지 못했다. 최근접은 SVR-GS(arXiv 2509.11116, 2025-09)인데 **공간 가변 대상이 sparsity/pruning 마스크**이고 표적이 압축·경량화다 `[원문 확인, 초록]` — 기하 정칙화가 아니라 우리 축이 아니다.
+인접 계열도 전부 다른 것을 가른다: 4DGS-in-the-wild(불확실도로 적응 정칙화, 표적은 동적 씬), sparse-view 계열의 spatial-aware mask(전경 신뢰 구역 강조, 깊이 prior 가중), Gaussian Surfels(정칙화 자체는 균일). **"관측 결핍 구역에서 photometric을 낮추고 기하 정칙화를 올린다"는 조합은 확인 범위에 없다.**
+탐색 경로: normal consistency/smoothness + spatially varying·per-region·mask·uncertainty·adaptive strength·unobserved 조합, 2025~2026 필터. 기존 위키 대조(CoMe·AmbiSuR percentile·Expo-GS·CDGS) — 전부 **photometric 또는 prior 쪽을 가중**하지 기하 정칙화를 구역별로 올리지 않는다.
+**→ §4-c가 새 자리라는 근거 성립.** 단 AmbiSuR가 "모호 구역에 normal prior를 선택 투입"하는 것과 **겉모습이 비슷**하므로(투입 대상이 prior냐 정칙화냐, 구분 근거가 학습된 지표냐 학습 전 가시성이냐) 차별 축을 서술로 못박아야 한다. **판단 필요.**
