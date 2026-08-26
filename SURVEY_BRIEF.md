@@ -675,7 +675,7 @@ MILo·GOF·2DGS·SuGaR 본문·limitations에 관통 구멍·개구부의 위상
 
 ---
 
-### Q-34. naive v0 설계 입력 — 미관측 구역의 표면 처리 선례 [완료, 판단 필요] (우선순위 1)
+### Q-34. naive v0 설계 입력 — 미관측 구역의 표면 처리 선례 [완료 — 08-26 판정: 정지 규칙 '닫지 않고 표시' 확정(SurfaceTrimmer 선례), AmbiSuR 차별 축 3항 확정] (우선순위 1)
 
 > **요청 성격이 다르다.** 사용자가 지금 논문을 직접 읽을 수 없는 상황이라, **핵심만 추려 오는 것**이 목적이다. 각 항목 3~6줄. 전문 요약이나 방법 상세는 필요 없고, **우리 설계에 바로 꽂히는 사실과 verbatim 한두 개**만 가져온다.
 > 배경: `wiki/system/design-2026-08-26-naive-v0.md` (naive v0 — 자유공간 단언 + 미관측 구역 매끄러운 연장). §4-c와 §5가 이 조사의 소비처다.
@@ -744,7 +744,20 @@ Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배
 
 **질문 4 (SH가 흡수하는 것)**: 3DGS 원문은 SH를 **색에만** 한정한다 — "SH coefficients representing color c of each Gaussian to correctly capture the **view-dependent appearance**"(§5.1) `[원문 확인]`. 가시성·가림을 SH가 흡수한다는 서술은 원논문에 **없다**(가시성 정렬·알파 합성은 §6 래스터화가 담당). **단 Q-35에서 "SH가 기하 오차를 보상한다"는 제3자 실측 진술을 확보했다 — 아래 참조.**
 
-**권고 (우리 현상을 부를 이름)**: 발표에서는 **"self-occlusion으로 인한 뷰 간 가시성 변화"**로 부르고, 필요하면 `view-dependent visibility`처럼 **수식어를 붙인 복합어**를 쓴다. 맨 `view-dependent`는 (a)로 읽히므로 쓰지 않는다. 어두운 내부는 `ambient occlusion` 또는 "낮은 조도"로 부르고 뷰 의존성과 섞지 않는다. **판정은 방향 세션.**
+**권고 (우리 현상을 부를 이름) — 확정안 (08-26 사용자 질의 반영)**
+
+우리 현상은 **원인**과 **양**을 갈라 부르는 것이 분야 관행이다.
+
+| 층 | 정확한 용어 | 쓰는 자리 |
+| --- | --- | --- |
+| **원인 (기전)** | **self-occlusion** — 물체가 자기 자신을 가림 | "안와 내부는 self-occlusion으로 좁은 방향 원뿔에서만 보인다" |
+| **양 (수학적 대상)** | **visibility function V(x, ω)** — 점과 방향의 이진 함수. 렌더링 방정식에서 BRDF·조사도와 **분리된 항** | 수식·정의 자리 |
+| **뷰 집합 표현** | **visible view set** / **co-visibility** (여러 뷰가 함께 보는가) | "그 점의 visible view set이 개구 방향으로 제한된다" |
+| **처리 관점 형용사** | **occlusion-aware** (기법 수식), **partial visibility** (부분만 보임) | 관련 연구 대비 자리 |
+
+**한 문장 표준형**: "self-occlusion이 내부 표면의 **visible view set을 개구 방향으로 제한**한다." — 이렇게 쓰면 (a) specular로 오해되지 않고, 렌더링 방정식의 V 항을 가리키는 것이 명확하다.
+
+**금지**: 맨 `view-dependent` (청중이 (a)로 읽는다). `view-dependent visibility`는 수식어가 붙어 있으므로 허용하되, 첫 등장에서 "self-occlusion에 의한"을 덧붙인다. 어두운 내부는 `ambient occlusion` 또는 "낮은 조도"로 부르고 뷰 의존성과 섞지 않는다. **판정은 방향 세션.**
 
 **탐색 경로**: NeRF ar5iv §3·§4, 3DGS ar5iv §3·§5.1 원문 확인. 검색: view-dependent 정의 + BRDF·visibility 구분, self-occlusion 표준 용어, 카메라 동반 광원 용어. (c) 전용 용어와 카메라 동반 광원 용어는 부재로 확정.
 
@@ -754,14 +767,16 @@ Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배
 
 > Q-32("표적으로 삼았나" = 없음)와 다른 질문. 원인을 짚은 **한 문장**이면 수확. 각 항목에 **표적/원인만** 구분 표기.
 
-**★ 불리한 발견 우선 — 축 2·3의 핵심 진술이 이미 존재한다**
+**축 2·3의 핵심 진술이 이미 존재한다 (등급: 인용 자산, 위협 아님 — 08-26 재분류)**
 
 **"Mind the Gap: Standard 3DGS Evaluation Primarily Measures Near-Trajectory Interpolation"** (arXiv 2607.01556v1) **§5.2 SH-Degree Decomposition of the Gap** `[원문 확인, HTML]` — **원인만 짚음, 표적 아님**(표적은 3DGS 평가 프로토콜의 궤적 편향).
 
 - **핵심 verbatim**: "**SH coefficients can compensate for geometric errors** ... so the geometric and view-dependent components interact rather than sum perfectly" (§5.2·Table 5 캡션)
 - 진단 장치: "The gap at SH degree 0 (diffuse only) captures a *diffuse/geometry-proxy* component: with view-dependent color removed, **the residual gap reflects Gaussians not positioned correctly** for novel viewpoints"
 - 실측: 고차 SH가 외삽을 **3개 씬에서 오히려 해쳤다** — 저자 해석은 SH가 학습 방향에 과적합해 기하 오배치를 **교정이 아니라 은폐**한다는 것
-- **우리에게 걸리는 것**: 축 2(SH 표현력↔기하 품질)와 축 3(shape-radiance ambiguity의 확장)이 이 한 편에서 동시에 충족된다. **단 축은 "새 시점 외삽"이지 self-occlusion이 아니다** — 가시성 변화를 색이 흡수한다는 축 1의 진술로는 확장되지 않았다. **차별 축은 유지되나 서술이 조심스러워야 한다. 판단 필요.**
+- **재분류 근거 (08-26)**: 최초 기록에서 "불리한 발견"으로 올렸으나 **과한 분류였다.** 셋 다 성립한다 — ⓐ **표적이 다르다**(그들은 3DGS 평가 프로토콜의 궤적 편향, 우리는 hole mesh 품질) ⓑ **개입 지점이 안 겹친다**(우리 naive v0은 자유공간 carving·감독 배분이며 SH를 건드리지 않는다) ⓒ **명제의 원전도 아니다** — "외관이 기하 오차를 흡수한다"는 NeRF++ §3 shape-radiance ambiguity(2020)가 원전이고 이 논문은 3DGS에서의 재측정이다. NeRF++는 애초에 위협이 아니라 Q-30 인용 은행 자산으로 다뤄 왔다.
+- **따라서 등급은 인용 자산**: "photometric이 기하 오차를 가릴 수 있다"의 **3DGS판 실측 근거**로 motivation에 쓸 수 있다(Q-30 은행 교차 등재 후보).
+- **남는 유일한 제약**: "외관이 기하를 보상한다는 것을 아무도 짚지 않았다"는 주장은 **하면 안 된다**(거짓이 된다). 우리 주장은 그 일반 명제가 아니라 **self-occlusion 축으로의 특정**이며, 축 1이 여전히 부재이므로 그 자리는 비어 있다.
 
 **축별 정리**
 

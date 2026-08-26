@@ -71,6 +71,7 @@ tags:
    - threshold를 임의로 정하려면 근거가 있어야 하고, 아니면 **learnable**이 가능한지 검토한다 (`rules-research.md` 4-1)
    - 차등의 기여 지점 후보: regularization 가중 / densification 제어 / prior 배분 / **추출 단계 개입 — Labatut식 가시성 carving 재소환 (08-26 후보 등록, Q-33 B축)**: 고전 Delaunay graph-cut은 가시성 항으로 사면체를 깎아 관통이 열렸는데 GS 계열은 이 항을 잃었다. X1 확인 시 정확히 그 빈 곳을 채우는 개입. 고전 재소환 서술은 Laurentini 패턴(Q-26③)과 동일 구조 — 전부 재검토 대상
 3. **어떤 기법에든 붙는 독립 모듈** — 특정 baseline(MILo) 비고집 (방향 일지 §3, 원칙 8)
+4. **차별 축 (08-26 확정)** — PGSR 계열 = 순환 안(자기 기하 파생) / AmbiSuR = 관측은 있으나 모호 + 외부 prior 주입 + 학습 중 지표. 우리 = **순환 밖 + 증거 부재 구역 + 정칙화 체제 전환**. 전문은 `design-2026-08-26-naive-v0.md` §12-2
 
 ## 4. 열린 질문
 
@@ -173,6 +174,10 @@ tags:
 | 판별값, 지표, confidence | 신호 |
 | 동일 기준 비교, 정량 대조 | 채점 |
 | prior | (표준 용어이므로 유지) |
+| **self-occlusion**(원인) · **visibility function V(x,ω)**(양) · **visible view set / co-visibility**(뷰 집합) | **맨 `view-dependent`** — NeRF·3DGS가 이 말을 **색·외관에만** 쓰므로 청중이 specular로 읽는다 `[원문 확인]`. 수식어 붙인 `view-dependent visibility`만 허용 |
+| **낮은 조도 · ambient occlusion** (위치의 함수) | 어두운 내부를 **뷰 의존으로 서술하는 것** — DTU는 조명 고정 + 카메라 이동이라 어두움은 위치의 함수다 |
+
+**발표 표준형 (08-26 확정, Q-36)**: "**self-occlusion이 내부 표면의 visible view set을 개구 방향으로 제한한다.**"
 
 ### 8-1. 서술 규칙 (발표·논문 공통)
 
