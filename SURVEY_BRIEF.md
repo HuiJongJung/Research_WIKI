@@ -252,6 +252,7 @@ Q-02가 **삼각측량각**에 대해 "학습 내부 사용 선례 없음"을 �
 **즉시 확인 가능한 것**: COLMAP track은 실제 정합된 이미지만 담으므로 **point 채널은 이미 가림을 반영하고 pose 채널만 눈이 멀었다**(조사 세션 관찰). 두 채널의 불일치를 가림 지표로 쓰는 안은 새 계산 없이 기존 데이터 재판독으로 확인 가능. 선택지 A~D 표로 정리, 채택은 B4 판정.
 
 
+
 ## 7. 결과 인계 형식
 
 항목 하나를 끝낼 때마다 아래 두 가지를 한다.
@@ -574,7 +575,7 @@ research-status §4 **Q-B**의 조사 담당분. confidence에 따른 차등에�
 
 ### Q-28a. 무대의 계보 — GS mesh recon [완료 — 08-24 판정: 전 마디 이월 잔여물 서술 채택, 정독 우선순위 불변] (우선순위 2)
 
-**판정 (08-24)**: 결론 채택 — Q-28b 빈칸과 독립 수렴. 같은 조건부(수요 증명은 SOTA 실측 대기). SuGaR 절충 수치는 Q-30 은행 1-5b 교차 등재 확인. **현재 큐는 비어 있다** — 새 항목은 방향 세션이 등록한다.
+**판정 (08-24)**: 결론 채택 — Q-28b 빈칸과 독립 수렴. 같은 조건부(수요 증명은 SOTA 실측 대기). SuGaR 절충 수치는 Q-30 은행 1-5b 교차 등재 확인. (08-25: 큐 소진 상태 해소 — 방향 세션이 **Q-32** 등록.)
 
 **결과**: 8마디 계보를 의도 축으로 조립 (`wiki/comparisons/stage-genealogy-gs-mesh-recon.md`). 3DGS→SuGaR→2DGS→{GOF, RaDe-GS}→PGSR→{MILo, AmbiSuR, Gaussian Sculpting}. 축 A(primitive: 3D→2D/평면→mesh·SDF 앵커)와 축 B(추출 시점: 사후 Poisson→사후 TSDF/level set→in-loop→SDF 주역)로 정리했고, **공통 추진력은 "mesh를 최적화에 점점 가깝게 끌어들이기"**다. 계보도 텍스트 스펙 포함(그림용).
 **핵심 관찰(판단 필요)**: hole·오목·관측 결핍은 **모든 마디의 "남긴 것" 칸에만 등장**하고 어느 마디도 표적으로 삼지 않았다. 3DGS §7.4에서 이미 자인됐고(계보 출발점부터 존재) PGSR §VI가 가장 직접적이며, PGSR만이 가림을 방법으로 다뤘으나 대상이 **뷰 간 모순의 배제**이지 결핍 영역의 처방이 아니다. 즉 우리 자리는 축 A·B의 다음 칸이 아니라 **전 마디에 이월된 잔여물**이라는 것이 표의 결론.
@@ -586,3 +587,88 @@ research-status §4 **Q-B**의 조사 담당분. confidence에 따른 차등에�
 - 축 둘로 정리: primitive 유형(3D vs 평면 vs SDF 앵커), mesh 추출 시점(사후 TSDF vs in-loop)
 - 각 마디의 "남긴 문제"에서 **hole·오목·관측 결핍이 어디에 등장하는지** 표시 — 우리 자리가 계보 어디에 꽂히는지가 산출물
 - 형식: comparison 페이지 1장 + (가능하면) 그림용 계보도 텍스트 스펙
+
+### Q-32. ★hole 있는 오브젝트를 표적으로 삼은 계열 — 2025-01 ~ 2026 하반기 [완료, 판단 필요] (우선순위 1)
+
+**결과**: **A(대상 물체의 깊은 내부를 난점으로 세운 계열)를 정면 표적으로 삼은 2025-01 이후 신규 연구는 찾지 못했다. 빈칸 유지.** 반영: `problem-genealogy-observation-deficit.md`의 "시간 축 후속" 절, `stage-genealogy-gs-mesh-recon.md` 2-1절.
+확인한 신규분은 전부 A가 아니다 — G4Splat(ICLR 2026): 미관측의 원인이 씬 sparse view이고 video diffusion으로 채움 = 계보 마디 5 노선, 무대도 실내 씬. InnerGS: **입력이 단층(sliced) 데이터**라 외부 카메라 조건 자체가 성립 안 함. QGS: 오목을 **표현**할 수 있게 한 축 A 신규 마디(관측 결핍 아님, 계보에 등재). 치과·내시경 2026 다수: **카메라가 공동 안으로 들어감**(관측 기하 반대). GAVIS·HGS-Planner: 능동 매핑 = 마디 4.
+**부수 확인 둘**: ① 2026년판 GS 표면 재구성 전용 survey 없음 — PeerJ판이 유일하며 2025 이후 커버리지 공백 그대로 ② 응용 분야는 A를 만나면 **카메라를 안에 넣어 우회**한다. 이는 1-3 반론("필요 없었던 것 아닌가")의 직접 재료 — 필요 없었던 게 아니라 우회되어 왔을 가능성. **판단 필요.**
+탐색 경로: 형상·관측·방법·응용 4축 검색어를 2025-01 이후 필터로, 2026 학회·arXiv 최신 목록 대조, 약 60건 중 5편 본문·초록 확인. 검색 요약이 지어낸 문장(GSPrior의 "deep occlusions, narrow gaps")은 원문 확인으로 배제했다.
+
+**배경**. Q-29가 확인한 PeerJ 서베이(Xu 외, PeerJ Comput. Sci. 11:e3034)의 **실질 커버리지는 2024년 말까지**다 — 투고 2025-01-06, 게재 2025-08-05, 참고문헌 연도 분포가 2024년 57편 대 2025년 3편 `[원문 확인, 로컬 PDF raw/papers/3DGS_RECON_SURVEY.pdf p1 및 참고문헌 전수]`. 방향 세션이 CHALLENGES 절(p20–21)을 직접 읽어 "남은 과제 셋이 전부 자원(데이터·연산·픽셀)의 양 문제로 환원된다"를 확인했고, 결과는 `wiki/comparisons/problem-genealogy-observation-deficit.md` 보강 절에 있다. 이 항목은 그 확인의 **시간 축 후속**이다.
+
+---
+
+
+### ⚠ 먼저: 두 가지 "hole"을 가른다 — 이 구분이 이 항목의 전부다
+
+| | 뜻 | 우리 표적인가 |
+| --- | --- | --- |
+| **A. 오브젝트가 가진 hole** | **재구성 대상 물체 자체의 기하**에 깊이 있는 공동·내부가 있음. 파이프 내부, 깊은 컵·병, 보어, 구강, 조개 내부 등. 재구성 난이도의 **원인** | **✅ 이것을 찾는다** |
+| **B. 결과물에 생긴 hole** | 재구성된 mesh에 뚫린 구멍·빈 면. 관측 실패나 알고리즘 실패의 **증상** | ❌ 아니다 |
+
+**검색어 `hole`은 압도적으로 B를 가리킨다** (hole filling, hole repair, mesh completion, watertight reconstruction). 그대로 검색하면 B 문헌에 파묻히고 A는 한 편도 안 잡힌다. 조사 세션은 **A만 수집한다.**
+
+- B 계열 자체는 이미 다뤘다 — 계보 마디 5(shape completion, "없는 곳을 prior로 채우기")가 그것이고, 우리 노선과 **반대**로 판정돼 있다. 재조사하지 않는다.
+- **단 하나의 예외**: B를 다루는 논문이 그 원인으로 **A(대상 물체의 깊은 내부·오목 형상)를 명시적으로 지목**했다면 인접 재료로 기록한다. 반드시 "B 계열, 원인 서술만 해당"이라고 표시할 것.
+
+**A의 정확한 범위** (research-status §1 기준):
+- 관통 구멍(가위 손잡이, 도넛)은 **아니다** — 양쪽에서 보이므로 실패하지 않는다
+- **깊이가 있는 내부**가 표적이다
+- 08-24 정밀화 반영: 질감 있는 오목은 photo-consistency가 깎을 수 있으므로(Kutulakos & Seitz §2.2), 남는 표적은 **어둡거나 무질감한 깊은 내부**다
+
+---
+
+**질문**: 2025-01 이후 ~ 2026년 하반기(조사 시점 최신)까지 발표된 연구 중, **hole/깊은 내부를 가진 오브젝트의 재구성을 정면으로 표적 삼은 계열**이 있는가. GS 기반을 우선하되 인접(NeRF·MVS·SDF·스캐닝)도 포함한다.
+
+찾는 것은 "그런 물체를 어쩌다 실험에 포함한 논문"이 아니라 **그 물체 형상 자체를 난점으로 세운 논문**이다. 방법 논문·데이터셋 논문·응용 논문 어느 쪽이든 좋다.
+
+**중복 방지**. Q-14·16·22·24·26·27·28a·28b에서 훑은 범위는 재조사하지 않는다. **2025-01 이후 신규분만.** 데이터셋 쪽은 `hole-object-dataset-candidates.md` · `deep-cavity-target-datasets.md`에 이미 정리돼 있으니 **거기 없는 것만** 추가한다. 기확인 기법(MILo·AmbiSuR·Gaussian Sculpting·GeoSVR·PGSR)은 "이 축을 **표적**으로 삼았는가"만 재확인한다.
+
+**검색어 설계 (핵심)**. 서베이가 §Survey methodology(p5)에서 밝힌 자체 수집 키워드는 `3D Gaussian splatting` · `3D GS` · `mesh` · `surface` **넷뿐**이다 `[원문 확인]`. 그 집합으로 다시 찾으면 같은 맹점을 재생산할 뿐이다. 축을 틀어서 검색한다.
+
+- **형상축(A를 직접 가리키는 말)**: deep cavity, concave object, interior geometry, hollow object, recessed surface, deep recess, self-occluded geometry, non-convex object reconstruction
+- **관측축**: unobserved / under-observed region, limited visibility, view coverage, occluded interior, textureless interior, incomplete observation
+- **방법축**: visibility-aware supervision, coverage-aware, observation confidence, uncertainty-guided densification
+- **응용축 — 여기가 가능성이 제일 높다.** A가 실물로 존재해 그 분야 사람들이 이미 싸우고 있는 곳: endoscopic / intraoral / dental scanning, borehole·well logging, pipe·duct·conduit inspection, cavity inspection, 주물·기계부품의 internal bore metrology, 문화재 내부·동굴
+- 연도 필터 2025-01 이후. **2026년 하반기 신착까지 반드시 포함** — arXiv 최신 목록, 2026년 학회(CVPR/ICCV/ECCV/SIGGRAPH/NeurIPS) accepted 목록을 별도로 훑는다
+
+**산출 요구**
+- 발견 시: rules-research 1-5 형식(꼬집는 문제 상황 → 방향성·방법 → **의도** → 결과 지표 → 남는 한계). 더해 **우리 표적과의 겹침 정도**를 명시 — 같은 문제인가 / 인접일 뿐인가 / 응용만 겹치고 기전은 다른가 / A가 아니라 B인가
+- **불리한 발견을 우선 보고한다.** 누군가 이미 A를 정면으로 했다면 그것이 이 항목의 가장 중요한 결과다. 완화하거나 뒤에 배치하지 않는다
+- 미발견 시: 부재를 **탐색 경로(사용한 검색어 전부 · 훑은 목록 · 연도 필터 · 훑은 편수)와 함께** 확정한다. 경로 없는 부재 주장은 서지 않는다
+- **2026년판 GS 표면 재구성 survey**가 새로 나왔는지 함께 확인 (Q-29 시점 미발견). 나왔다면 그 challenges 절이 A를 다루는지가 즉시 확인 대상
+- 반영처: `problem-genealogy-observation-deficit.md` 빈칸 절, `stage-genealogy-gs-mesh-recon.md`
+
+**판정은 하지 않는다.** rules-research 1-3의 반론("필요 없었던 것 아닌가")과 직결되므로 재료만 모아 "판단 필요"로 넘긴다.
+
+---
+
+### Q-33. 위상(topology) 축 5개 판정 [완료 — 08-26 판정 4건 반영: 자리 문장 채택·X1 등록·carving 후보 등재·위상 지표 편입] (우선순위 1 — 슬라이드/방향 세션 요청, 08-26)
+
+> 요청 형식대로 축별 판정만 기록한다 (새 페이지 없음). 근거 대부분은 기존 페이지 재사용이며 신규 조사는 B(고전 위상 취급)·D(GSO)뿐이다.
+> (재저장 08-26: 최초 기록이 방향 세션 커밋과의 동시 수정으로 유실되어 다시 저장함)
+
+**A. GS mesh 추출 계열의 위상 취급 — 판정: 없음** `[기확보 종결]`
+MILo·GOF·2DGS·SuGaR 본문·limitations에 관통 구멍·개구부의 위상 논의 없음 (각 소스 페이지 정독 + 2DGS 게재본 §7 + SuGaR는 limitations 절 자체가 없음, 08-21 확인). GW는 "hole"이 등장하나 의미가 반대다 — "High-error Gaussians are cloned with flipped normals, **closing holes** and reinforcing the shell" [원문 확인, Q-26]: shell 틈 메우기이며, 물체의 위상 구멍 보존은 논의 없음. 오히려 **hole=닫을 결함이라는 태도의 GS 내 실물 증거**. 유일한 오목 자인은 SatSplat §4.5(2DGS 평면 가정의 오목 over-smoothing)이나 이는 오목이지 위상이 아님. → 공백 근거 성립. 부수: scan37 가위 링이 "fuse together in Scan37"로 닫힌다는 제3자 문헌도 기확보(hole-object-dataset-candidates.md).
+
+**B. 고전 표면 재구성의 위상 취급 — 판정: 있음 (구멍을 안 메우는 계열이 GS 이전에 존재)** `[신규 조사, 2차 자료 중심]`
+- **Poisson은 구조적으로 watertight다**: indicator function(내부/외부 지시 함수)을 복원하므로 정의상 닫힌 표면이며, "robust to missing data through **filling the corresponding holes**" — hole filling이 설계 의도다 [2차 자료, CGAL 매뉴얼·Screened Poisson TOG 2013 계열]. 완화 장치로 density 기반 trimming(Screened Poisson 배포물의 SurfaceTrimmer)이 관행.
+- **안 메우는 계열**: Ball-Pivoting(Bernardini 외, TVCG 1999 [원문 PDF 존재]) — 표집 밀도가 낮으면 edge를 만들지 않아 **구멍이 남는다**(보간하지 않음). α-shapes 계열 동일("Topologically Correct Surface Reconstruction Using Alpha Shapes", 2008). **Labatut 계열 Delaunay graph-cut** — 가시성 항으로 사면체 내부/외부를 라벨링하므로 **광선이 통과한 관통은 원리적으로 깎인다**(결과는 watertight이되 위상은 가시성이 결정) [2차 자료].
+- **왜 GS가 안 쓰나 (관찰, 해석 표기)**: GS 계열의 입력은 점군이 아니라 렌더 깊이·Gaussian이라 노이즈에 강건한 TSDF/Poisson을 채택(2DGS가 TSDF의 floater·노이즈 강건성을 채택 이유로 언급). BPA·α-shape는 표집 밀도에 민감해 렌더 깊이 노이즈와 상성이 나쁨. **핵심 관찰: MILo는 Delaunay를 쓰면서 Labatut의 가시성 항 없이 learnable SDF 부호에 위상을 맡긴다** — 사용자 가설(구멍 안 사면체가 채워지면 안 뚫림)과 정확히 맞물리는 구조적 차이. 단 이는 조사 세션의 관찰이며 MILo 코드로 교차 확인 필요 `[코드 미확인]`.
+
+**C. 위상을 재는 지표 — 판정: 부분 (지표는 존재, GS/NeRF 표면 재구성 평가에는 부재)** `[기확보 종결]`
+- 존재하는 것: Sulzer 외 survey(arXiv 2301.13656)가 성분 수·경계 변·비다양체 변을 Chamfer와 병렬 보고(점군 입력 고전·학습 계열 무대) [원문 확인]. TopoSculpt(arXiv 2509.03938)의 Betti 제약 TIB + "voxel 단위 겹침 측도는 위상 정확성을 못 잡는다"는 필요성 서술(의료) [2차 자료]. **High-Genus IR(arXiv 2601.12155, 다중 뷰 mesh 역렌더링)이 Betti·PH 채점을 실제 사용** — tunnel·handle 보존을 지표로 잰 최근접 사례, 단 GS 아님 [원문 확인].
+- 부재하는 것: **GS/NeRF 표면 재구성 벤치마크에서 genus·Euler·Betti를 채점한 사례는 Q-27 누적 탐색에서 찾지 못했다.** Gaussian Sculpting의 mesh 품질 지표(내각·sliver)도 기하 품질이지 위상이 아님.
+- **확정 가능 문장**: "GS 표면 재구성 평가에서 구멍이 막혔는지를 재는 표준 지표는 없다 — Chamfer·F-score는 관통이 닫혀도 국소 거리 오차로만 계상하고, DTU 프로토콜은 ObsMask로 관측 영역만 채점한다(Q-06)." 단 "지표가 없다"가 아니라 "지표는 인접 분야에 있는데 GS 평가가 안 쓴다"로 서술해야 정확 (1-3 반론 대비).
+
+**D. 관통 구조 GT mesh 데이터셋 — 판정: 있음 (기확보 + GSO 신규)** `[신규 1건]`
+기확보 표(hole-object-dataset-candidates.md·deep-cavity-target-datasets.md) 유효. 신규: **GSO(Google Scanned Objects, ICRA 2022)** — 실물 스캔 가정용품 1030개, OBJ mesh, **CC-BY 4.0**, "nearly all 1030 models had closed manifold meshes" [2차 자료, 공식 블로그·게재 논문]. **High-Genus IR이 Google Scans를 고 genus 평가 무대로 실사용** — 관통 물체 존재의 간접 확인 [원문 확인]. 개별 관통 품목 목록은 미확인 `[미검증]`. MobileBrick(모델별)·OmniObject3D(teapot 핸들 확정)은 기확보 그대로.
+
+**E. 가림을 명시적으로 모델링하는 GS — 판정: 있음(부분) — 전부 학습 중·자기참조이며 학습 전 a priori는 부재** `[기확보 종결]`
+- PGSR: 렌더 깊이 homography 전후방 사영 오차를 가림 게이트로 사용, 제거 시 F1 0.52→0.28 [원문 확인] — 학습 중, 자기 기하 참조.
+- VAD-GS(arXiv 2510.09364): 점군 복셀화 + z-buffer로 가시성 판정 → densification [원문 확인]. GW: 카메라 광선 vacancy carving(Eq.7) [원문 확인].
+- 반대편 자인: Nerfbusters §4.4 — 프러스텀 가시성은 "does not handle occlusions, instead overestimates the number of views" [원문 확인]. 우리 field의 알려진 한계와 동일 구조의 선행 자인.
+- **빈자리 유지**: 학습 전에 계산하는 가림 인지 가시성(HPR·SfM track 멤버십)을 감독 배분에 쓴 사례는 없음 (Q-16·Q-25 결론).
+
+**요청자 가설(위상 문제)에 걸리는 종합**: A·C가 "없음/부분"으로 나와 공백이 서고, B가 그 공백의 계보적 원인 후보를 준다 — 고전에는 구멍을 안 메우는 계열(BPA·α-shape)과 가시성으로 위상을 결정하는 계열(Labatut)이 있었는데, GS 계열은 렌더 깊이 노이즈 때문에 TSDF/Poisson(watertight 지향)으로 수렴했고 MILo의 Delaunay는 가시성 항 없이 SDF에 위상을 맡긴다. **판단 필요**: MILo 코드에서 사면체 라벨링에 가시성이 정말 없는지 교차 확인(실험 세션 X 후보), Labatut식 가시성 carving의 재소환을 개입 설계에 넣을지.

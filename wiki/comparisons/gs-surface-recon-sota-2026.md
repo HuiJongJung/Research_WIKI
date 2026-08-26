@@ -94,6 +94,40 @@ GVGS 주의: "establishes a new state-of-the-art with a mean Chamfer Distance of
 | 유지 | 2DGS, GOF 또는 RaDe-GS, MILo | 계열 대표성. 단 서면상 SOTA와 0.2~0.34 격차가 있음을 C7 서술에 명시 |
 | 유지 (유보 강화) | Gaussian Wrapping | 표준 프로토콜 수치가 없어 "SOTA" 칭호의 근거가 자체 프로토콜뿐. 채택 시 자체 실행으로 표준 수치를 만들어야 함 |
 
+## 4-1. 2025–2026 단일 오브젝트 무대 최신순 목록 (08-25 추가, 게재처 확정판)
+
+> 요청 조건: 3DGS 기반 mesh recon, 단일 오브젝트 무대, 2025-01~2026-08, 최신순, 게재처 포함.
+> **선별 기준 (사용자 확정, 08-25)**: "배경 배제"는 문자 조건이 아니다 — 배경을 target으로 삼는 GS mesh 기법 자체가 없으므로(08-19 방향 전환의 폐기 사유와 동일 관찰), **물체 무대 품질 SOTA를 고르는 것이 기준**이다. Object-Centric 2DGS(마스크 배경 제거)는 문자적 사례로 참고만 남긴다.
+
+| # | 기법 | 시점(최신 기준) | **게재처** | DTU CD | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | **Gaussian Sculpting** | arXiv 2608.10602v1 (2026-08-11) | **미게재 (preprint)** | — (OmniObject3D 무대) | SDF 주역, mesh 자체 품질 지표(내각·sliver). 코드 미공개 `[원문 확인]` |
+| 2 | **GVGS** | arXiv 2601.20331v3 (2026-04) | **게재처 미확인 (arXiv)** `[미검증]` | 0.49 (자기 표 — GeoSVR·AmbiSuR 부재 주의) | 가시성 인지 다중 뷰 기하. 코드 공개 |
+| 3 | **GS-2M** | arXiv 2509.22276v2 (2026-03-07) | **Eurographics 2026** (CGF, Wiley DOI 확인) `[원문 확인]` | **0.53** (Table 1) | 재질 인지 — 반사 강건 축. T&T 2씬 F1 0.62. 코드 공개 |
+| 4 | **CoMe** | ECCV 2026 | **ECCV 2026** | 0.65 (unbounded 계열 자평) | confidence 축. 코드 공개 |
+| 5 | **AmbiSuR** | ICML 2026 | **ICML 2026** | **0.46 — 물체 무대 실질 SOTA** | PGSR 개량 + SH ambiguity. 코드 공개 |
+| 5b | **GSPrior** | arXiv 2603.19682v1 (2026-03) | **CVPR 2026** (공식 저장소 표제 확인) `[원문 확인]` | 0.50 (Table 2 — **비교표에 GeoSVR·AmbiSuR 부재**, GVGS형 자기 표 주의) | 자기유도 TSDF 제약. T&T F1 0.51, 42분. 코드 저장소 존재 |
+| 6 | **TriaGS** | arXiv 2512.06269 (2025-12) | **WACV 2026** `[2차 자료]` | 0.50 | 삼각측량 합의점 loss. 코드 미확인 |
+| 7 | (참고) GeoSVR | NeurIPS 2025 | **NeurIPS 2025 Spotlight** | 0.47 | **GS 아님** (sparse voxel) |
+| 8 | **MILo** | SIGGRAPH Asia 2025 | **SIGGRAPH Asia 2025** (TOG 44(6)) | 0.68 | in-loop. 우리 base |
+| 9 | Direct SDF Learning | arXiv 2509.07493 (2025-09) | 게재처 미확인 `[미검증]` | 0.50 주장 `[2차 자료]` | prior 없이 SDF 직접 학습 주장 |
+| 10 | **QGS** (Quadratic GS) | arXiv 2411.16392 (게재 2025) | **ICCV 2025** (공식 저장소·포스터 확인) `[원문 확인]` | 미확보 `[미검증]` | **quadric primitive로 볼록·오목 연속 전이** — 오목 표현 축 |
+| 11 | **Object-Centric 2DGS** | arXiv 2501.08174 (2025-01) | **ICPRAM 2025** `[원문 확인, abs]` | — (효율 축) | **"배경 배제 + 단일 오브젝트"를 문자 그대로 표방한 유일 확보 사례** — 마스크 기반 배경 제거 + occlusion-aware pruning, Gaussian·mesh 출력, 96% 축소·71% 학습 가속. 단 목표가 정확도 SOTA가 아니라 compact |
+
+**요약 (2사이클 갱신, 08-25)**: 물체 무대 정확도 순은 여전히 AmbiSuR 0.46 > GeoSVR 0.47(비GS) > GVGS 0.49(자기 표) > **GSPrior(CVPR 2026)**·TriaGS·DirectSDF 0.50 > GS-2M 0.53이며, 2025–2026 게재 확정작은 AmbiSuR(ICML)·CoMe(ECCV)·**GSPrior(CVPR)**·GS-2M(EG)·TriaGS(WACV)·QGS(ICCV)·MILo(SGA)·GeoSVR(NeurIPS)·Object-Centric 2DGS(ICPRAM)의 9편이다. 2사이클에서 추가 확인: ARGS(arXiv 2508.21344)는 미게재 preprint + 씬 수준이라 제외, VAD-GS는 CVPR 2026이나 동적 도시 씬 무대라 물체 목록 밖. "배경 배제"의 문자적 계열은 효율 쪽(ICPRAM)에 하나 있고 정확도 SOTA 계열에는 없다 — 정확도 계열은 배경을 배제하는 게 아니라 물체 중심 벤치마크에서 잰다.
+
+## 4-2. 실측 런 후보 추천 (08-25, 조사 세션 의견 — 선정은 판단 필요)
+
+전제: MILo·AmbiSuR 기실행, PGSR은 실험 줄기 3번에 기계획. 미게재 preprint(GW·GVGS·Gaussian Sculpting·DirectSDF·ARGS) 제외.
+
+| 순위 | 추천 | 근거 | 유보 |
+| --- | --- | --- | --- |
+| 1 | **QGS** (ICCV 2025) | 게재작 중 유일한 **오목 표현 가능 primitive**(quadric). hole 무대에서 실패하면 "표현을 바꿔도 관측 결핍은 남는다"의 실측 — 표현 한계 대 관측 한계 분리(GW 진단 구상의 게재본 대체재). **코드 실재 확인(08-25)**: train.py+render.py(mesh 추출)+DTU/TNT 평가 스크립트+DTU 전처리 데이터 링크 완비, COLMAP 표준 입력, 2025-08-11 갱신 활성 `[원문 확인, 저장소]` | DTU 수치 미확보, environment.yml의 CUDA·torch 버전 미기재(설치 시 확인), LICENSE.md 종류 미확인 |
+| 2 | **GeoSVR** (NeurIPS 2025 Spotlight) | 서면 2위(0.47)·코드 공개. GS 밖(voxel) 대조군 겸용 — "GS 고유가 아니라 관측의 문제" 서사 강화 | GS 아님 — 스코프 판정 선행. GS 내 대체재는 GSPrior(CVPR 2026, 0.50) |
+| 비추천 | GS-2M(반사 축, hole과 직교), TriaGS(코드 미확인), CoMe(위협표 이중 지위 정리 선행), 2DGS·GOF·RaDe-GS(품질 열세 — 단 2DGS는 오목 실패 대조군 가치) | | |
+
+최소 구성: MILo + AmbiSuR + PGSR(계획) + **QGS** = in-loop / SOTA / 평면·가림 게이트 / 오목 표현의 4계열.
+
 ## 5. 남긴 것
 
 - GeoSVR·RaDe-GS·GausSurf의 **자기 논문 표**를 열지 않았다 (GeoSVR·RaDe-GS는 제3자 표 수치만, GausSurf는 검색 요약 경유)
