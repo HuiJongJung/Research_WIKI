@@ -725,3 +725,53 @@ Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배
 인접 계열도 전부 다른 것을 가른다: 4DGS-in-the-wild(불확실도로 적응 정칙화, 표적은 동적 씬), sparse-view 계열의 spatial-aware mask(전경 신뢰 구역 강조, 깊이 prior 가중), Gaussian Surfels(정칙화 자체는 균일). **"관측 결핍 구역에서 photometric을 낮추고 기하 정칙화를 올린다"는 조합은 확인 범위에 없다.**
 탐색 경로: normal consistency/smoothness + spatially varying·per-region·mask·uncertainty·adaptive strength·unobserved 조합, 2025~2026 필터. 기존 위키 대조(CoMe·AmbiSuR percentile·Expo-GS·CDGS) — 전부 **photometric 또는 prior 쪽을 가중**하지 기하 정칙화를 구역별로 올리지 않는다.
 **→ §4-c가 새 자리라는 근거 성립.** 단 AmbiSuR가 "모호 구역에 normal prior를 선택 투입"하는 것과 **겉모습이 비슷**하므로(투입 대상이 prior냐 정칙화냐, 구분 근거가 학습된 지표냐 학습 전 가시성이냐) 차별 축을 서술로 못박아야 한다. **판단 필요.**
+
+---
+
+### Q-36. "view-dependent" 용어의 정확한 경계 [완료 — 08-26 판정: 권고 전면 채택, 맨 view-dependent 금지] (우선순위 1 — 발표자료 필수)
+
+**용어표 — 셋의 표준 명칭**
+
+| 우리가 가르려는 것 | 분야 표준 명칭 | 정의 verbatim (위치) | 우리가 쓸 표현 |
+| --- | --- | --- | --- |
+| **(a) radiance가 방향의 함수** | **view-dependent appearance / color** (표준, 이견 없음) | NeRF §3: 출력이 "an emitted color **c**=(r,g,b) and volume density σ"이며 색만 "as a function of both location and viewing direction" `[원문 확인, ar5iv]`. 3DGS §3: "The directional appearance component (color) of the radiance field is represented via spherical harmonics" `[원문 확인]` | view-dependent appearance (그대로 씀) |
+| **(b) 가시성이 방향의 함수** | **self-occlusion / (local) visibility function** — **`view-dependent`라 부르는 관행 없음** | 그래픽스 관행: BRDF의 방향 의존 radiance는 "neglecting phenomena such as interreflections and **self-occlusions**", 가시성은 "the **local visibility function** ... due to self-occlusion"으로 **별개 항** `[2차 자료, 렌더링 방정식 관행 문헌]` | **self-occlusion** 또는 **view-dependent visibility**(수식어를 붙여 명시) — 맨 `view-dependent`는 금지 |
+| **(c) 조명이 위치의 함수** | **ambient occlusion / 간접광** (조명 항이지 뷰 항이 아님) | 렌더링 방정식에서 가시성·BRDF·조사도가 분리 항. 카메라 동반 광원의 별도 표준 용어는 **찾지 못함** — 내시경 문헌은 서술적으로 "light source moves with the camera" 식으로 쓴다 `[미검증, 표준 용어 부재]` | **어두운 내부 / 낮은 조도** (view-dependent 계열 용어 회피) |
+
+**핵심 판정 (질문 2)**: **(b)를 `view-dependent`라 부르는 관행은 없다.** NeRF·3DGS 모두 이 단어를 **색·외관에만** 쓴다 — NeRF에서 density σ는 위치만의 함수이고 가시성은 σ와 투과율 T(t)가 별도로 처리한다 `[원문 확인, §3·§4]`. 그래픽스도 self-occlusion을 view-dependent radiance에서 **명시적으로 제외**한다. **따라서 우리 현상 (b)에 맨 `view-dependent`를 쓰면 안 되고, 청중은 (a)로 알아듣는다.**
+
+**질문 3 (c)의 지위**: 조명 고정 + 카메라 이동이면 색은 안 변하므로 엄밀히 view-dependent가 아니다. 이 구분을 한 문장으로 못박은 문헌은 **찾지 못했다** — 렌더링 방정식이 항을 나누므로 자명하게 취급되는 것으로 보인다. 광원이 카메라에 동반하는 경우(내시경·헤드램프)의 **전용 표준 용어도 찾지 못함** `[미검증]`. **DTU는 조명 고정 + 카메라 이동이므로 우리 무대에서 (c)는 "위치의 함수"로만 서술해야 한다.**
+
+**질문 4 (SH가 흡수하는 것)**: 3DGS 원문은 SH를 **색에만** 한정한다 — "SH coefficients representing color c of each Gaussian to correctly capture the **view-dependent appearance**"(§5.1) `[원문 확인]`. 가시성·가림을 SH가 흡수한다는 서술은 원논문에 **없다**(가시성 정렬·알파 합성은 §6 래스터화가 담당). **단 Q-35에서 "SH가 기하 오차를 보상한다"는 제3자 실측 진술을 확보했다 — 아래 참조.**
+
+**권고 (우리 현상을 부를 이름)**: 발표에서는 **"self-occlusion으로 인한 뷰 간 가시성 변화"**로 부르고, 필요하면 `view-dependent visibility`처럼 **수식어를 붙인 복합어**를 쓴다. 맨 `view-dependent`는 (a)로 읽히므로 쓰지 않는다. 어두운 내부는 `ambient occlusion` 또는 "낮은 조도"로 부르고 뷰 의존성과 섞지 않는다. **판정은 방향 세션.**
+
+**탐색 경로**: NeRF ar5iv §3·§4, 3DGS ar5iv §3·§5.1 원문 확인. 검색: view-dependent 정의 + BRDF·visibility 구분, self-occlusion 표준 용어, 카메라 동반 광원 용어. (c) 전용 용어와 카메라 동반 광원 용어는 부재로 확정.
+
+---
+
+### Q-35. 실패의 원인을 짚은 선례 [완료 — 08-26 판정: 축 2·3 선점 인정하고 인용, 축 1·4를 우리 몫으로 확정] (우선순위 1)
+
+> Q-32("표적으로 삼았나" = 없음)와 다른 질문. 원인을 짚은 **한 문장**이면 수확. 각 항목에 **표적/원인만** 구분 표기.
+
+**★ 불리한 발견 우선 — 축 2·3의 핵심 진술이 이미 존재한다**
+
+**"Mind the Gap: Standard 3DGS Evaluation Primarily Measures Near-Trajectory Interpolation"** (arXiv 2607.01556v1) **§5.2 SH-Degree Decomposition of the Gap** `[원문 확인, HTML]` — **원인만 짚음, 표적 아님**(표적은 3DGS 평가 프로토콜의 궤적 편향).
+
+- **핵심 verbatim**: "**SH coefficients can compensate for geometric errors** ... so the geometric and view-dependent components interact rather than sum perfectly" (§5.2·Table 5 캡션)
+- 진단 장치: "The gap at SH degree 0 (diffuse only) captures a *diffuse/geometry-proxy* component: with view-dependent color removed, **the residual gap reflects Gaussians not positioned correctly** for novel viewpoints"
+- 실측: 고차 SH가 외삽을 **3개 씬에서 오히려 해쳤다** — 저자 해석은 SH가 학습 방향에 과적합해 기하 오배치를 **교정이 아니라 은폐**한다는 것
+- **우리에게 걸리는 것**: 축 2(SH 표현력↔기하 품질)와 축 3(shape-radiance ambiguity의 확장)이 이 한 편에서 동시에 충족된다. **단 축은 "새 시점 외삽"이지 self-occlusion이 아니다** — 가시성 변화를 색이 흡수한다는 축 1의 진술로는 확장되지 않았다. **차별 축은 유지되나 서술이 조심스러워야 한다. 판단 필요.**
+
+**축별 정리**
+
+| 축 | 결과 | 근거 |
+| --- | --- | --- |
+| **1. 가시성 차이를 색이 흡수한다는 지적** | **찾지 못했다.** 인접만 존재 — 거울·반사에서 "3DGS fails to distinguish between real surfaces and virtual projections, leading to geometric reconstruction contradictions"(MSGS 계열) `[2차 자료]`는 **반사** 축이고 self-occlusion이 아니다 | 검색: SH absorbs/compensates occlusion·explains away inconsistency·view-dependent color masks geometry 조합 |
+| **2. SH 차수↔기하 품질 실측** | **있음.** Mind the Gap §5.2(위). 부수: 저차 SH가 view-dependent 거짓 양성을 줄인다는 변화 탐지 ablation `[2차 자료]`, 반대로 SH 제거가 품질을 낮춘다는 압축 계열 ablation `[2차 자료]` — **방향이 과제에 따라 갈린다** | 원문 1건 + 2차 2건 |
+| **3. shape-radiance ambiguity의 self-occlusion 확장** | **부분.** Mind the Gap이 NeRF++ §3 명제를 **기하 오차 보상**으로 실측 확장했으나 **가시성 축으로는 확장 안 됨.** self-occlusion 방향의 확장은 찾지 못했다 | NeRF++ §3은 Q-30 은행 기확보 |
+| **4. 가시성을 기하와 독립 제약으로** | **찾지 못했다.** 확인된 것은 전부 기하 참조·모순 배제 — PGSR 왕복 게이트(기확보, 목적=모순 배제), VAD-GS z-buffer(densification 판정), GW vacancy carving(공간 비우기). **순환(기하→가시성→감독→기하)을 명시적으로 짚은 문헌은 없다** | Q-16·Q-25·Q-33 E축 누적 결론과 일치 |
+
+**탐색 경로**: SH+occlusion 흡수, SH degree ablation+geometry, shape-radiance+visibility 확장, 가시성 독립 제약 — 4갈래 검색 + 기존 위키(NeRF++·PGSR·VAD-GS·GW·CoMe) 대조. 원문 확인 3편(NeRF·3DGS·Mind the Gap), 나머지 2차. `hole` 검색어는 Q-32 ⚠에 따라 배제.
+
+**남긴 것**: Mind the Gap의 Table 5 수치 미수집(§5.2 문장만 확보), 게재처 미확인 `[미검증]`. 변화 탐지·압축 계열 ablation은 2차 자료.
