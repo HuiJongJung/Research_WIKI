@@ -793,7 +793,7 @@ Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배
 
 ---
 
-### Q-37. AmbiSuR I_SH의 처방 범위 — 낮은 쪽에도 prior를 주입하는가 [대기] (우선순위 1)
+### Q-37. AmbiSuR I_SH의 처방 범위 — 낮은 쪽에도 prior를 주입하는가 [완료, 판단 필요] (우선순위 1)
 
 **질문 셋** (전부 원문 확인, 절·수식 번호 명기):
 
@@ -803,7 +803,20 @@ Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배
 
 **소비처**: research-status §1-2의 AmbiSuR 대비 문단. 3번이 비어 있으면 "기존 축은 그 구역을 잡고도 결과를 검증하지 않았다"가 되고, 우리 2a·2b 실측의 값이 올라간다.
 
-### Q-38. K&S §4 — photo hull 계산법과 가정 [대기] (우선순위 2)
+**결과 (08-30)** — 전부 로컬 PDF 정독 `[원문 확인, raw/papers/Revisiting Photometric Ambiguity...pdf]`
+
+**1) 낮은 쪽도 잡는다 — 사용자 추정 확정.** §3.3 "Dual-End Indication". 정의는 I_SH = Σᵢ βᵢ² = ‖f_rest‖² (Eq.10, 고차 SH 계수의 제곱합). 상단은 top η_U 백분위(Eq.11), **하단은 bottom η_L 백분위(Eq.12)를 별도로 선별**한다. 하단의 근거 verbatim: "an extremely low I_SH often correlates to **inadequate optimization with few photometric supervision** or incorrect appearances baked, which helps us to indicate the uncertain regions" (§3.3; 부록 C p.15에 같은 문장 재서술). 부록 C의 보조 논거: 잘 제약된 Lambertian 표면도 최적화 중 photometric 잔차를 SH가 일부 기록하므로 I_SH가 0에 붙지 않는다 — 그래서 "극단적으로 낮음"이 이상 신호가 된다.
+
+**2) 처방은 양끝 동일 — prior 주입 하나뿐.** S = S_U ∪ S_L로 합쳐서(§3.3) 동일하게 Amorphous Local Regularizer에 넣는다: S 소속 primitive만 마스크 M으로 투영(Eq.13)하고 normal prior 손실 N = Mean(M·(1−N_D·N_P))(Eq.14)을 건다. 차등 장치는 Parameter Separation(비대상 동결, opacity·scaling 제외)뿐이며 **상/하단 구분 처방은 없다.** 즉 "정보 부족" 구역에도 처방은 foundation model normal prior로 채우기다 — 미결정 표시나 감독 철회 같은 선택지는 없다.
+
+**3) 낮은 쪽 구역의 결과 언급 — 집계 ablation은 있으나 구역 한정 검증은 없다.**
+- **있는 것**: Table 5 (p.8) — w/o Dual-End 0.473 → +Lower Indicator 0.464 (+Upper는 0.469, Full 0.461; DTU CD). **하단 지표 단독 기여가 상단보다 크다.** Table 9 (부록 D.3, p.17) — η_L 5/10/15% 강건성. 구현 세부 (p.17): **"η_L is adopted as 10% in DTU that has darker lighting environments, and 5% for other datasets"** — 어두운 조명 환경에서 하단 선별을 2배로 늘렸다는 자인. 우리 광학 축(어두움→정보 부족)과 직결되는 실물 문장. 부록 I: 백분위 선별 안정성 (Table 10).
+- **없는 것 (부재 확정)**: 저 I_SH 구역 **내부**의 재구성 정확도를 따로 잰 평가·정성 그림·서술이 없다. 전 지표가 씬 집계 CD/F1이다. 또 하단의 두 원인("few photometric supervision" 대 "incorrect appearances baked")을 **가르지 않는다** — 검색 경로: 본문·부록 전 페이지에서 lower/dual-end/bottom/η_L 전수 검색(23쪽), region-wise·breakdown류 표 부재 확인.
+- **소비처에 걸리는 결론 재료**: ⓐ 기존 축(I_SH)도 낮은 쪽을 잡기는 잡는다 — "기존 축은 출력을 보고 우리는 입력을 본다"는 서술은 유지되나, "기존 축은 정보 부족을 못 잡는다"로 쓰면 **과장이 된다.** 정확한 서술은 "잡되 ① 학습 중 출력 통계로 잡고(학습 전 아님) ② 두 원인을 못 가르고 ③ 처방이 prior 채우기 하나이며 ④ 그 구역의 결과를 구역 한정으로 검증하지 않았다". ⓑ P-c·2a·2b 실측의 값은 ④의 부재로 올라간다. **판단 필요.**
+
+**남긴 것**: I_SH 유도부(Eq.8–9)의 수학 세부 미전사(정의만 확보). Figure 3은 도식이라 구역 결과 증거로 안 침.
+
+### Q-38. K&S §4 — photo hull 계산법과 가정 [완료, 판단 필요] (우선순위 2)
 
 space carving 알고리즘의 실제 계산(§4 부근): 무엇을 반복하고 언제 멈추는가, provably correct의 정확한 진술, 그리고 **가정 목록**(국소 radiance, 배경 분리, 카메라 기지 등).
 
@@ -812,3 +825,26 @@ space carving 알고리즘의 실제 계산(§4 부근): 무엇을 반복하고 
 - 로컬 PDF 있음 (`raw/papers/`). 사용자 발췌 정독(§1.1·§2.2)과 별개로, §4는 조사가 대신 읽고 요지만 넘긴다
 
 **판정은 하지 않는다.** 재료만 모아 넘긴다.
+
+**결과 (08-30)** — `[원문 확인, 저자 공식 사본 cs.toronto.edu/~kyros/pubs/00.ijcv.carve.pdf, IJCV 38(3) 199–218, 2000]`
+> ⚠ 큐 기재와 달리 **로컬 PDF가 raw/papers/에 없다** (전수 확인). 저자 공식 사본을 받아 정독했다. 보관 원하면 저장 지시 필요.
+
+**① 무엇을 반복하나 (§4 Reconstruction by Space Carving, pp.205–206).** 초기 부피 V(씬 포함 보장)를 복셀 v₁…v_M으로 표현하고, **반복마다 표면 복셀 하나를 검사**한다: Surf(V)의 v를 보이는 사진 전부(Vis_V(v))에 투영 → 픽셀 색·광선으로 consist_K 판정 → 비일관이면 V←V−{v}. 제거 순서는 무관: "The order in which non-photo-consistent voxels are examined and removed is **not important for guaranteeing correctness**." 비용 상한은 Proposition 1: 검사 횟수 ≤ N×M.
+
+**② 언제 멈추나 (정지 조건 verbatim).** Step 3: "**If no non-photo-consistent voxel is found, set V* = V and terminate.**" 수렴 서술: "Convergence to this shape occurs when **no non-photo-consistent voxel can be found on the surface** of the carved volume."
+
+**③ provably correct의 정확한 진술.** 근거는 정리 둘 — Theorem 1 (Subset Theorem): "If p ∈ Surf(V) is not photo-consistent, **no photo-consistent subset of V contains p**" → 비일관 복셀 제거는 photo hull을 절대 침범하지 않는다. Theorem 2 (Photo Hull Theorem): V*(V 안 모든 photo-consistent 형상의 합집합)의 **모든 표면점이 photo-consistent**이며 유일 — 알고리즘이 이 V*에 수렴한다. "provably correct"는 이 둘의 합성이지 단일 정리 이름이 아니다.
+
+**④ 가정 목록 (인용 시 함께 명기할 것).**
+| 가정 | 원문 근거 |
+| --- | --- |
+| 국소 계산 가능 radiance — "global illumination effects such as **shadows, transparency and inter-reflections can be ignored**" (§1; Lambertian·Phong·Torrance-Sparrow 포함) | `[원문 확인]` |
+| 카메라 기지 — "viewed under perspective projection from **N known positions** c₁…c_N in R³−V" (§2) | `[원문 확인]` |
+| 씬은 닫힌 불투명 점집합 (§2 서두) | `[원문 확인]` |
+| 배경 분리 가능 — Definition 1이 "p does **not project to a background pixel**"을 요구 | `[원문 확인]` |
+| 초기 부피 V는 외부 지식 — "selection of this volume is **beyond the scope** of this paper" (§4) | `[원문 확인]` |
+| 시점 배치는 무제약 — "camera distribution ... **completely unconstrained**" (Fig.1 캡션) | `[원문 확인]` |
+
+**⑤ 정지 조건 = 미결정 경계인가 (요청된 한 문단).** 그렇다 — 깎기는 **사진이 모순을 제기할 수 있는 마지막 지점**에서 멈추므로, 정지 시점의 표면(photo hull 표면)은 "사진이 빈 공간이라 단언하는 구역"(깎인 바깥)과 "사진이 더는 결정하지 못하는 구역"(남은 안)의 경계 그 자체다. 남은 부피 내부의 모든 photo-consistent 형상은 사진만으로 서로 구별 불가(Theorem 2가 그 전체의 합집합이 V*임을 보장)이므로, **우리 3상태의 "미결정"은 photo hull 내부에서 진짜 표면을 뺀 부분**에 해당하고, 우리 FREE 단언은 K&S가 깎아낸 바깥과 같은 대상이다. 차이는 출력 태도 하나다: K&S는 최대 형상 V*를 답으로 내고, 우리는 그 선택을 "미결정" 라벨로 표시해 출력에 남긴다 — 인용 문장은 이 구도로 쓸 수 있다.
+
+**남긴 것**: §5 multi-sweep 구현(ordinal visibility 평면 스윕)은 미정독 — 인용 목적상 §4로 충분 판단. 로컬 보관 여부 판단 필요.
