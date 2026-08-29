@@ -793,7 +793,7 @@ Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배
 
 ---
 
-### Q-37. AmbiSuR I_SH의 처방 범위 — 낮은 쪽에도 prior를 주입하는가 [완료, 판단 필요] (우선순위 1)
+### Q-37. AmbiSuR I_SH의 처방 범위 [완료 — 08-30 판정: §1-2 과장 정정(차이 4항 채택), η_L 자인 등재, R1 질문 정련]
 
 **질문 셋** (전부 원문 확인, 절·수식 번호 명기):
 
@@ -816,7 +816,7 @@ Kazhdan PoissonRecon 배포물의 **SurfaceTrimmer** `[원문 확인, 공식 배
 
 **남긴 것**: I_SH 유도부(Eq.8–9)의 수학 세부 미전사(정의만 확보). Figure 3은 도식이라 구역 결과 증거로 안 침.
 
-### Q-38. K&S §4 — photo hull 계산법과 가정 [완료, 판단 필요] (우선순위 2)
+### Q-38. K&S §4 — photo hull 계산법과 가정 [완료 — 08-30 판정: '차이는 출력 태도 하나' 확정 승격, radiance 퇴화 경계 채택]
 
 space carving 알고리즘의 실제 계산(§4 부근): 무엇을 반복하고 언제 멈추는가, provably correct의 정확한 진술, 그리고 **가정 목록**(국소 radiance, 배경 분리, 카메라 기지 등).
 
