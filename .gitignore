@@ -17,3 +17,7 @@ raw/screenshots/
 
 # Local paper inputs. Keep only the directory placeholder in Git.
 raw/papers/*.pdf
+
+# Figure crops. Only the index is tracked — 그림 본체는 원본 PDF에서 다시 뽑는다.
+wiki/assets/**
+!wiki/assets/INDEX.md

@@ -100,4 +100,6 @@ diff <(awk 'NR==1 && /^---$/{f=1;next} f && /^---$/{f=0;next} !f' wiki/system/ru
 ## 알아둘 상태
 
 - MCP 서버(`research-wiki`)는 현재 실행되지 않는다. 명령이 PATH에 없어 최근 페이지들은 손으로 작성되었다. 손으로 쓸 때도 frontmatter 규칙은 동일하게 지킨다.
-- git 이력이 2026-06-23 이후 멈춰 있고 위키 markdown 다수가 추적되지 않은 상태다. 파일 삭제나 이동 전에 사용자에게 확인한다.
+- git은 **텍스트만 추적한다.** 큰 이진 파일은 목록만 남긴다 — `raw/papers/*.pdf`(908M), `raw/screenshots/`(67M), `wiki/assets/**`(52M) 전부 `.gitignore`. 각 목록은 `raw/papers/INDEX.md`와 `wiki/assets/INDEX.md`이며 `tools/make_paper_index.py`·`tools/make_assets_index.py`로 재생성한다. **손으로 고치지 않는다.**
+  - 파급: 다른 곳에서 클론하면 **위키 페이지의 그림이 깨진다.** 그림은 INDEX가 가리키는 원본 PDF에서 다시 crop한다
+- 파일 삭제나 이동 전에 사용자에게 확인한다. glob 일괄 삭제 금지.
